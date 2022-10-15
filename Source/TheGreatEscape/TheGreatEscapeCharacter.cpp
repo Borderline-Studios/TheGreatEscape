@@ -10,7 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
-//#include "Enemy.h"
+#include "Enemy.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -195,17 +195,17 @@ void ATheGreatEscapeCharacter::OnPrimaryAction()
 
 	if (Hit.GetActor() != nullptr)
 	{
-		//AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
+		AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
 
-		//if (Enemy)
-		//{
-			//if (GEngine)
-			//{
-				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, Hit.GetActor()->GetName());
-				//bHitEnemy = true;
-				//Enemy->DamageEnemy(GetActorLocation());
-			//}
-		//}
+		if (Enemy)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, Hit.GetActor()->GetName());
+				bHitEnemy = true;
+				Enemy->DamageEnemy();
+			}
+		}
 	}
 }
 
@@ -229,16 +229,16 @@ void ATheGreatEscapeCharacter::OnMelee()
 
 	if (Hit.GetActor() != nullptr)
 	{
-		//AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
+		AEnemy* Enemy = Cast<AEnemy>(Hit.GetActor());
 
-		//if (Enemy)
-		//{
-			//if (GEngine)
-			//{
-				//bHitEnemy = true;
-				//Enemy->DamageEnemy(GetActorLocation());
-			//}
-		//}
+		if (Enemy)
+		{
+			if (GEngine)
+			{
+				bHitEnemy = true;
+				Enemy->DamageEnemy();
+			}
+		}
 	}
 }
 

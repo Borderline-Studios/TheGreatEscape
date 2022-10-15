@@ -13,6 +13,9 @@ class ATheGreatEscapeGameMode : public AGameModeBase
 
 public:
 	ATheGreatEscapeGameMode();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 NumOfEnemiesAlive;
 };
 
 
