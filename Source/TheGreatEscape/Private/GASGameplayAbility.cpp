@@ -6,3 +6,8 @@
 UGASGameplayAbility::UGASGameplayAbility()
 {
 }
+
+void UGASGameplayAbility::SetInputID(EGASAbilityInputID ID)
+{
+	AbilityInputID = ID;
+}

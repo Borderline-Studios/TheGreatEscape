@@ -20,5 +20,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	EGASAbilityInputID AbilityInputID = EGASAbilityInputID::None;
+
+	UFUNCTION(BlueprintCallable)
+	void SetInputID(EGASAbilityInputID ID);
+	
 	
 };

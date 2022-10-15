@@ -13,7 +13,7 @@ enum class EGASAbilityInputID : uint8
 	Shoot,
 	AimDownSights,
 	Reload,
+	Melee,
 	QAbility,
 	EAbility,
-	Passive
 };
