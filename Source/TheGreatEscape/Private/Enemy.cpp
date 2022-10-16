@@ -64,6 +64,8 @@ void AEnemy::BeginPlay()
 
 	HeadShotSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
 	HeadShotSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
+
+	EnemyAIController->RandomPatrol();
 	
 }
 
@@ -92,6 +94,7 @@ void AEnemy::OnAIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResul
 		StopSeekingPlayer();
 
 		// attack player
+		Attack();
 		UE_LOG(LogTemp, Warning, TEXT("Player ATTACKED"));
 	}
 }
@@ -126,9 +129,12 @@ void AEnemy::DamageEnemy()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Dead"));
 		bDead = true;
-
-		//GameMode->NumOfEnemiesAlive -= 1;
 	}
+}
+
+void AEnemy::Attack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attack - PARENT CLASS"));
 }
 
 

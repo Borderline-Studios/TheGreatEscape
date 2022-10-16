@@ -28,10 +28,13 @@ void AEnemyAIController::RandomPatrol()
 {
 	if (NavArea)
 	{
-		NavArea->K2_GetRandomReachablePointInRadius(GetWorld(), GetPawn()->GetActorLocation(),RandomLocation, 15000.0f);
+		if (GetPawn())
+		{
+			NavArea->K2_GetRandomReachablePointInRadius(GetWorld(), GetPawn()->GetActorLocation(),RandomLocation, 15000.0f);
 
-		MoveToLocation(RandomLocation);
+			MoveToLocation(RandomLocation);
 
-		UE_LOG(LogTemp, Warning, TEXT("Random Location %s"), *RandomLocation.ToString());
+			UE_LOG(LogTemp, Warning, TEXT("Random Location %s"), *RandomLocation.ToString());
+		}
 	}
 }

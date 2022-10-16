@@ -47,7 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxHealth;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bDead;
 
 	class ATheGreatEscapeCharacter* Player;
@@ -84,6 +84,9 @@ public:
 
 	UFUNCTION()
 		void DamageEnemy();
+
+	UFUNCTION()
+		virtual void Attack();
 
 	UFUNCTION()
 		void OnPlayerDetectedOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
