@@ -22,7 +22,7 @@ public:
 	EGASAbilityInputID AbilityInputID = EGASAbilityInputID::None;
 
 	UFUNCTION(BlueprintCallable)
-	void SetInputID(EGASAbilityInputID ID);
+	EGASAbilityInputID GetInputIDAsInt(EGASAbilityInputID ID);
 	
 	
 };

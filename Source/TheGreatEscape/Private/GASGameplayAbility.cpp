@@ -7,7 +7,7 @@ UGASGameplayAbility::UGASGameplayAbility()
 {
 }
 
-void UGASGameplayAbility::SetInputID(EGASAbilityInputID ID)
+EGASAbilityInputID UGASGameplayAbility::GetInputIDAsInt(EGASAbilityInputID ID)
 {
-	AbilityInputID = ID;
+	return static_cast<EGASAbilityInputID>(ID); 
 }
