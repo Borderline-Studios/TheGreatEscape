@@ -43,8 +43,8 @@ AEnemy::AEnemy()
 	PlayerAttackDetection = CreateDefaultSubobject<USphereComponent>(TEXT("Player Attack Detection"));
 	PlayerAttackDetection->SetupAttachment(RootComponent);
 
-	HeadShotSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Headshot Sphere"));
-	HeadShotSphere->SetupAttachment(RootComponent);
+	//HeadShotSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Headshot Sphere"));
+	//HeadShotSphere->SetupAttachment(RootComponent);
 
 	MaxHealth = 20.0f;
 	Health = MaxHealth;
@@ -74,8 +74,8 @@ void AEnemy::BeginPlay()
 	PlayerAttackDetection->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
 	PlayerAttackDetection->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
 
-	HeadShotSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
-	HeadShotSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
+	//HeadShotSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
+	//HeadShotSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
 
 	EnemyAIController->RandomPatrol();
 	
@@ -212,6 +212,11 @@ void AEnemy::InitializeAttributes()
 		{
 			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Atrribes work"));
+		}
+		
 	}
 }
 
@@ -227,6 +232,11 @@ void AEnemy::GiveAbilities()
 				AbilitySystemComponent->GiveAbility(
 					FGameplayAbilitySpec(StartUpAbility, 1 , static_cast<int32>(StartUpAbility.GetDefaultObject()->AbilityInputID), this));
 			}
+		}
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("Abilities given"));
 		}
 	}
 }
