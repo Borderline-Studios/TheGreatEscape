@@ -32,7 +32,7 @@ protected:
 
 
 private:
-	// Test using components and seeing if they populate
+	// VARIABLES
 	UPROPERTY(VisibleAnywhere)
 	USplineComponent* Spline;
 
@@ -40,5 +40,16 @@ private:
 	UBoxComponent* Start;
 
 	UPROPERTY(VisibleAnywhere)
-	UBoxComponent* End;
+	UBoxComponent* Final;
+
+	// FUNCTIONS
+	UFUNCTION()
+	void BeginOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult &SweepResult
+	);
 };
