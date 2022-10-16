@@ -12,6 +12,13 @@
 
 #pragma once
 
+#include "AbilitySystemInterface.h"
+#include <GameplayEffectTypes.h>
+
+#include "GASAttributeSet.h"
+#include "GASAbilitySystemComponent.h"
+#include "GASGameplayAbility.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
@@ -22,6 +29,14 @@ class THEGREATESCAPE_API AEnemy : public ACharacter
 	GENERATED_BODY()
 
 public:
+
+/* GAS system connection */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GAS, meta = (AllowPrivateAccess = "true"))
+    UGASAbilitySystemComponent* AbilitySystemComponent;
+
+    //Attributes for GAS
+    UPROPERTY()
+    UGASAttributeSet* Attributes; 
 	// Sets default values for this character's properties
 	AEnemy();
 
@@ -40,6 +55,8 @@ public:
 
 	bool bPlayerDetected;
 	bool bCanAttackPlayer;
+
+	bool bAbilitiesAdded = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Health;
@@ -64,6 +81,20 @@ public:
 		class USphereComponent* HeadShotSphere;
 
 	class AEnemyAIController* EnemyAIController;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+
+    virtual void InitializeAttributes();
+    virtual void GiveAbilities();
+
+    virtual void PossessedBy(AController* NewController) override;
+    virtual void OnRep_PlayerState() override;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
+	TArray<TSubclassOf<UGASGameplayAbility>> DefaultAbilities;
 
 	// --- Functions ---
 	void OnAIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);

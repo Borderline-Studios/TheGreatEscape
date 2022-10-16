@@ -22,6 +22,12 @@
 #include "AITypes.h"
 #include "TheGreatEscape/TheGreatEscapeGameMode.h"
 
+// GAS includes
+#include "GASAbilitySystemComponent.h"
+#include "GASAttributeSet.h"
+#include "GASGameplayAbility.h"
+#include <GameplayEffectTypes.h>
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -43,6 +49,12 @@ AEnemy::AEnemy()
 	MaxHealth = 20.0f;
 	Health = MaxHealth;
 	bDead = false;
+
+	AbilitySystemComponent = CreateDefaultSubobject<UGASAbilitySystemComponent>("AbilitySystemComp");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	Attributes = CreateDefaultSubobject<UGASAttributeSet>("Attributes");
 
 	//GameMode = GetWorld()->GetAuthGameMode<ATheGreatEscapeGameMode>();
 }
@@ -181,5 +193,81 @@ void AEnemy::OnPlayerAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 		SeekPlayer();
 	}
 }
+
+UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AEnemy::InitializeAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1 , EffectContext);
+
+		if (SpecHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void AEnemy::GiveAbilities()
+{
+	if (!bAbilitiesAdded)
+	{
+		bAbilitiesAdded = true;
+		if (HasAuthority() && AbilitySystemComponent)
+		{
+			for (TSubclassOf<UGASGameplayAbility>& StartUpAbility : DefaultAbilities)
+			{
+				AbilitySystemComponent->GiveAbility(
+					FGameplayAbilitySpec(StartUpAbility, 1 , static_cast<int32>(StartUpAbility.GetDefaultObject()->AbilityInputID), this));
+			}
+		}
+	}
+}
+
+void AEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+	GiveAbilities();
+}
+void AEnemy::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+
+	if (AbilitySystemComponent && InputComponent)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("ASC and IC valid"));
+		}
+		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EGASAbilityInputID",
+			static_cast<int32>(EGASAbilityInputID::Confirm),static_cast<int32>(EGASAbilityInputID::Cancel));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("ASC and IC not valid"));
+		}
+	}
+}
+
+
+
+
+
 
 
