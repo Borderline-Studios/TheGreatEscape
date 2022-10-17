@@ -6,16 +6,16 @@
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
-#include "Test_TrackConnector.generated.h"
+#include "SplineTrack.generated.h"
 
 UCLASS()
-class THEGREATESCAPE_API ATest_TrackConnector : public AActor
+class THEGREATESCAPE_API ASplineTrack : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ATest_TrackConnector();
+	ASplineTrack();
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,7 +46,8 @@ private:
 	AActor* OtherActor;
 
 	// FUNCTIONS
-	USplineComponent* GetSplineComponent();
+	USplineComponent* GetSplineComponent() const;
+	UBoxComponent* GetStartBoxCollider() const;
 	// UFUNCTION()
 	// void BeginOverlap(
 	// 	UPrimitiveComponent* OverlappedComponent,

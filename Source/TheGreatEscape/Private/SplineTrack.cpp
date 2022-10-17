@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Test_TrackConnector.h"
+#include "SplineTrack.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
-ATest_TrackConnector::ATest_TrackConnector()
+ASplineTrack::ASplineTrack()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Might need a do once gate here to make sure that the spline only populates the first time it's dragged into scene
@@ -17,115 +17,143 @@ ATest_TrackConnector::ATest_TrackConnector()
 
 	Start = CreateDefaultSubobject<UBoxComponent>(TEXT("Start TriggerBox"));
 	Start->SetupAttachment(Spline);
-	Start->SetWorldScale3D(FVector(0.1f));
 
 	Final = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox #2"));
 	Final->SetupAttachment(Spline);
-
-	// The issue is that these locations aren't determined until after the construction script runs
-	// Perhaps some dummy scene components can be an analogue?
-	// Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
-	// Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::Local));
+	Final->SetWorldScale3D(FVector(0.1f));
+	
+	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
+	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::Local));
 }
 
 // Called when the game starts or when spawned
-void ATest_TrackConnector::BeginPlay()
+void ASplineTrack::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// It works but only if the second BP of the item is used as the start instead of the first.
 	// Seems one-directional, either need to reverse order or sort something else out...
-	GEngine->AddOnScreenDebugMessage(6, 5, FColor::Orange, TEXT("Starting BeginPlay of " + this->GetName()));
-
 	TArray<AActor*> OverlappingActorArray;
-	Final->GetOverlappingActors(OverlappingActorArray);
-	FString tempStr;
-
-	if (Final->IsOverlappingActor(OtherActor))
-	{
-		tempStr = "true";
-	}
-	else
-	{
-		tempStr = "false";
-	}
+	// Handles the Start Collision -> Placing the second in front of the first
+	Start->GetOverlappingActors(OverlappingActorArray);
 	
-	GEngine->AddOnScreenDebugMessage(100, 5, FColor::Red, TEXT("Is Overlapping OtherActor: " + tempStr));
-	
-	if (OverlappingActorArray.Num() > 0)
+	if (!OverlappingActorArray.IsEmpty())
 	{
-		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("Overlapping Actors Detected"));
-		for (int i = 0; i < OverlappingActorArray.Num(); i++)
+		for (int i = 0; i < OverlappingActorArray.Num(); ++i)
 		{
-			GEngine->AddOnScreenDebugMessage(20 + i, 5, FColor::Cyan, TEXT("Name: " + OverlappingActorArray[i]->GetName()));
-
 			if (OverlappingActorArray[i]->GetClass() == this->GetClass())
 			{
-				GEngine->AddOnScreenDebugMessage(11, 5, FColor::Orange, TEXT("Detected Spline"));
-				ATest_TrackConnector* OtherTrack = Cast<ATest_TrackConnector>(OverlappingActorArray[i]);
-				USplineComponent* OtherSpline = OtherTrack->GetSplineComponent();
-				// USplineComponent* OtherSpline = Cast<USplineComponent>(OverlappingActorArray[i]);
-				
-				if (OtherSpline == nullptr)
+				ASplineTrack* temp = Cast<ASplineTrack>(OverlappingActorArray[i]);
+
+				if (temp == nullptr)
 				{
-					GEngine->AddOnScreenDebugMessage(11, 5, FColor::Red, TEXT("Spline Detection Failed"));
 					continue;
 				}
 
-				// Determines whether or not the world position of the end of the spline is within the bounds of the End/Final detection box
+				USplineComponent* OtherSpline = temp->GetSplineComponent();
+				const int EndPointIndex = OtherSpline->GetNumberOfSplinePoints() - 1;
 
 				if (UKismetMathLibrary::IsPointInBox(
-					OtherSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),
-					Final->GetComponentLocation(),
-					Final->GetScaledBoxExtent()
+					OtherSpline->GetLocationAtSplinePoint(EndPointIndex, ESplineCoordinateSpace::World),
+					Start->GetComponentLocation(),
+					Start->GetScaledBoxExtent()
 				))
 				{
-					GEngine->AddOnScreenDebugMessage(12, 5, FColor::Orange, TEXT("Spline starting to move"));
-					// Sets the world location of the end spline point
-					OtherSpline->SetLocationAtSplinePoint(
-						0,
-						Final->GetComponentLocation(),
-						ESplineCoordinateSpace::World
-						);
+					// Set the location of the spline point
+					OtherSpline->SetWorldLocationAtSplinePoint(EndPointIndex, Start->GetComponentLocation());
 
-					GEngine->AddOnScreenDebugMessage(13, 5, FColor::Orange, TEXT("Setting spline arrive tangent"));
-					// Sets the arrive tangent of the moved point to be the negation of the leave tangent of the Start of the next spline
+					// Update the tangent of the spline point to match
 					OtherSpline->SetTangentsAtSplinePoint(
+						EndPointIndex,
+						Spline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						Spline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						ESplineCoordinateSpace::World
+						);
+					Spline->SetTangentsAtSplinePoint(
 						0,
-						OtherSpline->GetArriveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
-						Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World),
+						Spline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						Spline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
 						ESplineCoordinateSpace::World
 						);
 
-					GEngine->AddOnScreenDebugMessage(14, 5, FColor::Orange,
-						TEXT("Arrive Tangent" + Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World).ToString()));
-					GEngine->AddOnScreenDebugMessage(15, 5, FColor::Orange,
-						TEXT("Leave Tangent" + OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World).ToString()));
+					GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded Start"));
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(11, 2, FColor::Orange,
-						TEXT("The End of the other spline isn't inside the spline box"));
+					GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Red, TEXT("Oof"));
 					continue;
 				}
-				
-				break;
 			}
 		}
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("No Overlapping Actors"));
+		GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed Start"));
 	}
 
-	GEngine->AddOnScreenDebugMessage(7, 5, FColor::Orange, TEXT("Ending BeginPlay of " + this->GetName()));
+	// Handles the End Collision -> Placing the second behind the first
+	Final->GetOverlappingActors(OverlappingActorArray);
+	
+	if (!OverlappingActorArray.IsEmpty())
+	{
+		for (int i = 0; i < OverlappingActorArray.Num(); ++i)
+		{
+			if (OverlappingActorArray[i]->GetClass() == this->GetClass())
+			{
+				ASplineTrack* temp = Cast<ASplineTrack>(OverlappingActorArray[i]);
+
+				if (temp == nullptr)
+				{
+					continue;
+				}
+
+				USplineComponent* OtherSpline = temp->GetSplineComponent();
+				int ThisEndPointIndex = Spline->GetNumberOfSplinePoints() - 1;
+
+				if (UKismetMathLibrary::IsPointInBox(
+					Spline->GetLocationAtSplinePoint(ThisEndPointIndex, ESplineCoordinateSpace::World),
+					temp->GetStartBoxCollider()->GetComponentLocation(),
+					temp->GetStartBoxCollider()->GetScaledBoxExtent()
+				))
+				{
+					// Set the location of the spline point
+					Spline->SetWorldLocationAtSplinePoint(ThisEndPointIndex, temp->GetStartBoxCollider()->GetComponentLocation());
+
+					// Update the tangent of the spline point to match
+					Spline->SetTangentsAtSplinePoint(
+						ThisEndPointIndex,
+						OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						ESplineCoordinateSpace::World
+						);
+					OtherSpline->SetTangentsAtSplinePoint(
+						0,
+						OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
+						ESplineCoordinateSpace::World
+						);
+
+					GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded End"));
+				}
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Red, TEXT("Oof"));
+					continue;
+				}
+			}
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed End"));
+	}
 }
 
 // Called every frame
-void ATest_TrackConnector::Tick(float DeltaTime)
+void ASplineTrack::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 }
 
 /*void ATest_TrackConnector::BeginOverlap(
@@ -176,12 +204,17 @@ void ATest_TrackConnector::Tick(float DeltaTime)
 	
 }*/
 
-USplineComponent* ATest_TrackConnector::GetSplineComponent()
+USplineComponent* ASplineTrack::GetSplineComponent() const
 {
 	return Spline;
 }
 
-void ATest_TrackConnector::PostEditMove(bool bFinished)
+UBoxComponent* ASplineTrack::GetStartBoxCollider() const
+{
+	return Start;
+}
+
+void ASplineTrack::PostEditMove(bool bFinished)
 {
 	Super::PostEditMove(bFinished);
 
@@ -189,14 +222,18 @@ void ATest_TrackConnector::PostEditMove(bool bFinished)
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::World));
 
-	// Code only runs here at the end of the move action
-	if (bFinished)
+	// Code only runs here during specific stages of the Editor Move
+	if (!bFinished)	// Only runs during the actual moving of the item
+	{
+		
+	}
+	else			// Only runs at the end of the Move action
 	{
 		
 	}
 }
 
-void ATest_TrackConnector::PostEditUndo()
+void ASplineTrack::PostEditUndo()
 {
 	Super::PostEditUndo();
 
@@ -261,18 +298,26 @@ if (OverlappingActorArray.Num() > 0)
 */
 
 /*
-if (OverlappingActorArray.Num() > 0)
+TArray<AActor*> OverlappingActorArray;
+	Final->GetOverlappingActors(OverlappingActorArray);
+	
+	if (!OverlappingActorArray.IsEmpty())
 	{
 		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("Overlapping Actors Detected"));
 		for (int i = 0; i < OverlappingActorArray.Num(); i++)
 		{
-			if (OverlappingActorArray[i]->GetClass() == Spline->GetClass())
+			GEngine->AddOnScreenDebugMessage(20 + i, 5, FColor::Cyan, TEXT("Name: " + OverlappingActorArray[i]->GetName()));
+
+			if (OverlappingActorArray[i]->GetClass() == this->GetClass())
 			{
 				GEngine->AddOnScreenDebugMessage(11, 5, FColor::Orange, TEXT("Detected Spline"));
-				USplineComponent* OtherSpline = Cast<USplineComponent>(OverlappingActorArray[i]);
+				ASplineTrack* OtherTrack = Cast<ASplineTrack>(OverlappingActorArray[i]);
+				USplineComponent* OtherSpline = OtherTrack->GetSplineComponent();
+				// USplineComponent* OtherSpline = Cast<USplineComponent>(OverlappingActorArray[i]);
 				
 				if (OtherSpline == nullptr)
 				{
+					GEngine->AddOnScreenDebugMessage(11, 5, FColor::Red, TEXT("Spline Detection Failed"));
 					continue;
 				}
 
@@ -297,9 +342,14 @@ if (OverlappingActorArray.Num() > 0)
 					OtherSpline->SetTangentsAtSplinePoint(
 						0,
 						OtherSpline->GetArriveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
-						Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World) * -1,
+						Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World),
 						ESplineCoordinateSpace::World
 						);
+
+					GEngine->AddOnScreenDebugMessage(14, 5, FColor::Orange,
+						TEXT("Arrive Tangent" + Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World).ToString()));
+					GEngine->AddOnScreenDebugMessage(15, 5, FColor::Orange,
+						TEXT("Leave Tangent" + OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World).ToString()));
 				}
 				else
 				{
@@ -312,4 +362,10 @@ if (OverlappingActorArray.Num() > 0)
 			}
 		}
 	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("No Overlapping Actors"));
+	}
+
+	GEngine->AddOnScreenDebugMessage(7, 5, FColor::Orange, TEXT("Ending BeginPlay of " + this->GetName()));
  */
