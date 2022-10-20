@@ -26,4 +26,8 @@ class THEGREATESCAPE_API AEnemyRanged : public AEnemy
 	GENERATED_BODY()
 
 	virtual void Attack() override;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class ATheGreatEscapeProjectile> Projectile;
 };

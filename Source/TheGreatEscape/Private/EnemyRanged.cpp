@@ -13,7 +13,14 @@
 
 #include "EnemyRanged.h"
 
+#include "TheGreatEscape/TheGreatEscapeProjectile.h"
+
 void AEnemyRanged::Attack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attack - CHILD Ranged class"));
+	
+	GetWorld()->SpawnActor<ATheGreatEscapeProjectile>(Projectile, GetActorLocation(), GetActorRotation());
+
+	UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *GetActorLocation().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Rotation: %s"), *GetActorRotation().ToString());
 }
