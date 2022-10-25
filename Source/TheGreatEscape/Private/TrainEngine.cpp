@@ -3,6 +3,8 @@
 
 #include "TrainEngine.h"
 
+#include "SplineTrack.h"
+
 // Sets default values
 ATrainEngine::ATrainEngine()
 {
@@ -22,7 +24,8 @@ void ATrainEngine::BeginPlay()
 	bHasStartedMoving = false;
 	SplineLength = -5;
 
-	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackActorRef->GetRootComponent()); TempSplineRef != nullptr)
+	if (TrackActorRef == nullptr) {}
+	else if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackActorRef->GetRootComponent()); TempSplineRef != nullptr)
 	{
 		TrackSplineRef = TempSplineRef;
 	}
@@ -35,6 +38,11 @@ void ATrainEngine::BeginPlay()
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref empty"));
+	}
+
+	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef != nullptr)
+	{
+		TempTrackRef->PopulateTrainRef(this);
 	}
 	
 	GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, TEXT("Train Has Started Counting, will begin moving in 10 Seconds"));
@@ -83,7 +91,7 @@ void ATrainEngine::Tick(float DeltaTime)
 
 bool ATrainEngine::ChangeTrack(AActor* NewTrack)
 {
-	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(NewTrack->GetRootComponent()); TempSplineRef == nullptr)
+	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(NewTrack->GetRootComponent()); TempSplineRef == nullptr || ShouldChangeTracks == false)
 	{
 		return false;
 	}
