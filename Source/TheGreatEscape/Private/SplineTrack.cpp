@@ -2,6 +2,8 @@
 
 
 #include "SplineTrack.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -11,7 +13,7 @@ ASplineTrack::ASplineTrack()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Might need a do once gate here to make sure that the spline only populates the first time it's dragged into scene
-
+	// Creating and attaching components
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Comp"));
 	Spline->SetupAttachment(RootComponent);
 
@@ -24,6 +26,13 @@ ASplineTrack::ASplineTrack()
 	
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::Local));
+
+	// Editing component variables
+	Spline->SetUnselectedSplineSegmentColor(FLinearColor(FColor::Blue));
+	Spline->SetSelectedSplineSegmentColor(FLinearColor(FColor::Magenta));
+	Spline->SetTangentColor(FLinearColor(0.718f, 0.589f, 0.921f, 1.0f));
+
+	Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -31,12 +40,16 @@ void ASplineTrack::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// DEBUG
+	Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
+
 	// It works but only if the second BP of the item is used as the start instead of the first.
 	// Seems one-directional, either need to reverse order or sort something else out...
 	TArray<AActor*> OverlappingActorArray;
 	// Handles the Start Collision -> Placing the second in front of the first
 	Start->GetOverlappingActors(OverlappingActorArray);
-	
+
+	// Suspect that populating the NextSpline from here fails due to pointers being depopulated once the OverlappingActors array is overwritten
 	if (!OverlappingActorArray.IsEmpty())
 	{
 		for (int i = 0; i < OverlappingActorArray.Num(); ++i)
@@ -83,6 +96,8 @@ void ASplineTrack::BeginPlay()
 					GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Red, TEXT("Oof"));
 					continue;
 				}
+
+				break;
 			}
 		}
 	}
@@ -138,8 +153,8 @@ void ASplineTrack::BeginPlay()
 				else
 				{
 					GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Red, TEXT("Oof"));
-					continue;
 				}
+				break;
 			}
 		}
 	}
@@ -147,6 +162,9 @@ void ASplineTrack::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed End"));
 	}
+
+	const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+	GEngine->AddOnScreenDebugMessage(50, 20.0, FColor::Red, TEXT("Initial Location: " + FinalSplinePoint.GetLocation().ToString()));
 }
 
 // Called every frame
@@ -154,6 +172,44 @@ void ASplineTrack::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Final->GetComponentLocation() != Spline->GetLocationAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World))
+	{
+		const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
+		GEngine->AddOnScreenDebugMessage(51, 20.0, FColor::Red, TEXT("New Location: " + FinalSplinePoint.GetLocation().ToString()));
+		Final->SetWorldLocation(FinalSplinePoint.GetLocation());
+		Final->SetWorldRotation(FinalSplinePoint.GetRotation());
+
+		if (!NextSpline)
+		{
+			// Handles getting the data for the next spline in the sequence
+			TArray<AActor*> OverlappingActorArray;
+			Final->GetOverlappingActors(OverlappingActorArray);
+
+			if (!OverlappingActorArray.IsEmpty())
+			{
+				for (int i = 0; i < OverlappingActorArray.Num(); ++i)
+				{
+					if (OverlappingActorArray[i]->GetClass() == this->GetClass())
+					{
+						NextSpline = Cast<ASplineTrack>(OverlappingActorArray[i]);
+						GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Populated"));
+					}
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Failed to populate"));
+			}
+		}
+	}
+}
+
+void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
+{
+	if (TrainRef == nullptr)
+	{
+		TrainRef = NewTrainRef;
+	}
 }
 
 /*void ATest_TrackConnector::BeginOverlap(
@@ -214,6 +270,32 @@ UBoxComponent* ASplineTrack::GetStartBoxCollider() const
 	return Start;
 }
 
+void ASplineTrack::OnFinalBeginOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	GEngine->AddOnScreenDebugMessage(99, 1.0f, FColor::Blue, TEXT("Overlapped Comp: " + OverlappedComponent->GetName()));
+
+	if (OtherActor == Cast<AActor>(TrainRef))
+	{
+		GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
+
+		TrainRef->ShouldChangeTracks = true;
+
+		if (NextSpline != nullptr)
+		{
+			TrainRef->ChangeTrack(NextSpline);
+		}
+		
+		GEngine->AddOnScreenDebugMessage(101, 1.0f, FColor::Green, TEXT("Collision Ending With Train On Final Overlap"));
+	}
+}
+
+#if WITH_EDITOR
 void ASplineTrack::PostEditMove(bool bFinished)
 {
 	Super::PostEditMove(bFinished);
@@ -240,6 +322,7 @@ void ASplineTrack::PostEditUndo()
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::World));
 }
+#endif // WITH_EDITOR
 
 /*
 // Start->GetOverlappingActors(OverlappingActorArray);

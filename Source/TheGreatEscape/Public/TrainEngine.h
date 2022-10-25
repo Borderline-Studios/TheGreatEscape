@@ -41,7 +41,7 @@ protected:
 
 private:
 	// Variables
-	// Obtaining the spline for the train tgo follow
+	// Obtaining the spline for the train to follow
 	// UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
 	// AActor* TrackActorRef;
 	USplineComponent* TrackSplineRef;

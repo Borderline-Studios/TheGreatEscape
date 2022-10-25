@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
+#include "TrainEngine.h"
 #include "GameFramework/Actor.h"
 #include "SplineTrack.generated.h"
 
@@ -27,6 +28,8 @@ public:
 
 public:
 
+	// FUNCTIONS
+	void PopulateTrainRef(ATrainEngine* NewTrainRef);
 
 protected:
 
@@ -42,12 +45,27 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Final;
 
-	UPROPERTY(EditAnywhere)
-	AActor* OtherActor;
+	// UPROPERTY(EditAnywhere)
+	// AActor* OtherActor;
+
+	ATrainEngine* TrainRef;
+	ASplineTrack* NextSpline;
 
 	// FUNCTIONS
 	USplineComponent* GetSplineComponent() const;
 	UBoxComponent* GetStartBoxCollider() const;
+	// void OnFinalEndOverlap();
+
+	UFUNCTION()
+	void OnFinalBeginOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult &SweepResult
+		);
+
 	// UFUNCTION()
 	// void BeginOverlap(
 	// 	UPrimitiveComponent* OverlappedComponent,
@@ -58,7 +76,9 @@ private:
 	// 	const FHitResult &SweepResult
 	// );
 
+#if WITH_EDITOR
 	// Overrides for code that runs specifically when changes are made in the editor
 	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
+#endif
 };
