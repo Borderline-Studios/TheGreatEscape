@@ -2,7 +2,6 @@
 
 
 #include "TrainEngine.h"
-
 #include "SplineTrack.h"
 
 // Sets default values
@@ -24,28 +23,49 @@ void ATrainEngine::BeginPlay()
 	bHasStartedMoving = false;
 	SplineLength = -5;
 
-	if (TrackActorRef == nullptr) {}
+	const float DistancePercentage = DistanceBetweenCars / 100;
+
+	// Checking for a spline reference and connecting if one is detected
+	if (!TrackActorRef) {}
 	else if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackActorRef->GetRootComponent()); TempSplineRef != nullptr)
 	{
 		TrackSplineRef = TempSplineRef;
 	}
 
-	if (TrackSplineRef != nullptr)
+	if (TrackSplineRef)
 	{
 		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("Train Spline Ref populated"));
 		SplineLength = TrackSplineRef->GetSplineLength();
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref empty"));
+
+		CarriageOffset = SplineLength * DistancePercentage;
 	}
 
-	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef != nullptr)
+	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef)
 	{
 		TempTrackRef->PopulateTrainRef(this);
 	}
 	
-	GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, TEXT("Train Has Started Counting, will begin moving in 10 Seconds"));
+	GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
+
+	// Setting up the engine along this spline
+	float StartPos = CarriageCount * DistancePercentage;
+	EngineStart = FMath::Lerp(0.0f, SplineLength, StartPos);	// The BP has an offset that is negative but flip its sign because that BP assumes a negative traversal of the spline
+
+	SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(EngineStart, ESplineCoordinateSpace::World));
+
+	if (CarriageCount > 0)
+	{
+		for (int i = 0; i < CarriageCount; ++i)
+		{
+			float temp = (CarriageCount - 1 - i) * DistancePercentage;
+			float CarriageStartDist = FMath::Lerp(0.0f, SplineLength, temp);
+
+			FTransform CarriageSpawnTransform = TrackSplineRef->GetTransformAtDistanceAlongSpline(CarriageStartDist, ESplineCoordinateSpace::World);
+			CarriageSpawnTransform.SetScale3D(FVector(1.0f));
+
+			CarriageRefs.Add(GetWorld()->SpawnActor<ATrainCarriage>(ATrainCarriage::StaticClass(), CarriageSpawnTransform));
+		}
+	}	
 }
 
 // Called every frame
@@ -55,38 +75,58 @@ void ATrainEngine::Tick(float DeltaTime)
 	
 	TimeSinceStart += DeltaTime;
     	
-    	if (TimeSinceStart > 10 && bHasStartedMoving == false && SplineLength != -5)
-    	{
-    		TimeSinceStart -= 10;
-    		bHasStartedMoving = true;
-    	    
-    		GEngine->AddOnScreenDebugMessage(2, 5, FColor::Green, TEXT("Train has started moving"));
-    		SetActorTransform(
-    			TrackSplineRef->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World, false),
-    			false,
-    			nullptr,
-    			ETeleportType::TeleportPhysics
-    			);
-    	}
-    
-    	if (bHasStartedMoving)
-    	{
-    		GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("LerpTimer = %f"), (TimeSinceStart/TimeToComplete)));
-    		GEngine->AddOnScreenDebugMessage(4, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
-    		LerpTimer = (TimeSinceStart/TimeToComplete) * SplineLength;
-    
-    		if (LerpTimer < 0)
-    		{
-    			LerpTimer = 0;
-    		}
-    		else if (LerpTimer >= SplineLength)
-    		{
-    			LerpTimer -= SplineLength;
-    			TimeSinceStart = 0;
-    		}
-    		
-    		SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(LerpTimer, ESplineCoordinateSpace::World, false));
-    	}
+    if (TimeSinceStart > StartDelayTime && bHasStartedMoving == false && SplineLength != -5)
+    {
+        TimeSinceStart -= StartDelayTime;
+        bHasStartedMoving = true;
+        
+        GEngine->AddOnScreenDebugMessage(2, 5, FColor::Green, TEXT("Train has started moving"));
+        // SetActorTransform(
+        //     TrackSplineRef->GetTransformAtDistanceAlongSpline(EngineStart, ESplineCoordinateSpace::World, false),
+        //     false,
+        //     nullptr,
+        //     ETeleportType::TeleportPhysics
+        //     );
+    }
+
+    if (bHasStartedMoving)
+    {
+	    GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("LerpTimer = %f"), (TimeSinceStart/TimeToComplete)));
+    	GEngine->AddOnScreenDebugMessage(4, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
+
+    	float TimerTrack = TimeSinceStart / TimeToComplete;
+
+	    if (TimerTrack < 0)
+	    {
+	    	TimerTrack = 0;
+	    	TimeSinceStart = 0; 
+	    }
+    	else if (TimerTrack >= 1)
+	    {
+		    TimerTrack -= 1;
+    		TimeSinceStart = 0;
+	    }
+
+	    const float CurrentDistance = FMath::Lerp(EngineStart, SplineLength, TimerTrack);
+
+    	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
+    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
+
+    	//SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
+
+	    if (CarriageCount > 0)
+	    {
+	        for (int i = 0; i < CarriageCount; ++i)
+	        {
+		        const float CurrentCarriageOffset = (i + 1) * CarriageOffset;
+	        	const float CurrentCarriageDistance = CurrentDistance - CurrentCarriageOffset;
+
+	        	CarriageRefs[i]->SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
+	        	CarriageRefs[i]->SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
+	        	//CarriageRefs[i]->SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
+	        }
+	    }
+    }
 }
 
 bool ATrainEngine::ChangeTrack(AActor* NewTrack)

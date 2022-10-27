@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
+#include "TrainCarriage.h"
 #include "TrainEngine.generated.h"
 
 UCLASS()
@@ -25,7 +26,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Custom section containing everything added beyond the default Unreal code
-	public:
 	// Track Changing
 	UPROPERTY(BlueprintReadWrite)
 	bool ShouldChangeTracks = false;
@@ -56,6 +56,20 @@ private:
 
 	// Used to keep track for the lerp
 	float LerpTimer;
+	
+	// Train Creation Functionality
+	UPROPERTY(EditInstanceOnly)
+	float DistanceBetweenCars;
+	float CarriageOffset;
+
+	UPROPERTY(EditInstanceOnly)
+	int StartDelayTime;
+	UPROPERTY(EditInstanceOnly)
+	int CarriageCount;
+
+	TArray<ATrainCarriage*> CarriageRefs;
+
+	float EngineStart;
 
 	// Track Changing
 	// UPROPERTY(BlueprintReadWrite)
