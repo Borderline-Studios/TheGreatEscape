@@ -22,6 +22,7 @@ void ATrainEngine::BeginPlay()
 	TimeSinceStart = 0.0f;
 	bHasStartedMoving = false;
 	SplineLength = -5;
+	CompleteSplineLength = 0;
 
 	const float DistancePercentage = DistanceBetweenCars / 100;
 
@@ -40,11 +41,6 @@ void ATrainEngine::BeginPlay()
 		CarriageOffset = SplineLength * DistancePercentage;
 	}
 
-	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef)
-	{
-		TempTrackRef->PopulateTrainRef(this);
-	}
-	
 	GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
 
 	// Setting up the engine along this spline
@@ -65,13 +61,60 @@ void ATrainEngine::BeginPlay()
 
 			CarriageRefs.Add(GetWorld()->SpawnActor<ATrainCarriage>(ATrainCarriage::StaticClass(), CarriageSpawnTransform));
 		}
-	}	
+	}
 }
 
 // Called every frame
 void ATrainEngine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Initial, effectively a do-once but in Tick so that it's after the begin play
+	// Populating the Train Track References
+	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef && CompleteTrackRefs.Num() == 0)
+	{
+		TempTrackRef->PopulateTrainRef(this);
+		//CompleteTrackRefs.AddUnique(TempTrackRef);
+
+		while (TempTrackRef->GetNextSpline())
+		{
+			TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
+		
+			CompleteTrackRefs.AddUnique(TempTrackRef);
+			CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
+			TempTrackRef = TempTrackRef->GetNextSpline();
+			TempTrackRef->PopulateTrainRef(this);
+
+			// If this is the final spline, connect that up too before exiting the loop
+			if (!TempTrackRef->GetNextSpline())
+			{
+				CompleteTrackRefs.AddUnique(TempTrackRef);
+				CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
+				TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
+			}
+		}
+
+		for (int i = 0; i < CompleteTrackRefs.Num(); i++)
+		{
+			FSplineTraversalParameters NewSplineParams;
+			NewSplineParams.Ratio = CompleteSplineLength / TimeToComplete;	// There should be a way to make this static but I haven't worked that out et
+			NewSplineParams.LengthToTraverse = CompleteTrackRefs[i]->GetSpline()->GetSplineLength();
+			NewSplineParams.TimeToTraverse = NewSplineParams.LengthToTraverse / NewSplineParams.Ratio;
+			NewSplineParams.TimeToSwap = 1 / NewSplineParams.TimeToTraverse;
+			
+			if (SplineTravelParameters.Num() >= 1)
+			{
+				NewSplineParams.TimeToSwap += SplineTravelParameters[i - 1].TimeToSwap;
+			}
+
+			SplineTravelParameters.Add(NewSplineParams);
+		}
+		
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, TEXT("Check Success"));
+		GEngine->AddOnScreenDebugMessage(0, 5, FColor::Magenta, FString::Printf(TEXT("Number of connected splines = %d"), CompleteTrackRefs.Num()));
+	}
+
+	// Standard Tick Operation
 	
 	TimeSinceStart += DeltaTime;
     	
@@ -81,12 +124,6 @@ void ATrainEngine::Tick(float DeltaTime)
         bHasStartedMoving = true;
         
         GEngine->AddOnScreenDebugMessage(2, 5, FColor::Green, TEXT("Train has started moving"));
-        // SetActorTransform(
-        //     TrackSplineRef->GetTransformAtDistanceAlongSpline(EngineStart, ESplineCoordinateSpace::World, false),
-        //     false,
-        //     nullptr,
-        //     ETeleportType::TeleportPhysics
-        //     );
     }
 
     if (bHasStartedMoving)

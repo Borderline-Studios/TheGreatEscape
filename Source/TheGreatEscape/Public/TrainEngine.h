@@ -40,6 +40,23 @@ protected:
 
 
 private:
+	// Structs
+	struct FSplineTraversalParameters
+	{
+		float TimeToTraverse;
+		float LengthToTraverse;
+		float TimeToSwap;
+		float Ratio;
+
+		// bool operator==(const FSplineTraversalParameters& A, FSplineTraversalParameters& B)
+		// {
+		// 	return (
+		// 		A.TimeToTraverse == B.TimeToTraverse &&
+		// 		A.LengthToTraverse == B.LengthToTraverse &&
+		// 		A.TimeToSwap == B.TimeToSwap
+		// 	);
+		// }
+	};
 	// Variables
 	// Obtaining the spline for the train to follow
 	// UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
@@ -70,6 +87,13 @@ private:
 	TArray<ATrainCarriage*> CarriageRefs;
 
 	float EngineStart;
+
+	// Keeping track of the entire track (pun intended)
+	TArray<class ASplineTrack*> CompleteTrackRefs;
+
+	// Complete Track Information
+	float CompleteSplineLength;
+	TArray<FSplineTraversalParameters> SplineTravelParameters;
 
 	// Track Changing
 	// UPROPERTY(BlueprintReadWrite)

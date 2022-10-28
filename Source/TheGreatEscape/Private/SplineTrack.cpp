@@ -123,7 +123,7 @@ void ASplineTrack::BeginPlay()
 				}
 
 				USplineComponent* OtherSpline = temp->GetSplineComponent();
-				int ThisEndPointIndex = Spline->GetNumberOfSplinePoints() - 1;
+				const int ThisEndPointIndex = Spline->GetNumberOfSplinePoints() - 1;
 
 				if (UKismetMathLibrary::IsPointInBox(
 					Spline->GetLocationAtSplinePoint(ThisEndPointIndex, ESplineCoordinateSpace::World),
@@ -193,6 +193,7 @@ void ASplineTrack::Tick(float DeltaTime)
 					{
 						NextSpline = Cast<ASplineTrack>(OverlappingActorArray[i]);
 						GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Populated"));
+						break;
 					}
 				}
 			}
@@ -210,6 +211,16 @@ void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
 	{
 		TrainRef = NewTrainRef;
 	}
+}
+
+USplineComponent* ASplineTrack::GetSpline()
+{
+	return Spline;
+}
+
+ASplineTrack* ASplineTrack::GetNextSpline()
+{
+	return NextSpline ? NextSpline: nullptr;
 }
 
 /*void ATest_TrackConnector::BeginOverlap(
@@ -286,7 +297,7 @@ void ASplineTrack::OnFinalBeginOverlap(
 
 		TrainRef->ShouldChangeTracks = true;
 
-		if (NextSpline != nullptr)
+		if (NextSpline)
 		{
 			TrainRef->ChangeTrack(NextSpline);
 		}

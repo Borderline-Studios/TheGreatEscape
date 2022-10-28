@@ -30,6 +30,8 @@ public:
 
 	// FUNCTIONS
 	void PopulateTrainRef(ATrainEngine* NewTrainRef);
+	USplineComponent* GetSpline();
+	ASplineTrack* GetNextSpline();
 
 protected:
 
