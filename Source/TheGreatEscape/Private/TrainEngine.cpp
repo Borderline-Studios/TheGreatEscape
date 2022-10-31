@@ -97,7 +97,7 @@ void ATrainEngine::Tick(float DeltaTime)
 		for (int i = 0; i < CompleteTrackRefs.Num(); i++)
 		{
 			FSplineTraversalParameters NewSplineParams;
-			NewSplineParams.Ratio = CompleteSplineLength / TimeToComplete;	// There should be a way to make this static but I haven't worked that out et
+			NewSplineParams.Ratio = CompleteSplineLength / TimeToComplete;	// There should be a way to make this static but I haven't worked that out yet
 			NewSplineParams.LengthToTraverse = CompleteTrackRefs[i]->GetSpline()->GetSplineLength();
 			NewSplineParams.TimeToTraverse = NewSplineParams.LengthToTraverse / NewSplineParams.Ratio;
 			NewSplineParams.TimeToSwap = 1 / NewSplineParams.TimeToTraverse;
@@ -118,7 +118,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	
 	TimeSinceStart += DeltaTime;
     	
-    if (TimeSinceStart > StartDelayTime && bHasStartedMoving == false && SplineLength != -5)
+    if (TimeSinceStart > StartDelayTime && bHasStartedMoving == false && TrackSplineRef)
     {
         TimeSinceStart -= StartDelayTime;
         bHasStartedMoving = true;
@@ -131,16 +131,31 @@ void ATrainEngine::Tick(float DeltaTime)
 	    GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("LerpTimer = %f"), (TimeSinceStart/TimeToComplete)));
     	GEngine->AddOnScreenDebugMessage(4, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
 
+	    // for (int i = 0; i < CompleteTrackRefs.Num(); ++i)
+	    // {
+		   //  USplineComponent* temp = CompleteTrackRefs[i]->GetSpline();
+	    //
+		   //  if (temp == TrackSplineRef && SplineTravelParameters[i].TimeToTraverse != CurrentSplineTimeToTraverse)
+		   //  {
+			  //   CurrentSplineTimeToTraverse = SplineTravelParameters[i].TimeToTraverse;
+		   //  	break;
+		   //  }
+	    // }
+
+    	// GEngine->AddOnScreenDebugMessage(25, DeltaTime, FColor::Magenta, FString::Printf(TEXT("CurrentSplineTimeToTraverse = %f"), CurrentSplineTimeToTraverse));
+
     	float TimerTrack = TimeSinceStart / TimeToComplete;
+
+    	// GEngine->AddOnScreenDebugMessage(26, DeltaTime, FColor::Magenta, FString::Printf(TEXT("TimerTrack = %f"), TimerTrack));
 
 	    if (TimerTrack < 0)
 	    {
-	    	TimerTrack = 0;
+	    	// TimerTrack = 0;
 	    	TimeSinceStart = 0; 
 	    }
     	else if (TimerTrack >= 1)
 	    {
-		    TimerTrack -= 1;
+		    // TimerTrack -= 1;
     		TimeSinceStart = 0;
 	    }
 
@@ -181,4 +196,32 @@ bool ATrainEngine::ChangeTrack(AActor* NewTrack)
 	//SplineLength = TrackSplineRef->GetSplineLength();
 
 	return true;
+}
+
+void ATrainEngine::GetSplineReferences(TArray<ASplineTrack*>& Array)
+{
+	Array = CompleteTrackRefs;
+}
+
+void ATrainEngine::BPOverrideTrack(AActor* TrackOverride)
+{
+	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackOverride->GetRootComponent()); TempSplineRef != nullptr)
+	{
+		TrackSplineRef = TempSplineRef;
+	}
+
+	if (TrackSplineRef)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref Overridden"));
+		SplineLength = TrackSplineRef->GetSplineLength();
+	}
+	
+	EngineStart = FMath::Lerp(0.0f, SplineLength, 0.0f);
+	SetActorTransform(TrackSplineRef->GetTransformAtSplinePoint(0, ESplineCoordinateSpace::World));
+	isTrackOverridden = true;
+}
+
+bool ATrainEngine::GetTrackOverrideState()
+{
+	return isTrackOverridden;
 }

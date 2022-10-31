@@ -54,6 +54,7 @@ private:
 	ASplineTrack* NextSpline;
 
 	// FUNCTIONS
+	UFUNCTION(BlueprintCallable)
 	USplineComponent* GetSplineComponent() const;
 	UBoxComponent* GetStartBoxCollider() const;
 	// void OnFinalEndOverlap();

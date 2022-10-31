@@ -36,6 +36,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ChangeTrack(AActor* NewTrack);
 
+	UFUNCTION(BlueprintCallable)
+	void GetSplineReferences(TArray<class ASplineTrack*>& Array);
+
+	UFUNCTION(BlueprintCallable)
+	void BPOverrideTrack(AActor* TrackOverride);
+	bool GetTrackOverrideState();
+
 protected:
 
 
@@ -47,16 +54,8 @@ private:
 		float LengthToTraverse;
 		float TimeToSwap;
 		float Ratio;
-
-		// bool operator==(const FSplineTraversalParameters& A, FSplineTraversalParameters& B)
-		// {
-		// 	return (
-		// 		A.TimeToTraverse == B.TimeToTraverse &&
-		// 		A.LengthToTraverse == B.LengthToTraverse &&
-		// 		A.TimeToSwap == B.TimeToSwap
-		// 	);
-		// }
 	};
+	
 	// Variables
 	// Obtaining the spline for the train to follow
 	// UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
@@ -91,9 +90,15 @@ private:
 	// Keeping track of the entire track (pun intended)
 	TArray<class ASplineTrack*> CompleteTrackRefs;
 
+	// Checking if the track has been overridden
+	bool isTrackOverridden = false;
+
 	// Complete Track Information
 	float CompleteSplineLength;
 	TArray<FSplineTraversalParameters> SplineTravelParameters;
+
+	// Tracking current Spline
+	float CurrentSplineTimeToTraverse;
 
 	// Track Changing
 	// UPROPERTY(BlueprintReadWrite)
