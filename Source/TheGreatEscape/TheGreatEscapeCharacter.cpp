@@ -273,6 +273,11 @@ void ATheGreatEscapeCharacter::MoveForward(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorForwardVector(), Value);
+
+		if (Value > 2.0f || Value < -2.0f)
+		{
+			FootStep = true;
+		}
 	}
 }
 
@@ -282,6 +287,11 @@ void ATheGreatEscapeCharacter::MoveRight(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
+
+		if (Value > 2.0f || Value < -2.0f)
+		{
+			FootStep = true;
+		}
 	}
 }
 

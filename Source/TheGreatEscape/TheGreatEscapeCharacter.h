@@ -10,7 +10,9 @@
 #include "GASAttributeSet.h"
 #include "GASAbilitySystemComponent.h"
 #include "GASGameplayAbility.h"
+#include "Kismet/GameplayStatics.h"
 #include "TheGreatEscapeCharacter.generated.h"
+
 
 
 class UInputComponent;
@@ -57,6 +59,11 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float TurnRateGamepad;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
+	bool FootStep = false;
+	
+	
 
 	/** Delegate to whom anyone can subscribe to receive this event */
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
