@@ -32,7 +32,7 @@ ASplineTrack::ASplineTrack()
 	Spline->SetSelectedSplineSegmentColor(FLinearColor(FColor::Magenta));
 	Spline->SetTangentColor(FLinearColor(0.718f, 0.589f, 0.921f, 1.0f));
 
-	Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
+	//Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -41,7 +41,7 @@ void ASplineTrack::BeginPlay()
 	Super::BeginPlay();
 
 	// DEBUG
-	Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
+	//Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
 
 	// It works but only if the second BP of the item is used as the start instead of the first.
 	// Seems one-directional, either need to reverse order or sort something else out...
@@ -164,7 +164,8 @@ void ASplineTrack::BeginPlay()
 	}
 
 	const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	GEngine->AddOnScreenDebugMessage(50, 20.0, FColor::Red, TEXT("Initial Location: " + FinalSplinePoint.GetLocation().ToString()));
+	// GEngine->AddOnScreenDebugMessage(50, 20.0, FColor::Red, TEXT("Initial Location: " + FinalSplinePoint.GetLocation().ToString()));
+	//GEngine->AddOnScreenDebugMessage(FMath::Rand() * 40, 120.0, FColor::Red, FString::Printf(TEXT("Spline " + GetName() + " length: %d"), Spline->GetSplineLength()));
 }
 
 // Called every frame
@@ -175,7 +176,7 @@ void ASplineTrack::Tick(float DeltaTime)
 	if (Final->GetComponentLocation() != Spline->GetLocationAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World))
 	{
 		const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-		GEngine->AddOnScreenDebugMessage(51, 20.0, FColor::Red, TEXT("New Location: " + FinalSplinePoint.GetLocation().ToString()));
+		// GEngine->AddOnScreenDebugMessage(51, 20.0, FColor::Red, TEXT("New Location: " + FinalSplinePoint.GetLocation().ToString()));
 		Final->SetWorldLocation(FinalSplinePoint.GetLocation());
 		Final->SetWorldRotation(FinalSplinePoint.GetRotation());
 
@@ -220,7 +221,7 @@ USplineComponent* ASplineTrack::GetSpline()
 
 ASplineTrack* ASplineTrack::GetNextSpline()
 {
-	return NextSpline ? NextSpline: nullptr;
+	return NextSpline ? NextSpline : nullptr;
 }
 
 /*void ATest_TrackConnector::BeginOverlap(
@@ -293,6 +294,7 @@ void ASplineTrack::OnFinalBeginOverlap(
 
 	if (OtherActor == Cast<AActor>(TrainRef))
 	{
+		if (TrainRef->GetTrackOverrideState()) {return;}
 		GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
 
 		TrainRef->ShouldChangeTracks = true;
