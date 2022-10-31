@@ -17,7 +17,6 @@
 
 #include "GASAttributeSet.h"
 #include "GASAbilitySystemComponent.h"
-#include "GASGameplayAbility.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -94,7 +93,7 @@ public:
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
-	TArray<TSubclassOf<UGASGameplayAbility>> DefaultAbilities;
+	TArray<TSubclassOf<class UGASGameplayAbility>> DefaultAbilities;
 
 	// --- Functions ---
 	void OnAIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
