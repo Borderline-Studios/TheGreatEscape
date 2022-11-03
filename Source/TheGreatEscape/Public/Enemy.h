@@ -80,6 +80,8 @@ public:
 		class USphereComponent* HeadShotSphere;
 
 	class AEnemyAIController* EnemyAIController;
+	
+	// GET TRAIN
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
@@ -117,6 +119,12 @@ public:
 
 	UFUNCTION()
 		virtual void Attack();
+		
+		// find dist to train 
+		// find dist to player
+		// function to see which is closest
+		// calculate if player gets within range (collider)
+	// fix attack
 
 	UFUNCTION()
 		void OnPlayerDetectedOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
