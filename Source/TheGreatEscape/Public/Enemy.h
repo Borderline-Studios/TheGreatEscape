@@ -76,7 +76,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* PlayerAttackDetection;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 		class USphereComponent* HeadShotSphere;
 
 	class AEnemyAIController* EnemyAIController;
