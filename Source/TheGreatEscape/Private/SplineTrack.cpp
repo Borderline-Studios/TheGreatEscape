@@ -292,9 +292,11 @@ void ASplineTrack::OnFinalBeginOverlap(
 {
 	GEngine->AddOnScreenDebugMessage(99, 1.0f, FColor::Blue, TEXT("Overlapped Comp: " + OverlappedComponent->GetName()));
 
+	return;
 	if (OtherActor == Cast<AActor>(TrainRef))
 	{
 		if (TrainRef->GetTrackOverrideState()) {return;}
+		// if (TrainRef->GetTrackOverrideState()) {return;}
 		GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
 
 		TrainRef->ShouldChangeTracks = true;

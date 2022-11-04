@@ -3,6 +3,7 @@
 
 #include "TrainEngine.h"
 #include "SplineTrack.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ATrainEngine::ATrainEngine()
@@ -23,6 +24,7 @@ void ATrainEngine::BeginPlay()
 	bHasStartedMoving = false;
 	SplineLength = -5;
 	CompleteSplineLength = 0;
+	CurrentSplineIndex = 0;
 
 	const float DistancePercentage = DistanceBetweenCars / 100;
 
@@ -71,7 +73,7 @@ void ATrainEngine::Tick(float DeltaTime)
 
 	// Initial, effectively a do-once but in Tick so that it's after the begin play
 	// Populating the Train Track References
-	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef && CompleteTrackRefs.Num() == 0)
+	if (ASplineTrack* TempTrackRef = Cast<ASplineTrack>(TrackActorRef); TempTrackRef && CompleteTrackRefs.IsEmpty())
 	{
 		TempTrackRef->PopulateTrainRef(this);
 		//CompleteTrackRefs.AddUnique(TempTrackRef);
@@ -88,27 +90,39 @@ void ATrainEngine::Tick(float DeltaTime)
 			// If this is the final spline, connect that up too before exiting the loop
 			if (!TempTrackRef->GetNextSpline())
 			{
+				TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
 				CompleteTrackRefs.AddUnique(TempTrackRef);
 				CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
-				TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
 			}
 		}
+
+		GEngine->AddOnScreenDebugMessage(20, 20, FColor::Emerald, FString::Printf(TEXT("Complete Spline Length = %f"), CompleteSplineLength));
 
 		for (int i = 0; i < CompleteTrackRefs.Num(); i++)
 		{
 			FSplineTraversalParameters NewSplineParams;
 			NewSplineParams.Ratio = CompleteSplineLength / TimeToComplete;	// There should be a way to make this static but I haven't worked that out yet
 			NewSplineParams.LengthToTraverse = CompleteTrackRefs[i]->GetSpline()->GetSplineLength();
-			NewSplineParams.TimeToTraverse = NewSplineParams.LengthToTraverse / NewSplineParams.Ratio;
-			NewSplineParams.TimeToSwap = 1 / NewSplineParams.TimeToTraverse;
 			
-			if (SplineTravelParameters.Num() >= 1)
+			GEngine->AddOnScreenDebugMessage((i + 1) * 100, 20, FColor::Magenta, FString::Printf(TEXT("Length for Spline %d: %f"), i + 1, NewSplineParams.LengthToTraverse));
+			GEngine->AddOnScreenDebugMessage((i + 1) * 101, 20, FColor::Magenta, FString::Printf(TEXT("Complete Spline Length: %f"), CompleteSplineLength));
+
+			NewSplineParams.TimeToTraverse = NewSplineParams.LengthToTraverse / CompleteSplineLength /*/ NewSplineParams.Ratio*/;
+			NewSplineParams.TimeToSwap = /*1 / */NewSplineParams.TimeToTraverse;
+			
+			if (SplineTravelParameters.Num() > 1)
 			{
 				NewSplineParams.TimeToSwap += SplineTravelParameters[i - 1].TimeToSwap;
 			}
+			GEngine->AddOnScreenDebugMessage((i + 1) * 102, 20, FColor::Magenta, FString::Printf(TEXT("TimeToSwap for Component %d: %f"), i, NewSplineParams.TimeToSwap));
+			GEngine->AddOnScreenDebugMessage((i + 1) * 103, 20, FColor::Magenta, FString::Printf(TEXT("TimeToTraverse for Component %d: %f"), i, NewSplineParams.TimeToTraverse));
 
 			SplineTravelParameters.Add(NewSplineParams);
+
+			GEngine->AddOnScreenDebugMessage(21 + i, 20, FColor::Emerald, FString::Printf(TEXT("Spline #%d Length: %f"), i + 1, CompleteTrackRefs[i]->GetSpline()->GetSplineLength()));
 		}
+
+		// UKismetMathLibrary::InRange_FloatFloat();
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, TEXT("Check Success"));
 		GEngine->AddOnScreenDebugMessage(0, 5, FColor::Magenta, FString::Printf(TEXT("Number of connected splines = %d"), CompleteTrackRefs.Num()));
@@ -128,7 +142,7 @@ void ATrainEngine::Tick(float DeltaTime)
 
     if (bHasStartedMoving)
     {
-	    GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("LerpTimer = %f"), (TimeSinceStart/TimeToComplete)));
+	    GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Distance Along Spline (Normalised) = %f"), (TimeSinceStart/TimeToComplete)));
     	GEngine->AddOnScreenDebugMessage(4, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
 
 	    // for (int i = 0; i < CompleteTrackRefs.Num(); ++i)
@@ -146,6 +160,48 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	float TimerTrack = TimeSinceStart / TimeToComplete;
 
+    	// Experimental, may not work
+	    if (CurrentSplineIndex >= 0 && CurrentSplineIndex < CompleteTrackRefs.Num())
+	    {
+	    	int NewSplineIndex = 0;
+	    	
+	    	// Could do a "reverse for loop" to get it into a single if check, get it to break the first time it detects between a max of 1 and a min of the time to complete.
+		    for (int i = 0; i < CompleteTrackRefs.Num() - 1; i++) 
+		    {
+			    if (i == 0 && UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0, SplineTravelParameters[0].TimeToTraverse, true, false))
+			    {
+				    NewSplineIndex = i;
+				    break;
+			    }
+			    if (UKismetMathLibrary::InRange_FloatFloat(TimerTrack, SplineTravelParameters[i].TimeToTraverse, SplineTravelParameters[i + 1].TimeToTraverse, true, false))
+			    {
+				    NewSplineIndex = i;
+			    	break;
+			    }
+
+		    	NewSplineIndex = CurrentSplineIndex;
+		    }
+
+	    	if (CurrentSplineIndex != NewSplineIndex)
+	    	{
+	    		CurrentSplineIndex = NewSplineIndex;
+	    		ChangeTrack(CompleteTrackRefs[CurrentSplineIndex]);
+	    	}
+
+	    	const float TotalProgress = FMath::Lerp(EngineStart, CompleteSplineLength, TimerTrack);
+	    	float CurrentSplineProgress = TotalProgress;
+
+	    	for (int i = 0; i < CurrentSplineIndex; i++)
+	    	{
+	    		CurrentSplineProgress -= SplineTravelParameters[i].TimeToTraverse;
+	    	}
+
+	    	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
+	    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
+	    }
+
+    	// End of Experimental
+    	
     	// GEngine->AddOnScreenDebugMessage(26, DeltaTime, FColor::Magenta, FString::Printf(TEXT("TimerTrack = %f"), TimerTrack));
 
 	    if (TimerTrack < 0)
@@ -158,6 +214,11 @@ void ATrainEngine::Tick(float DeltaTime)
 		    // TimerTrack -= 1;
     		TimeSinceStart = 0;
 	    }
+    	// else if (TimerTrack >= SplineTravelParameters[CurrentSplineIndex].TimeToSwap)
+    	// {
+    	// 	CurrentSplineIndex++;
+    	// 	ChangeTrack(CompleteTrackRefs[CurrentSplineIndex]);
+    	// }		Currently a bit rubbish, keeps crashing the engine lol
 
 	    const float CurrentDistance = FMath::Lerp(EngineStart, SplineLength, TimerTrack);
 

@@ -98,6 +98,7 @@ private:
 	TArray<FSplineTraversalParameters> SplineTravelParameters;
 
 	// Tracking current Spline
+	int CurrentSplineIndex;
 	float CurrentSplineTimeToTraverse;
 
 	// Track Changing
