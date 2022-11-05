@@ -28,7 +28,7 @@ public:
 	// Custom section containing everything added beyond the default Unreal code
 	// Track Changing
 	UPROPERTY(BlueprintReadWrite)
-	bool ShouldChangeTracks = false;
+	bool ShouldChangeTracks = true;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
 	AActor* TrackActorRef;
 

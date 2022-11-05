@@ -104,22 +104,22 @@ void ATrainEngine::Tick(float DeltaTime)
 			NewSplineParams.Ratio = CompleteSplineLength / TimeToComplete;	// There should be a way to make this static but I haven't worked that out yet
 			NewSplineParams.LengthToTraverse = CompleteTrackRefs[i]->GetSpline()->GetSplineLength();
 			
-			GEngine->AddOnScreenDebugMessage((i + 1) * 100, 20, FColor::Magenta, FString::Printf(TEXT("Length for Spline %d: %f"), i + 1, NewSplineParams.LengthToTraverse));
-			GEngine->AddOnScreenDebugMessage((i + 1) * 101, 20, FColor::Magenta, FString::Printf(TEXT("Complete Spline Length: %f"), CompleteSplineLength));
+			// GEngine->AddOnScreenDebugMessage((i + 1) * 100, 20, FColor::Magenta, FString::Printf(TEXT("Length for Spline %d: %f"), i + 1, NewSplineParams.LengthToTraverse));
+			// GEngine->AddOnScreenDebugMessage((i + 1) * 101, 20, FColor::Magenta, FString::Printf(TEXT("Complete Spline Length: %f"), CompleteSplineLength));
 
 			NewSplineParams.TimeToTraverse = NewSplineParams.LengthToTraverse / CompleteSplineLength /*/ NewSplineParams.Ratio*/;
 			NewSplineParams.TimeToSwap = /*1 / */NewSplineParams.TimeToTraverse;
 			
-			if (SplineTravelParameters.Num() > 1)
+			if (SplineTravelParameters.Num() >= 1)
 			{
 				NewSplineParams.TimeToSwap += SplineTravelParameters[i - 1].TimeToSwap;
 			}
 			GEngine->AddOnScreenDebugMessage((i + 1) * 102, 20, FColor::Magenta, FString::Printf(TEXT("TimeToSwap for Component %d: %f"), i, NewSplineParams.TimeToSwap));
-			GEngine->AddOnScreenDebugMessage((i + 1) * 103, 20, FColor::Magenta, FString::Printf(TEXT("TimeToTraverse for Component %d: %f"), i, NewSplineParams.TimeToTraverse));
+			// GEngine->AddOnScreenDebugMessage((i + 1) * 103, 20, FColor::Magenta, FString::Printf(TEXT("TimeToTraverse for Component %d: %f"), i, NewSplineParams.TimeToTraverse));
 
 			SplineTravelParameters.Add(NewSplineParams);
 
-			GEngine->AddOnScreenDebugMessage(21 + i, 20, FColor::Emerald, FString::Printf(TEXT("Spline #%d Length: %f"), i + 1, CompleteTrackRefs[i]->GetSpline()->GetSplineLength()));
+			// GEngine->AddOnScreenDebugMessage(21 + i, 20, FColor::Emerald, FString::Printf(TEXT("Spline #%d Length: %f"), i + 1, CompleteTrackRefs[i]->GetSpline()->GetSplineLength()));
 		}
 
 		// UKismetMathLibrary::InRange_FloatFloat();
@@ -142,102 +142,53 @@ void ATrainEngine::Tick(float DeltaTime)
 
     if (bHasStartedMoving)
     {
-	    GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Distance Along Spline (Normalised) = %f"), (TimeSinceStart/TimeToComplete)));
-    	GEngine->AddOnScreenDebugMessage(4, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
+	    const float TimerTrack = TimeSinceStart / TimeToComplete;
 
-	    // for (int i = 0; i < CompleteTrackRefs.Num(); ++i)
-	    // {
-		   //  USplineComponent* temp = CompleteTrackRefs[i]->GetSpline();
-	    //
-		   //  if (temp == TrackSplineRef && SplineTravelParameters[i].TimeToTraverse != CurrentSplineTimeToTraverse)
-		   //  {
-			  //   CurrentSplineTimeToTraverse = SplineTravelParameters[i].TimeToTraverse;
-		   //  	break;
-		   //  }
-	    // }
-
-    	// GEngine->AddOnScreenDebugMessage(25, DeltaTime, FColor::Magenta, FString::Printf(TEXT("CurrentSplineTimeToTraverse = %f"), CurrentSplineTimeToTraverse));
-
-    	float TimerTrack = TimeSinceStart / TimeToComplete;
-
-    	// Experimental, may not work
 	    if (CurrentSplineIndex >= 0 && CurrentSplineIndex < CompleteTrackRefs.Num())
 	    {
+	    	// This segment calculates which spline the engine should be on based on:
+	    	// - The location of the engine throughout the complete spline
+	    	// - The time since the start of traversing the complete spline.
 	    	int NewSplineIndex = 0;
-	    	
-	    	// Could do a "reverse for loop" to get it into a single if check, get it to break the first time it detects between a max of 1 and a min of the time to complete.
-		    for (int i = 0; i < CompleteTrackRefs.Num() - 1; i++) 
+		    
+		    for (int i = CompleteTrackRefs.Num() - 1; i > 0; i--)
 		    {
-			    if (i == 0 && UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0, SplineTravelParameters[0].TimeToTraverse, true, false))
-			    {
-				    NewSplineIndex = i;
-				    break;
-			    }
-			    if (UKismetMathLibrary::InRange_FloatFloat(TimerTrack, SplineTravelParameters[i].TimeToTraverse, SplineTravelParameters[i + 1].TimeToTraverse, true, false))
-			    {
-				    NewSplineIndex = i;
-			    	break;
-			    }
-
-		    	NewSplineIndex = CurrentSplineIndex;
+		        if (UKismetMathLibrary::InRange_FloatFloat(TimerTrack, SplineTravelParameters[i - 1].TimeToSwap, SplineTravelParameters[i].TimeToSwap, true, false))
+		        {
+					NewSplineIndex = i;
+		        	break;
+		        }
 		    }
 
+	    	// Updates what track the train is currently on depending on whether or not there is a difference between the current assigned index and the index calculated above.
 	    	if (CurrentSplineIndex != NewSplineIndex)
 	    	{
+	    		GEngine->AddOnScreenDebugMessage(7, 1, FColor::Red, TEXT("Changing Tracks"));
 	    		CurrentSplineIndex = NewSplineIndex;
 	    		ChangeTrack(CompleteTrackRefs[CurrentSplineIndex]);
 	    	}
 
-	    	const float TotalProgress = FMath::Lerp(EngineStart, CompleteSplineLength, TimerTrack);
-	    	float CurrentSplineProgress = TotalProgress;
+	    	// This segment handles the conversion of time between the complete spline and the individual spline segments.
+	    	// For example, 0.5 seconds through the complete spline might refer to 0.86 seconds through the second spline.
+	    	float TimeOffset = 0;
 
 	    	for (int i = 0; i < CurrentSplineIndex; i++)
 	    	{
-	    		CurrentSplineProgress -= SplineTravelParameters[i].TimeToTraverse;
+	    		TimeOffset += SplineTravelParameters[i].TimeToTraverse;
 	    	}
+
+	    	const float CurrentSplineProgress = FMath::Lerp(EngineStart, CompleteSplineLength, TimerTrack - TimeOffset);
 
 	    	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
 	    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
 	    }
 
-    	// End of Experimental
-    	
-    	// GEngine->AddOnScreenDebugMessage(26, DeltaTime, FColor::Magenta, FString::Printf(TEXT("TimerTrack = %f"), TimerTrack));
+    	GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Distance Along Spline (Normalised) = %f"), TimerTrack));
+    	GEngine->AddOnScreenDebugMessage(4, 10, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
 
-	    if (TimerTrack < 0)
+	    if (!UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0.0, 1.0, false, true))
 	    {
-	    	// TimerTrack = 0;
-	    	TimeSinceStart = 0; 
-	    }
-    	else if (TimerTrack >= 1)
-	    {
-		    // TimerTrack -= 1;
-    		TimeSinceStart = 0;
-	    }
-    	// else if (TimerTrack >= SplineTravelParameters[CurrentSplineIndex].TimeToSwap)
-    	// {
-    	// 	CurrentSplineIndex++;
-    	// 	ChangeTrack(CompleteTrackRefs[CurrentSplineIndex]);
-    	// }		Currently a bit rubbish, keeps crashing the engine lol
-
-	    const float CurrentDistance = FMath::Lerp(EngineStart, SplineLength, TimerTrack);
-
-    	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
-    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
-
-    	//SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
-
-	    if (CarriageCount > 0)
-	    {
-	        for (int i = 0; i < CarriageCount; ++i)
-	        {
-		        const float CurrentCarriageOffset = (i + 1) * CarriageOffset;
-	        	const float CurrentCarriageDistance = CurrentDistance - CurrentCarriageOffset;
-
-	        	CarriageRefs[i]->SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
-	        	CarriageRefs[i]->SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
-	        	//CarriageRefs[i]->SetActorTransform(TrackSplineRef->GetTransformAtDistanceAlongSpline(CurrentCarriageDistance, ESplineCoordinateSpace::World));
-	        }
+		    TimeSinceStart = 0;
 	    }
     }
 }
@@ -253,7 +204,7 @@ bool ATrainEngine::ChangeTrack(AActor* NewTrack)
 		TrackSplineRef = TempSplineRef;
 	}
 
-	TimeSinceStart = 0;
+	//TimeSinceStart = 0;
 	//SplineLength = TrackSplineRef->GetSplineLength();
 
 	return true;
