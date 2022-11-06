@@ -54,6 +54,7 @@ public:
 
 	bool bPlayerDetected;
 	bool bCanAttackPlayer;
+	bool bPlayerIsClosest = false;
 
 	bool bAbilitiesAdded = false;
 	
@@ -81,7 +82,7 @@ public:
 
 	class AEnemyAIController* EnemyAIController;
 	
-	// GET TRAIN
+	class ATrainEngine* TrainEngine;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
@@ -104,9 +105,13 @@ public:
 	float StoppingDistance = 100.0f;
 
 	FTimerHandle SeekPlayerTimerHandle;
+	FTimerHandle SeekTrainTimerHandle;
 
 	UFUNCTION()
 		void MoveToPlayer();
+
+	UFUNCTION()
+		void MoveToTrain();
 
 	UFUNCTION()
 		void SeekPlayer();
@@ -115,10 +120,25 @@ public:
 		void StopSeekingPlayer();
 
 	UFUNCTION()
+		void SeekTrain();
+
+	UFUNCTION()
+		void StopSeekingTrain();
+
+	UFUNCTION()
 		void DamageEnemy();
 
 	UFUNCTION()
 		virtual void Attack();
+
+	UFUNCTION()
+		double FindDistanceToPlayer();
+
+	UFUNCTION()
+		double FindDistanceToTrain();
+
+	UFUNCTION()
+		void FindClosestTarget();
 		
 		// find dist to train 
 		// find dist to player

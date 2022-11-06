@@ -21,7 +21,7 @@ void AEnemyAIController::BeginPlay()
 
 	NavArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
 
-	RandomPatrol();
+	//RandomPatrol();
 }
 
 void AEnemyAIController::RandomPatrol()

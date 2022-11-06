@@ -21,6 +21,10 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "AITypes.h"
 #include "TheGreatEscape/TheGreatEscapeGameMode.h"
+#include "TrainEngine.h"
+#include "Kismet/GameplayStatics.h"
+#include "Containers/Array.h"
+#include "Math/Vector.h"
 
 // GAS includes
 #include "GASAbilitySystemComponent.h"
@@ -77,8 +81,44 @@ void AEnemy::BeginPlay()
 	HeadShotSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
 	HeadShotSphere->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
 
-	EnemyAIController->RandomPatrol();
-	
+	AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), ATrainEngine::StaticClass());
+
+	TrainEngine = Cast<ATrainEngine>(FoundActor);
+
+	if (TrainEngine == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Train engine Cast failed"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Engine Found!"));
+	}
+
+	FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), ATheGreatEscapeCharacter::StaticClass());
+
+	Player = Cast<ATheGreatEscapeCharacter>(FoundActor);
+
+	if (Player == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Cast failed"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Found!"));
+	}
+
+	FindClosestTarget();
+
+	if (bPlayerIsClosest)
+	{
+		SeekPlayer();
+		UE_LOG(LogTemp, Warning, TEXT("Player closest"));
+	}
+	else
+	{
+		SeekTrain();
+		UE_LOG(LogTemp, Warning, TEXT("Train closest"));
+	}
 }
 
 // Called every frame
@@ -97,9 +137,23 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::OnAIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
-	if (!bPlayerDetected)
+	if (bPlayerIsClosest)
 	{
-		EnemyAIController->RandomPatrol();
+		SeekPlayer();
+	}
+	else if(!bPlayerIsClosest)
+	{
+		if (FindDistanceToTrain() > 200.0f)
+		{
+			SeekTrain();
+			UE_LOG(LogTemp, Warning, TEXT("Moving to train"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Too close not doing anything!"));
+			StopSeekingTrain();
+			// attack train
+		}
 	}
 	else if (bPlayerDetected && bCanAttackPlayer)
 	{
@@ -120,6 +174,14 @@ void AEnemy::MoveToPlayer()
 	}
 }
 
+void AEnemy::MoveToTrain()
+{
+	if(TrainEngine)
+	{
+		EnemyAIController->MoveToLocation(TrainEngine->GetActorLocation(), StoppingDistance, true);
+	}
+}
+
 void AEnemy::SeekPlayer()
 {
 	MoveToPlayer();
@@ -129,6 +191,17 @@ void AEnemy::SeekPlayer()
 void AEnemy::StopSeekingPlayer()
 {
 	GetWorld()->GetTimerManager().ClearTimer(SeekPlayerTimerHandle);
+}
+
+void AEnemy::SeekTrain()
+{
+	MoveToTrain();
+	GetWorld()->GetTimerManager().SetTimer(SeekTrainTimerHandle, this, &AEnemy::SeekTrain, 0.25f, true);
+}
+
+void AEnemy::StopSeekingTrain()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SeekTrainTimerHandle);
 }
 
 void AEnemy::DamageEnemy()
@@ -149,35 +222,69 @@ void AEnemy::Attack()
 	UE_LOG(LogTemp, Warning, TEXT("Attack - PARENT CLASS"));
 }
 
+double AEnemy::FindDistanceToPlayer()
+{
+	return FVector::Dist(GetActorLocation(), Player->GetActorLocation());
+}
+
+double AEnemy::FindDistanceToTrain()
+{
+	return FVector::Dist( GetActorLocation(), TrainEngine->GetActorLocation());
+}
+
+void AEnemy::FindClosestTarget()
+{	
+	if (FindDistanceToPlayer() < FindDistanceToTrain())
+	{
+		bPlayerIsClosest = true;
+	}
+	else
+	{
+		bPlayerIsClosest = false;
+	}
+}
+
+
 
 void AEnemy::OnPlayerDetectedOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Player = Cast<ATheGreatEscapeCharacter>(OtherActor);
+	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
 	
-	if (Player)
+	if (PlayerCharacter)
 	{
 		bPlayerDetected = true;
+		StopSeekingTrain();
 		SeekPlayer();
 	}
 }
 
 void AEnemy::OnPlayerDetectedOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	Player = Cast<ATheGreatEscapeCharacter>(OtherActor);
+	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
 	
-	if (Player)
+	if (PlayerCharacter)
 	{
 		bPlayerDetected = false;
 		StopSeekingPlayer();
-		EnemyAIController->RandomPatrol();
+
+		if (bPlayerIsClosest)
+		{
+			StopSeekingTrain();
+			SeekPlayer();
+		}
+		else
+		{
+			SeekTrain();
+		}
+		
 	}
 }
 
 void AEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Player = Cast<ATheGreatEscapeCharacter>(OtherActor);
+	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
 	
-	if (Player)
+	if (PlayerCharacter)
 	{
 		bCanAttackPlayer = true;
 	}
@@ -185,11 +292,12 @@ void AEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 
 void AEnemy::OnPlayerAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	Player = Cast<ATheGreatEscapeCharacter>(OtherActor);
+	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
 	
-	if (Player)
+	if (PlayerCharacter)
 	{
 		bCanAttackPlayer = false;
+		StopSeekingTrain();
 		SeekPlayer();
 	}
 }
