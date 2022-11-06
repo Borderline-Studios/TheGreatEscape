@@ -137,32 +137,32 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::OnAIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
-	if (bPlayerIsClosest)
-	{
-		SeekPlayer();
-	}
-	else if(!bPlayerIsClosest)
-	{
-		if (FindDistanceToTrain() > 200.0f)
-		{
-			SeekTrain();
-			UE_LOG(LogTemp, Warning, TEXT("Moving to train"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Too close not doing anything!"));
-			StopSeekingTrain();
-			// attack train
-		}
-	}
-	else if (bPlayerDetected && bCanAttackPlayer)
-	{
-		StopSeekingPlayer();
-
-		// attack player
-		Attack();
-		UE_LOG(LogTemp, Warning, TEXT("Player ATTACKED"));
-	}
+	//if (bPlayerIsClosest)
+	//{
+	//	SeekPlayer();
+	//}
+	//else if(!bPlayerIsClosest)
+	//{
+	//	if (FindDistanceToTrain() > 200.0f)
+	//	{
+	//		SeekTrain();
+	//		UE_LOG(LogTemp, Warning, TEXT("Moving to train"));
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("Too close not doing anything!"));
+	//		StopSeekingTrain();
+	//		// attack train
+	//	}
+	//}
+	//else if (bPlayerDetected && bCanAttackPlayer)
+	//{
+	//	StopSeekingPlayer();
+//
+	//	// attack player
+	//	Attack();
+	//	UE_LOG(LogTemp, Warning, TEXT("Player ATTACKED"));
+	//}
 }
 
 
@@ -184,8 +184,9 @@ void AEnemy::MoveToTrain()
 
 void AEnemy::SeekPlayer()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), GetWorld()->GetTimeSeconds());
 	MoveToPlayer();
-	GetWorld()->GetTimerManager().SetTimer(SeekPlayerTimerHandle, this, &AEnemy::SeekPlayer, 0.25f, true);
+	GetWorld()->GetTimerManager().SetTimer(SeekPlayerTimerHandle, this, &AEnemy::SeekPlayer, 0.25f, false);
 }
 
 void AEnemy::StopSeekingPlayer()
@@ -196,7 +197,7 @@ void AEnemy::StopSeekingPlayer()
 void AEnemy::SeekTrain()
 {
 	MoveToTrain();
-	GetWorld()->GetTimerManager().SetTimer(SeekTrainTimerHandle, this, &AEnemy::SeekTrain, 0.25f, true);
+	GetWorld()->GetTimerManager().SetTimer(SeekTrainTimerHandle, this, &AEnemy::SeekTrain, 0.25f, false);
 }
 
 void AEnemy::StopSeekingTrain()
