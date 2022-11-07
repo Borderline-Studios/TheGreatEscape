@@ -57,15 +57,6 @@ public:
 	bool bPlayerIsClosest = false;
 
 	bool bAbilitiesAdded = false;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Health;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxHealth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bDead;
 
 	class ATheGreatEscapeCharacter* Player;
 
@@ -81,8 +72,6 @@ public:
 		class USphereComponent* HeadShotSphere;
 
 	class AEnemyAIController* EnemyAIController;
-	
-	class ATrainEngine* TrainEngine;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
@@ -99,20 +88,15 @@ public:
 	TArray<TSubclassOf<class UGASGameplayAbility>> DefaultAbilities;
 
 	// --- Functions ---
-	void OnAIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
 
 	UPROPERTY(EditAnywhere)
 	float StoppingDistance = 100.0f;
 
 	FTimerHandle SeekPlayerTimerHandle;
-	FTimerHandle SeekTrainTimerHandle;
 
 	UFUNCTION()
 		void MoveToPlayer();
-
-	UFUNCTION()
-		void MoveToTrain();
-
+	
 	UFUNCTION()
 		void SeekPlayer();
 
@@ -120,39 +104,10 @@ public:
 		void StopSeekingPlayer();
 
 	UFUNCTION()
-		void SeekTrain();
-
-	UFUNCTION()
-		void StopSeekingTrain();
-
-	UFUNCTION()
-		void DamageEnemy();
-
-	UFUNCTION()
 		virtual void Attack();
 
 	UFUNCTION()
 		double FindDistanceToPlayer();
-
-	UFUNCTION()
-		double FindDistanceToTrain();
-
-	UFUNCTION()
-		void FindClosestTarget();
-		
-		// find dist to train 
-		// find dist to player
-		// function to see which is closest
-		// calculate if player gets within range (collider)
-	// fix attack
-
-	UFUNCTION()
-		void OnPlayerDetectedOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-			class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-		void OnPlayerDetectedOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
-			class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
 		void OnPlayerAttackOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
