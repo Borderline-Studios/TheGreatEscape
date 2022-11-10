@@ -203,7 +203,7 @@ void ATheGreatEscapeCharacter::OnPrimaryAction()
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, Hit.GetActor()->GetName());
 				bHitEnemy = true;
-				Enemy->DamageEnemy();
+				//Enemy->DamageEnemy();
 			}
 		}
 	}
@@ -236,7 +236,7 @@ void ATheGreatEscapeCharacter::OnMelee()
 			if (GEngine)
 			{
 				bHitEnemy = true;
-				Enemy->DamageEnemy();
+				//Enemy->DamageEnemy();
 			}
 		}
 	}

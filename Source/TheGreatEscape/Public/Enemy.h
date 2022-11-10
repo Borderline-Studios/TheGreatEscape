@@ -92,7 +92,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float StoppingDistance = 100.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bAttacking;
+
 	FTimerHandle SeekPlayerTimerHandle;
+	FTimerHandle AttackPlayerTimerHandle;
+	FTimerHandle WaitTimerHandle;
 
 	UFUNCTION()
 		void MoveToPlayer();
@@ -105,6 +110,15 @@ public:
 
 	UFUNCTION()
 		virtual void Attack();
+
+	UFUNCTION()
+		void StopAttack();
+
+	UFUNCTION()
+		void WaitToRun();
+
+	UFUNCTION()
+		void Run();
 
 	UFUNCTION()
 		double FindDistanceToPlayer();

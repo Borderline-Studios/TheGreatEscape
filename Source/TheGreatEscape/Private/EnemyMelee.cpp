@@ -21,5 +21,5 @@ AEnemyMelee::AEnemyMelee()
 
 void AEnemyMelee::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack - CHILD melee class"));
+	//UE_LOG(LogTemp, Warning, TEXT("Attack - CHILD melee class"));
 }

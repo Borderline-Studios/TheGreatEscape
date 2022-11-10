@@ -17,10 +17,17 @@
 
 void AEnemyRanged::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack - CHILD Ranged class"));
+	Super::Attack();
 	
-	GetWorld()->SpawnActor<ATheGreatEscapeProjectile>(Projectile, GetActorLocation(), GetActorRotation());
+	UE_LOG(LogTemp, Warning, TEXT("Attacking = %s"), bAttacking ? TEXT("true") : TEXT("false") );
+	
+	
+	GetWorld()->SpawnActor<ATheGreatEscapeProjectile>(Projectile, GetMesh()->GetSocketLocation("FiringLocation"), GetActorRotation());
 
-	UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *GetActorLocation().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Rotation: %s"), *GetActorRotation().ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *GetActorLocation().ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Rotation: %s"), *GetActorRotation().ToString());
+
+	bAttacking = false;
+
+	UE_LOG(LogTemp, Warning, TEXT("Attacking = %s"), bAttacking ? TEXT("true") : TEXT("false") );
 }

@@ -128,7 +128,28 @@ void AEnemy::StopSeekingPlayer()
 
 void AEnemy::Attack()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
+
+	bAttacking = true;
+	
+	GetWorld()->GetTimerManager().SetTimer(AttackPlayerTimerHandle, this, &AEnemy::Attack, 3.0f, false);
 	UE_LOG(LogTemp, Warning, TEXT("Attack - PARENT CLASS"));
+}
+
+void AEnemy::StopAttack()
+{
+	GetWorld()->GetTimerManager().ClearTimer(AttackPlayerTimerHandle);
+}
+
+void AEnemy::WaitToRun()
+{
+	GetWorld()->GetTimerManager().SetTimer(WaitTimerHandle, this, &AEnemy::Run, 2.0f, false);
+}
+
+void AEnemy::Run()
+{
+	GetWorld()->GetTimerManager().ClearTimer(WaitTimerHandle);
+	SeekPlayer();
 }
 
 double AEnemy::FindDistanceToPlayer()
@@ -139,10 +160,14 @@ double AEnemy::FindDistanceToPlayer()
 void AEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
+
+	UE_LOG(LogTemp, Warning, TEXT("in attack range"));
 	
 	if (PlayerCharacter)
 	{
 		bCanAttackPlayer = true;
+		StopSeekingPlayer();
+		Attack();
 	}
 }
 
@@ -153,7 +178,8 @@ void AEnemy::OnPlayerAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 	if (PlayerCharacter)
 	{
 		bCanAttackPlayer = false;
-		SeekPlayer();
+		StopAttack();
+		WaitToRun();
 	}
 }
 
