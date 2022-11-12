@@ -3,6 +3,8 @@
 
 #include "TrainCarriage.h"
 
+#include "Components/SplineComponent.h"
+
 // Sets default values
 ATrainCarriage::ATrainCarriage()
 {
@@ -25,13 +27,6 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
-// ATrainCarriage::ATrainCarriage(int AssignedNumber)
-// {
-// 	CarriageNumber = AssignedNumber;
-//
-// 	ATrainCarriage();
-// }
-
 // Called when the game starts or when spawned
 void ATrainCarriage::BeginPlay()
 {
@@ -49,5 +44,22 @@ void ATrainCarriage::Tick(float DeltaTime)
 void ATrainCarriage::SetCarriageNumber(int AssignedNumber)
 {
 	CarriageNumber = AssignedNumber;
+}
+
+bool ATrainCarriage::ChangeTrack(AActor* NewTrack)
+{
+	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(NewTrack->GetRootComponent()); TempSplineRef == nullptr)
+	{
+		return false;
+	}
+	else
+	{
+		TrackSplineRef = TempSplineRef;
+	}
+
+	//TimeSinceStart = 0;
+	//SplineLength = TrackSplineRef->GetSplineLength();
+
+	return true;
 }
 

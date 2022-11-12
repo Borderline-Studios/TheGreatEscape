@@ -30,10 +30,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// VARIABLES
-	
+	int CurrentSplineIndex;
+	class USplineComponent* TrackSplineRef;
 	
 	// FUNCTIONS
 	void SetCarriageNumber(int AssignedNumber);
+	bool ChangeTrack(AActor* NewTrack);
 	
 private:
 	// VARIABLES

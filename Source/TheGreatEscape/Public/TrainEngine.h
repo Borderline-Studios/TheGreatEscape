@@ -84,6 +84,7 @@ private:
 	int CarriageCount;
 
 	TArray<ATrainCarriage*> CarriageRefs;
+	TArray<float> CarriageStartPositions;
 
 	float EngineStart;
 

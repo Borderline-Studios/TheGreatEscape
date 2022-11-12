@@ -62,6 +62,7 @@ void ATrainEngine::BeginPlay()
 			CarriageSpawnTransform.SetScale3D(FVector(1.0f));
 
 			CarriageRefs.Add(GetWorld()->SpawnActor<ATrainCarriage>(ATrainCarriage::StaticClass(), CarriageSpawnTransform));
+			CarriageRefs[i]->TrackSplineRef = TrackSplineRef;
 		}
 	}
 }
@@ -189,6 +190,47 @@ void ATrainEngine::Tick(float DeltaTime)
 	    if (!UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0.0, 1.0, false, true))
 	    {
 		    TimeSinceStart = 0;
+	    }
+
+    	// This code seems expensive. If we can move it to the carriages then it might be more effective.
+    	// As it stands, it runs and keeps the train moving through the spline.
+    	// However, it causes each train segment to hang on the point of track change.
+    	// Might be an issue with resetting the train on the new spline but it seems weird that it happens with each carriage.
+    	if (CarriageCount > 0)	
+	    {
+		    for (int i = 0; i < CarriageRefs.Num(); i++)
+		    {
+		    	int NewSplineIndex = 0;
+		    	const float CarriageTimerTrack = TimerTrack - ((i + 1) * (CompleteSplineLength * DistanceBetweenCars / 100) / CompleteSplineLength);
+		    
+		    	for (int j = CompleteTrackRefs.Num() - 1; j > 0; j--)
+		    	{
+		    		if (UKismetMathLibrary::InRange_FloatFloat(CarriageTimerTrack, SplineTravelParameters[j - 1].TimeToSwap, SplineTravelParameters[j].TimeToSwap, true, false))
+		    		{
+		    			NewSplineIndex = j;
+		    			break;
+		    		}
+		    	}
+
+		    	if (CarriageRefs[i]->CurrentSplineIndex != NewSplineIndex)
+		    	{
+		    		GEngine->AddOnScreenDebugMessage(5000 + i, 1, FColor::Red, FString::Printf(TEXT("Carriage %d changes track"), i + 1));
+		    		CarriageRefs[i]->CurrentSplineIndex = NewSplineIndex;
+		    		CarriageRefs[i]->ChangeTrack(CompleteTrackRefs[CarriageRefs[i]->CurrentSplineIndex]);
+		    	}
+
+		    	float TimeOffset = 0;
+
+		    	for (int j = 0; j < CarriageRefs[i]->CurrentSplineIndex; j++)
+		    	{
+		    		TimeOffset += SplineTravelParameters[j].TimeToTraverse;
+		    	}
+
+		    	const float CarriageSplineProgress = FMath::Lerp(EngineStart, CompleteSplineLength, CarriageTimerTrack - TimeOffset);
+
+		    	CarriageRefs[i]->SetActorLocation(CarriageRefs[i]->TrackSplineRef->GetLocationAtDistanceAlongSpline(CarriageSplineProgress, ESplineCoordinateSpace::World));
+		    	CarriageRefs[i]->SetActorRotation(CarriageRefs[i]->TrackSplineRef->GetRotationAtDistanceAlongSpline(CarriageSplineProgress, ESplineCoordinateSpace::World));
+		    }
 	    }
     }
 }
