@@ -89,7 +89,7 @@ public:
 
 	// --- Functions ---
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StoppingDistance = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
