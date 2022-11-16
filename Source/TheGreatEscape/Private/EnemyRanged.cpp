@@ -21,13 +21,21 @@ void AEnemyRanged::Attack()
 	
 	UE_LOG(LogTemp, Warning, TEXT("Attacking = %s"), bAttacking ? TEXT("true") : TEXT("false") );
 	
-	
-	GetWorld()->SpawnActor<ATheGreatEscapeProjectile>(Projectile, GetMesh()->GetSocketLocation("FiringLocation"), GetActorRotation());
+
+	if (AttackCounter++ % 30 == 0)
+	{
+		bAttacking = true;
+		GetWorld()->SpawnActor<ATheGreatEscapeProjectile>(Projectile, GetMesh()->GetSocketLocation("FiringLocation"), GetActorRotation());
+	}
+	else
+	{
+		bAttacking = false;
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *GetActorLocation().ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("Rotation: %s"), *GetActorRotation().ToString());
 
-	bAttacking = false;
+	//bAttacking = false;
 
 	UE_LOG(LogTemp, Warning, TEXT("Attacking = %s"), bAttacking ? TEXT("true") : TEXT("false") );
 }

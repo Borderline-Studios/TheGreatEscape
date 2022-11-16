@@ -30,4 +30,7 @@ class THEGREATESCAPE_API AEnemyRanged : public AEnemy
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class ATheGreatEscapeProjectile> Projectile;
+
+private:
+	int AttackCounter = 0;
 };

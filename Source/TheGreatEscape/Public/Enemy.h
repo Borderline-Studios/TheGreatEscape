@@ -124,6 +124,12 @@ public:
 		double FindDistanceToPlayer();
 
 	UFUNCTION()
+		void UpdateRotation();
+
+	
+	void OnAIMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
+
+	UFUNCTION()
 		void OnPlayerAttackOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 			class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

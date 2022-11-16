@@ -32,6 +32,10 @@
 #include "GASGameplayAbility.h"
 #include <GameplayEffectTypes.h>
 
+// MATH
+#include "Kismet/KismetMathLibrary.h"
+#include "Math/UnrealMathUtility.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -66,7 +70,7 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	EnemyAIController = Cast<AEnemyAIController>(GetController());
-	//EnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &AEnemy::OnAIMoveCompleted);
+	EnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &AEnemy::OnAIMoveCompleted);
 
 	PlayerAttackDetection->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnPlayerAttackOverlapBegin);
 	PlayerAttackDetection->OnComponentEndOverlap.AddDynamic(this,&AEnemy::OnPlayerAttackOverlapEnd);
@@ -115,7 +119,7 @@ void AEnemy::MoveToPlayer()
 
 void AEnemy::SeekPlayer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), GetWorld()->GetTimeSeconds());
+	//UE_LOG(LogTemp, Warning, TEXT("Time: %f"), GetWorld()->GetTimeSeconds());
 	MoveToPlayer();
 	GetWorld()->GetTimerManager().SetTimer(SeekPlayerTimerHandle, this, &AEnemy::SeekPlayer, 0.25f, false);
 }
@@ -130,9 +134,9 @@ void AEnemy::Attack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
 
-	bAttacking = true;
+	UpdateRotation();
 	
-	GetWorld()->GetTimerManager().SetTimer(AttackPlayerTimerHandle, this, &AEnemy::Attack, 3.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(AttackPlayerTimerHandle, this, &AEnemy::Attack, 0.1f, false);
 	UE_LOG(LogTemp, Warning, TEXT("Attack - PARENT CLASS"));
 }
 
@@ -157,6 +161,27 @@ double AEnemy::FindDistanceToPlayer()
 	return FVector::Dist(GetActorLocation(), Player->GetActorLocation());
 }
 
+void AEnemy::UpdateRotation()
+{
+	FRotator PlayerRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Player->GetActorLocation());
+
+	FRotator NewRot = UKismetMathLibrary::RInterpTo(GetActorRotation(), PlayerRotation, GetWorld()->GetDeltaSeconds(), 50);
+
+	UE_LOG(LogTemp, Warning, TEXT("Rotating"));
+	
+	SetActorRotation(FRotator(GetActorRotation().Pitch, NewRot.Yaw, GetActorRotation().Roll));
+}
+
+
+void AEnemy::OnAIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	if (bCanAttackPlayer)
+	{
+		Attack();
+	}
+}
+
+
 void AEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ATheGreatEscapeCharacter* PlayerCharacter = Cast<ATheGreatEscapeCharacter>(OtherActor);
@@ -167,7 +192,7 @@ void AEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 	{
 		bCanAttackPlayer = true;
 		StopSeekingPlayer();
-		Attack();
+		//Attack();
 	}
 }
 
@@ -182,6 +207,9 @@ void AEnemy::OnPlayerAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 		WaitToRun();
 	}
 }
+
+
+// --- ABILITY SYSTEM --- //
 
 UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
 {
