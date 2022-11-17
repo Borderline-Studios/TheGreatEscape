@@ -52,6 +52,7 @@ private:
 	USceneComponent* SceneRoot;
 	UStaticMeshComponent* Base;
 	UStaticMeshComponent* Middle;
+	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* Handle;
 	UStaticMeshComponent* FGrip;
 	UStaticMeshComponent* BGrip;
