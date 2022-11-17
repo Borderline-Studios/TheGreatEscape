@@ -37,13 +37,13 @@ void ATrainEngine::BeginPlay()
 
 	if (TrackSplineRef)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("Train Spline Ref populated"));
+		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("Train Spline Ref populated"));
 		SplineLength = TrackSplineRef->GetSplineLength();
 
 		CarriageOffset = SplineLength * DistancePercentage;
 	}
 
-	GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
+	//GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
 
 	// Setting up the engine along this spline
 	float StartPos = CarriageCount * DistancePercentage;
@@ -97,7 +97,7 @@ void ATrainEngine::Tick(float DeltaTime)
 			}
 		}
 
-		GEngine->AddOnScreenDebugMessage(20, 20, FColor::Emerald, FString::Printf(TEXT("Complete Spline Length = %f"), CompleteSplineLength));
+		//GEngine->AddOnScreenDebugMessage(20, 20, FColor::Emerald, FString::Printf(TEXT("Complete Spline Length = %f"), CompleteSplineLength));
 
 		for (int i = 0; i < CompleteTrackRefs.Num(); i++)
 		{
@@ -115,7 +115,7 @@ void ATrainEngine::Tick(float DeltaTime)
 			{
 				NewSplineParams.TimeToSwap += SplineTravelParameters[i - 1].TimeToSwap;
 			}
-			GEngine->AddOnScreenDebugMessage((i + 1) * 102, 20, FColor::Magenta, FString::Printf(TEXT("TimeToSwap for Component %d: %f"), i, NewSplineParams.TimeToSwap));
+			//GEngine->AddOnScreenDebugMessage((i + 1) * 102, 20, FColor::Magenta, FString::Printf(TEXT("TimeToSwap for Component %d: %f"), i, NewSplineParams.TimeToSwap));
 			// GEngine->AddOnScreenDebugMessage((i + 1) * 103, 20, FColor::Magenta, FString::Printf(TEXT("TimeToTraverse for Component %d: %f"), i, NewSplineParams.TimeToTraverse));
 
 			SplineTravelParameters.Add(NewSplineParams);
@@ -125,8 +125,8 @@ void ATrainEngine::Tick(float DeltaTime)
 
 		// UKismetMathLibrary::InRange_FloatFloat();
 		
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, TEXT("Check Success"));
-		GEngine->AddOnScreenDebugMessage(0, 5, FColor::Magenta, FString::Printf(TEXT("Number of connected splines = %d"), CompleteTrackRefs.Num()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, TEXT("Check Success"));
+		//GEngine->AddOnScreenDebugMessage(0, 5, FColor::Magenta, FString::Printf(TEXT("Number of connected splines = %d"), CompleteTrackRefs.Num()));
 	}
 
 	// Standard Tick Operation
@@ -138,7 +138,7 @@ void ATrainEngine::Tick(float DeltaTime)
         TimeSinceStart -= StartDelayTime;
         bHasStartedMoving = true;
         
-        GEngine->AddOnScreenDebugMessage(2, 5, FColor::Green, TEXT("Train has started moving"));
+        //GEngine->AddOnScreenDebugMessage(2, 5, FColor::Green, TEXT("Train has started moving"));
     }
 
     if (bHasStartedMoving)
@@ -164,7 +164,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	    	// Updates what track the train is currently on depending on whether or not there is a difference between the current assigned index and the index calculated above.
 	    	if (CurrentSplineIndex != NewSplineIndex)
 	    	{
-	    		GEngine->AddOnScreenDebugMessage(7, 1, FColor::Red, TEXT("Changing Tracks"));
+	    		//GEngine->AddOnScreenDebugMessage(7, 1, FColor::Red, TEXT("Changing Tracks"));
 	    		CurrentSplineIndex = NewSplineIndex;
 	    		ChangeTrack(CompleteTrackRefs[CurrentSplineIndex]);
 	    	}
@@ -184,8 +184,8 @@ void ATrainEngine::Tick(float DeltaTime)
 	    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
 	    }
 
-    	GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Distance Along Spline (Normalised) = %f"), TimerTrack));
-    	GEngine->AddOnScreenDebugMessage(4, 10, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
+    	//GEngine->AddOnScreenDebugMessage(3, DeltaTime, FColor::Magenta, FString::Printf(TEXT("Distance Along Spline (Normalised) = %f"), TimerTrack));
+    	//GEngine->AddOnScreenDebugMessage(4, 10, FColor::Magenta, FString::Printf(TEXT("Time To Complete (In Seconds) = %d"), TimeToComplete));
 
 	    if (!UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0.0, 1.0, false, true))
 	    {
@@ -214,7 +214,7 @@ void ATrainEngine::Tick(float DeltaTime)
 
 		    	if (CarriageRefs[i]->CurrentSplineIndex != NewSplineIndex)
 		    	{
-		    		GEngine->AddOnScreenDebugMessage(5000 + i, 1, FColor::Red, FString::Printf(TEXT("Carriage %d changes track"), i + 1));
+		    		//GEngine->AddOnScreenDebugMessage(5000 + i, 1, FColor::Red, FString::Printf(TEXT("Carriage %d changes track"), i + 1));
 		    		CarriageRefs[i]->CurrentSplineIndex = NewSplineIndex;
 		    		CarriageRefs[i]->ChangeTrack(CompleteTrackRefs[CarriageRefs[i]->CurrentSplineIndex]);
 		    	}
@@ -266,7 +266,7 @@ void ATrainEngine::BPOverrideTrack(AActor* TrackOverride)
 
 	if (TrackSplineRef)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref Overridden"));
+		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref Overridden"));
 		SplineLength = TrackSplineRef->GetSplineLength();
 	}
 	

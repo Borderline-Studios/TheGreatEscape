@@ -89,11 +89,11 @@ void ASplineTrack::BeginPlay()
 						ESplineCoordinateSpace::World
 						);
 
-					GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded Start"));
+					//GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded Start"));
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Red, TEXT("Oof"));
+					//GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Red, TEXT("Oof"));
 					continue;
 				}
 
@@ -103,7 +103,7 @@ void ASplineTrack::BeginPlay()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed Start"));
+		//GEngine->AddOnScreenDebugMessage(10, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed Start"));
 	}
 
 	// Handles the End Collision -> Placing the second behind the first
@@ -148,11 +148,11 @@ void ASplineTrack::BeginPlay()
 						ESplineCoordinateSpace::World
 						);
 
-					GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded End"));
+					//GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Green, TEXT("Detection and Snapping Succeeded End"));
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Red, TEXT("Oof"));
+					//GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Red, TEXT("Oof"));
 				}
 				break;
 			}
@@ -160,7 +160,7 @@ void ASplineTrack::BeginPlay()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed End"));
+		//GEngine->AddOnScreenDebugMessage(11, 3.0, FColor::Orange, TEXT("Detection and Snapping Failed End"));
 	}
 
 	const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
@@ -193,14 +193,14 @@ void ASplineTrack::Tick(float DeltaTime)
 					if (OverlappingActorArray[i]->GetClass() == this->GetClass())
 					{
 						NextSpline = Cast<ASplineTrack>(OverlappingActorArray[i]);
-						GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Populated"));
+						//GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Populated"));
 						break;
 					}
 				}
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Failed to populate"));
+				//GEngine->AddOnScreenDebugMessage(110, 5.0f, FColor::Magenta, TEXT("NextSpline Failed to populate"));
 			}
 		}
 	}
@@ -290,14 +290,14 @@ void ASplineTrack::OnFinalBeginOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(99, 1.0f, FColor::Blue, TEXT("Overlapped Comp: " + OverlappedComponent->GetName()));
+	//GEngine->AddOnScreenDebugMessage(99, 1.0f, FColor::Blue, TEXT("Overlapped Comp: " + OverlappedComponent->GetName()));
 
 	return;
 	if (OtherActor == Cast<AActor>(TrainRef))
 	{
 		if (TrainRef->GetTrackOverrideState()) {return;}
 		// if (TrainRef->GetTrackOverrideState()) {return;}
-		GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
+		//GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
 
 		TrainRef->ShouldChangeTracks = true;
 
@@ -306,7 +306,7 @@ void ASplineTrack::OnFinalBeginOverlap(
 			TrainRef->ChangeTrack(NextSpline);
 		}
 		
-		GEngine->AddOnScreenDebugMessage(101, 1.0f, FColor::Green, TEXT("Collision Ending With Train On Final Overlap"));
+		//GEngine->AddOnScreenDebugMessage(101, 1.0f, FColor::Green, TEXT("Collision Ending With Train On Final Overlap"));
 	}
 }
 

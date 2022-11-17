@@ -7,16 +7,16 @@
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
-#include "HandCart.generated.h"
+#include "Handcart_NewMesh.generated.h"
 
 UCLASS()
-class THEGREATESCAPE_API AHandCart : public AActor
+class THEGREATESCAPE_API AHandcart_NewMesh : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AHandCart();
+	AHandcart_NewMesh();
 
 protected:
 	// Called when the game starts or when spawned
@@ -51,12 +51,10 @@ private:
 	// Mesh Variables
 	USceneComponent* SceneRoot;
 	UStaticMeshComponent* Base;
-	UStaticMeshComponent* Middle;
+	UStaticMeshComponent* Maglifts;
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* Handle;
-	UStaticMeshComponent* FGrip;
-	UStaticMeshComponent* BGrip;
-	UArrowComponent* Arrow;
+	// UArrowComponent* Arrow;
 
 	// Collision Components
 	UBoxComponent* FrontCollision;
@@ -104,3 +102,4 @@ private:
 	// Initialised
 	bool bIsInitialised = false;
 };
+
