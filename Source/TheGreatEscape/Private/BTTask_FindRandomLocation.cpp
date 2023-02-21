@@ -30,7 +30,6 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 {
 	// get Ai controller and enemy
 	const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	UE_LOG(LogTemp, Warning, TEXT("No AEnemyReworkController, controller class was %s"), *OwnerComp.GetAIOwner()->GetClass()->GetName());
 	
 	if (AIController)
 	{
@@ -52,6 +51,10 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 	
 		return EBTNodeResult::Succeeded;
 	}
+
+	// Log warning that cast failed and finish task
+	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
+	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	
 	return EBTNodeResult::Failed;
 }

@@ -17,4 +17,5 @@
 namespace BbKeys
 {
 	TCHAR const * const randLocation = TEXT("RandLocation");
+	TCHAR const * const canSeePlayer = TEXT("CanSeePlayer");
 }
