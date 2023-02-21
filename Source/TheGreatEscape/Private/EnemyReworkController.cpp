@@ -16,7 +16,14 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "BlackboardKeys.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
+#include "GameFramework/Character.h"
 #include "EnemyRework.h"
+#include "Perception/AIPerceptionComponent.h"
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
@@ -29,6 +36,8 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 	}
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
+
+	SetupPerceptionSystem();
 }
 
 void AEnemyReworkController::BeginPlay()
@@ -51,4 +60,32 @@ void AEnemyReworkController::OnPossess(APawn* const InPawn)
 UBlackboardComponent* AEnemyReworkController::GetBlackboard() const
 {
 	return Blackboard;
+}
+
+void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const stimulus)
+{
+	if (auto const character = Cast<AEnemyRework>(actor))
+	{
+		GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
+	}
+}
+
+void AEnemyReworkController::SetupPerceptionSystem()
+{
+	// Create and initalise sight config object
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Conifg"));
+	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+	SightConfig->SightRadius = 500.0f;
+	SightConfig->LoseSightRadius = SightConfig->SightRadius + 50.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 90.0f;
+	SightConfig->SetMaxAge(5.0f);
+	SightConfig->AutoSuccessRangeFromLastSeenLocation = 900.0f;
+	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+	// ADd sight config component to perception component
+	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
+	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnTargetDetected);
+	GetPerceptionComponent()->ConfigureSense(*SightConfig);
 }
