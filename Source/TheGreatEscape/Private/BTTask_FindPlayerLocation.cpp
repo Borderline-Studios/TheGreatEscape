@@ -19,6 +19,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "TheGreatEscape/TheGreatEscapeCharacter.h"
 #include "BlackboardKeys.h"
 
 UBTTask_FindPlayerLocation::UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer)
@@ -30,6 +31,7 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 {
 	// Get player character & Enemy AI controller
 	ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	
 	const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
 	// Check AIController not null

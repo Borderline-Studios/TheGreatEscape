@@ -23,6 +23,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"
 #include "EnemyRework.h"
+#include "TheGreatEscape/TheGreatEscapeCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
@@ -64,9 +65,18 @@ UBlackboardComponent* AEnemyReworkController::GetBlackboard() const
 
 void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const stimulus)
 {
-	if (auto const character = Cast<AEnemyRework>(actor))
+	UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
+
+	auto const character = Cast<ATheGreatEscapeCharacter>(actor);
+	
+	if (character)
 	{
 		GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
+		UE_LOG(LogTemp, Warning, TEXT("sensed"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player things name: %s"), *actor->GetName());
 	}
 }
 
