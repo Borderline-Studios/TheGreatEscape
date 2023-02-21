@@ -13,11 +13,12 @@
 
 #include "BTTask_FindRandomLocation.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "EnemyReworkController.h"
+#include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 //#include "BehaviorTree/Blackboard/BlackboardKeyType.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "BlackboardKeys.h"
+#include "SNegativeActionButton.h"
 //#include "EnemyReworkController.h"
 
 UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer)
@@ -28,10 +29,12 @@ UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const&
 EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// get Ai controller and enemy
-	auto const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
+	const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
+	UE_LOG(LogTemp, Warning, TEXT("No AEnemyReworkController, controller class was %s"), *OwnerComp.GetAIOwner()->GetClass()->GetName());
+	
 	if (AIController)
 	{
-		auto const Enemy = AIController->GetPawn();
+		APawn* const Enemy = AIController->GetPawn();
 
 		// Get enemy location to use as starting point
 		FVector const Origin = Enemy->GetActorLocation();
@@ -49,5 +52,6 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 	
 		return EBTNodeResult::Succeeded;
 	}
+	
 	return EBTNodeResult::Failed;
 }
