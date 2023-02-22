@@ -22,6 +22,10 @@ class UCameraComponent;
 class UAnimMontage;
 class USoundBase;
 
+class UQRGameplayAbility;
+class UQRAbilitySystemComponent;
+class UQRAttributeSet;
+
 
 
 // Declaration of the delegate that will be called when the Primary Action is triggered
@@ -29,7 +33,7 @@ class USoundBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUseItem);
 
 UCLASS(config=Game)
-class ATheGreatEscapeCharacter : public ACharacter
+class ATheGreatEscapeCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -40,53 +44,85 @@ class ATheGreatEscapeCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
-
-	/** GAS system connection */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UGASAbilitySystemComponent* AbilitySystemComponent;
-
-	//Attributes for GAS
-	UPROPERTY()
-	UGASAttributeSet* Attributes;
 	
 public:
 	ATheGreatEscapeCharacter();
 
-protected:
-	virtual void BeginPlay() override;
+	
+	//Components
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-public:
+	/** Returns Mesh1P subobject **/
+	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	/** Returns FirstPersonCameraComponent subobject **/
+	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent;}
+
+
+	//Properties
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float TurnRateGamepad;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
 	bool FootStep = false;
-	
-	
-
-	/** Delegate to whom anyone can subscribe to receive this event */
+		
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnUseItem OnUseItem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bHitEnemy = false;
 	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
-	virtual void InitializeAttributes();
-	virtual void GiveAbilities();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UQRGameplayAbility>> GameplayAbilities;
 
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void OnRep_PlayerState() override;
+	UPROPERTY()
+	uint8 bAbilitiesInitalized:1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
+	TObjectPtr<UQRAbilitySystemComponent> AbilitySystemComponent;
 
+	UPROPERTY()
+	TObjectPtr<UQRAttributeSet> Attributes;
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
 	TArray<TSubclassOf<UGASGameplayAbility>> DefaultAbilities;
+
+
+	//Functions
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamaged(float DamageAmount, const FHitResult& HitInfo,
+	               const struct FGameplayTagContainer& DamageTags,
+	               ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
+
+	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo,
+				   const struct FGameplayTagContainer& DamageTags,
+				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+
+	virtual void HandleHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 	
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+	void AddStartupGameplayAbilities();
+	
+
+	virtual void InitializeAttributes();
+	virtual void GiveAbilities();
+
+
+
 protected:
+	virtual void BeginPlay() override;
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	/** Fires a projectile. */
 	void OnPrimaryAction();
@@ -123,13 +159,6 @@ protected:
 	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
 	TouchData	TouchItem;
 
-
-	
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	// End of APawn interface
-
 	/* 
 	 * Configures input for touchscreen devices if there is a valid touch interface for doing so 
 	 *
@@ -139,11 +168,7 @@ protected:
 	bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 	bool bAbilitiesAdded = false;
-public:
-	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent;}
+
 
 };
 

@@ -20,7 +20,10 @@
 #include "GASGameplayAbility.h"
 #include <GameplayEffectTypes.h>
 
-
+#include "QRAbilitySystemComponent.h"
+#include "QRAttributeSet.h"
+#include "QRGameplayAbility.h"
+#include "CookOnTheFly/Internal/CookOnTheFly.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -28,6 +31,10 @@
 
 ATheGreatEscapeCharacter::ATheGreatEscapeCharacter()
 {
+
+
+	bAbilitiesInitalized = false;
+	
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
@@ -49,11 +56,11 @@ ATheGreatEscapeCharacter::ATheGreatEscapeCharacter()
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 
-	AbilitySystemComponent = CreateDefaultSubobject<UGASAbilitySystemComponent>("AbilitySystemComp");
+	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
-	Attributes = CreateDefaultSubobject<UGASAttributeSet>("Attributes");
+	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
 }
 
 void ATheGreatEscapeCharacter::BeginPlay()
@@ -139,11 +146,32 @@ void ATheGreatEscapeCharacter::GiveAbilities()
 		}
 }
 
+void ATheGreatEscapeCharacter::HandleDamage(float DamageAmount, const FHitResult& HitInfo,
+	const FGameplayTagContainer& DamageTags, ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
+{
+	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser); 
+}
+
+void ATheGreatEscapeCharacter::HandleHealthChanged(float Deltavalue, const FGameplayTagContainer& EventTags)
+{
+	if(bAbilitiesInitalized)
+	{
+		OnHealthChanged(Deltavalue, EventTags); 
+	}
+
+}
+
+
+
 void ATheGreatEscapeCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	//Server Gas Init
+	if(AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
 	InitializeAttributes();
 	GiveAbilities();
 }
@@ -151,28 +179,46 @@ void ATheGreatEscapeCharacter::PossessedBy(AController* NewController)
 void ATheGreatEscapeCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	InitializeAttributes();
+	//Server Gas Init
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
 	if (AbilitySystemComponent && InputComponent)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("ASC and IC valid"));
-		}
 		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EGASAbilityInputID",
 			static_cast<int32>(EGASAbilityInputID::Confirm),static_cast<int32>(EGASAbilityInputID::Cancel));
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
 	}
-	else
+}
+
+void ATheGreatEscapeCharacter::AddStartupGameplayAbilities()
+{
+	check(AbilitySystemComponent);
+	if(GetLocalRole() == ROLE_Authority && !bAbilitiesInitalized)
 	{
-		if (GEngine)
+		//Grant Abilities, but only on Server
+		for(TSubclassOf<UQRGameplayAbility>& StartupAbility : GameplayAbilities)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 150.0f, FColor::Yellow, TEXT("ASC and IC not valid"));
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec/**/(
+				StartupAbility, 1,
+				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 		}
 	}
 
+	for (const TSubclassOf<UGameplayEffect>& GameplayEffect : PassiveGameplayEffects)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 1, EffectContext);
+
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+				*NewHandle.Data.Get(), AbilitySystemComponent);
+		}
+
+		bAbilitiesInitalized = true;
+	}
 }
 
 void ATheGreatEscapeCharacter::OnPrimaryAction()
