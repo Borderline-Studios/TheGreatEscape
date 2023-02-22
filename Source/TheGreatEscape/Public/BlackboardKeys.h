@@ -20,4 +20,5 @@ namespace BbKeys
 	TCHAR const * const canSeePlayer = TEXT("CanSeePlayer");
 	TCHAR const * const patrolPathVector = TEXT("PatrolPathVector");
 	TCHAR const * const patrolPathIndex = TEXT("PatrolPathIndex");
+	TCHAR const * const playerInMeleeRange = TEXT("PlayerInMeleeRange");
 }

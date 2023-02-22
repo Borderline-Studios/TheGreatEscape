@@ -6,7 +6,7 @@
 // (c) 2022 Media Design School
 //
 // File Name   : NPCPatrolPath.cpp
-// Description : 
+// Description : Keeps track of the patrol path for the enemy
 // Author      : Borderline Studios - Toni Natta
 // Mail        : toni.natta@mds.ac.nz
 
