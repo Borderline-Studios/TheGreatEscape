@@ -35,6 +35,11 @@ void AEnemyRework::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+ANPCPatrolPath* AEnemyRework::GetPatrolPath()
+{
+	return PatrolPath;
+}
+
 void AEnemyRework::SetUpStimulus()
 {
 	Stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulus"));

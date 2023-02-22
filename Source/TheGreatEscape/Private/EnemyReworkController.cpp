@@ -85,11 +85,13 @@ void AEnemyReworkController::SetupPerceptionSystem()
 	// Create and initalise sight config object
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Conifg"));
 	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-	SightConfig->SightRadius = 500.0f;
-	SightConfig->LoseSightRadius = SightConfig->SightRadius + 50.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 90.0f;
-	SightConfig->SetMaxAge(5.0f);
-	SightConfig->AutoSuccessRangeFromLastSeenLocation = 900.0f;
+	SightConfig->SightRadius = 2000.0f;
+	SightConfig->LoseSightRadius = SightConfig->SightRadius + 500.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 70.0f;
+	SightConfig->SetMaxAge(0.0f);
+	SightConfig->AutoSuccessRangeFromLastSeenLocation = -1.0f;
+	SightConfig->PointOfViewBackwardOffset = 200.0f;
+	SightConfig->NearClippingRadius = 200.0f;
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;

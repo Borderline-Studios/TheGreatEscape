@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NPCPatrolPath.h"
 #include "GameFramework/Character.h"
 #include "EnemyRework.generated.h"
 
@@ -26,8 +27,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	ANPCPatrolPath* GetPatrolPath();
+
 private:
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
 	void SetUpStimulus();
 
+	// NPC STUFF
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	ANPCPatrolPath* PatrolPath;
 };

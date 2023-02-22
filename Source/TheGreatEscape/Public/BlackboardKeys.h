@@ -16,6 +16,8 @@
 
 namespace BbKeys
 {
-	TCHAR const * const randLocation = TEXT("RandLocation");
+	TCHAR const * const targetLocation = TEXT("TargetLocation");
 	TCHAR const * const canSeePlayer = TEXT("CanSeePlayer");
+	TCHAR const * const patrolPathVector = TEXT("PatrolPathVector");
+	TCHAR const * const patrolPathIndex = TEXT("PatrolPathIndex");
 }

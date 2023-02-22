@@ -49,12 +49,12 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 			UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 			if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, SearchRadius, Location, nullptr))
 			{
-				AIController->GetBlackboard()->SetValueAsVector(BbKeys::randLocation, Location.Location);
+				AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
 			}
 		}
 		else // set location as player location
 		{
-			AIController->GetBlackboard()->SetValueAsVector(BbKeys::randLocation, PlayerLocation);
+			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
 		}
 
 		// Finish task

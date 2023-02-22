@@ -43,7 +43,7 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 		UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 		if (NavSystem->GetRandomReachablePointInRadius(Origin, SearchRadius, Location, nullptr))
 		{
-			AIController->GetBlackboard()->SetValueAsVector(BbKeys::randLocation, Location.Location);
+			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
 		}
 
 		// Finish task
