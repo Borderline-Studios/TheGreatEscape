@@ -15,6 +15,8 @@ class THEGREATESCAPE_API ATrainCarriage : public AActor
 public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
+
+	ATrainCarriage(int AssignedNumber);
 	
 	// // Sets default values for this actor's properties
 	// explicit ATrainCarriage(int AssignedNumber);

@@ -28,13 +28,18 @@ public:
 private:
 	USceneComponent* SceneRoot;
 
-	UPROPERTY(EditInstanceOnly)
 	UBoxComponent* CollisionDetection;
 
 	UPROPERTY(EditInstanceOnly)
 	float BlendTime = 1.0f;
 	UPROPERTY(EditInstanceOnly)
 	float ZHeight = 100.0f;
+	UPROPERTY(EditInstanceOnly)
+	bool UseWorldRef = false;
+	UPROPERTY(EditInstanceOnly)
+	FName NextMapName = "Jake_Test";
+	UPROPERTY(EditInstanceOnly)
+	TSoftObjectPtr<UWorld> NextWorldRef;
 
 	AActor* PlayerRef;
 	UCameraComponent* PlayerCamRef;

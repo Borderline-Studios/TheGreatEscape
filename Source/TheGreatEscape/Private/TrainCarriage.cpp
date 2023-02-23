@@ -27,6 +27,41 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
+ATrainCarriage::ATrainCarriage(int AssignedNumber)
+{
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	RootComponent = SceneRoot;
+
+	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
+	Box->SetupAttachment(RootComponent);
+	
+	switch (AssignedNumber)
+	{
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	}
+
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	Box->SetStaticMesh(MeshObj.Object);
+	// Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
+
+	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	Arrow->SetupAttachment(RootComponent);
+	Arrow->SetArrowColor(FColor::Blue);
+	Arrow->SetHiddenInGame(false);
+	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+}
+
 // Called when the game starts or when spawned
 void ATrainCarriage::BeginPlay()
 {
