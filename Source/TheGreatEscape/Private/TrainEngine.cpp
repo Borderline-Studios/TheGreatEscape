@@ -11,6 +11,20 @@ ATrainEngine::ATrainEngine()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	RootComponent = SceneRoot;
+
+	BoxComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
+	BoxComp->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	BoxComp->SetStaticMesh(MeshObj.Object);
+	BoxComp->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
+
+	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	ArrowComp->SetupAttachment(RootComponent);
+	ArrowComp->SetArrowColor(FColor::Red);
+	ArrowComp->SetHiddenInGame(false);
+	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
 // Called when the game starts or when spawned

@@ -37,22 +37,28 @@ ATrainCarriage::ATrainCarriage(int AssignedNumber)
 
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
 	Box->SetupAttachment(RootComponent);
-	
-	switch (AssignedNumber)
+
+	if 	(AssignedNumber == 0)	// Full Base Car
 	{
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
+		ConstructorHelpers::FObjectFinder<UStaticMesh> FullBase(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
+		Box->SetStaticMesh(FullBase.Object);
 	}
-
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	Box->SetStaticMesh(MeshObj.Object);
+	else if (AssignedNumber == 1)	// FlatBed Car
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> FlatBed(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
+		Box->SetStaticMesh(FlatBed.Object);
+	}
+	else if (AssignedNumber == 2)	// Weapons Car
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Weapons(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
+		Box->SetStaticMesh(Weapons.Object);
+	}
+	else if (AssignedNumber == 3)	// Windows Car 
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Windows(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
+		Box->SetStaticMesh(Windows.Object);
+	}
+	
 	// Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
 
 	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));

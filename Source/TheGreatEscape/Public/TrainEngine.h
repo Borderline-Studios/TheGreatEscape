@@ -102,6 +102,16 @@ private:
 	int CurrentSplineIndex;
 	float CurrentSplineTimeToTraverse;
 
+	// Holds the Shapes used to show the engine
+	UPROPERTY(EditInstanceOnly)
+	USceneComponent* SceneRoot;
+
+	UPROPERTY(EditInstanceOnly)
+	UStaticMeshComponent* BoxComp;
+
+	UPROPERTY(EditInstanceOnly)
+	UArrowComponent* ArrowComp;
+
 	// Track Changing
 	// UPROPERTY(BlueprintReadWrite)
 	// bool ShouldChangeTracks = false;
