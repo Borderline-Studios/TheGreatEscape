@@ -51,23 +51,28 @@ void AMapConnector::BeginFrontOverlap(
 	if (OtherActor == PlayerRef)
 	{
 		// Insert other boolean checks here
-
-		// Spawn the second camera
-		ACameraActor* PlayerCam = Cast<ACameraActor>(GetWorld()->SpawnActor(ACameraActor::StaticClass()));
-		PlayerCam->SetActorLocation(PlayerRef->GetActorLocation());
-		PlayerCam->GetCameraComponent()->SetConstraintAspectRatio(false);
 		
-		ACameraActor* TopCam = Cast<ACameraActor>(GetWorld()->SpawnActor(ACameraActor::StaticClass()));
-		TopCam->SetActorLocation(GetActorLocation() + FVector(0, 0, ZHeight));
-		// Set NewCam Rotation
+		APlayerCameraManager* PlayerCamManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+		PlayerCamManager->StartCameraFade(0.0, 1.0, BlendTime, FColor::Black, true, true);
 
-		// Tween the camera using method one from that video
-		APlayerController* temp = UGameplayStatics::GetPlayerController(this, 0);
-		temp->SetViewTargetWithBlend(PlayerCam, 0);
-		temp->SetViewTargetWithBlend(TopCam, BlendTime);
-
-		// Set for the camera to fade during the blend time, maybe through the use of another lambda TimerHandle
-
+		// This all works as a rudimentary EndOfLevel Camera movement system but it's a bit involved for what we're after. Gonna alter it so that it fades instead
+		// // Spawn the second camera
+		// ACameraActor* PlayerCam = Cast<ACameraActor>(GetWorld()->SpawnActor(ACameraActor::StaticClass()));
+		// PlayerCam->SetActorLocation(PlayerRef->GetActorLocation());
+		// PlayerCam->GetCameraComponent()->SetConstraintAspectRatio(false);
+		//
+		// ACameraActor* TopCam = Cast<ACameraActor>(GetWorld()->SpawnActor(ACameraActor::StaticClass()));
+		// TopCam->SetActorLocation(GetActorLocation() + FVector(0, 0, ZHeight));
+		// // Set NewCam Rotation
+		//
+		// // Tween the camera using method one from that video
+		// APlayerController* temp = UGameplayStatics::GetPlayerController(this, 0);
+		// temp->SetViewTargetWithBlend(PlayerCam, 0);
+		// temp->SetViewTargetWithBlend(TopCam, BlendTime);
+		//
+		// // Set for the camera to fade during the blend time, maybe through the use of another lambda TimerHandle
+		//
+		
 		// Load the next level
 		FTimerHandle LoadLevelHandle;
 		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, [&]()
@@ -81,7 +86,7 @@ void AMapConnector::BeginFrontOverlap(
 				UGameplayStatics::OpenLevel(this, NextMapName);
 			}
 			
-		}, BlendTime * 2, false);
+		}, BlendTime + 1, false);
 	}
 }
 
