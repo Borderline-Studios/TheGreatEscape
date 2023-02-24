@@ -3,7 +3,7 @@
 
 #include "MapConnector.h"
 
-#include "Camera/CameraActor.h"
+//#include "Camera/CameraActor.h"
 #include "Character/QRCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
