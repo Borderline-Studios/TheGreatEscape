@@ -11,18 +11,18 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "MyBTTask_IncrementPathIndex.h"
+#include "BTTask_IncrementPathIndex.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyRework.h"
 #include "BlackboardKeys.h"
 
-UMyBTTask_IncrementPathIndex::UMyBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer)
+UBTTask_IncrementPathIndex::UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Increment Path Index");
 }
 
-EBTNodeResult::Type UMyBTTask_IncrementPathIndex::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_IncrementPathIndex::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// get Ai controller 
 	AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());

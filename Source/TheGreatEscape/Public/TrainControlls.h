@@ -41,7 +41,7 @@ public:
 	};
 
 	// Function to update the rotation of the train controls
-	void UpdateControls(ETrainControlSetting ControlSetting);
+	void UpdateControls(ETrainControlSetting* controlSetting);
 
 	ETrainControlSetting ControlSetting = ETrainControlSetting::Slow;
 

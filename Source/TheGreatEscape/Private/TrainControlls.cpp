@@ -44,7 +44,7 @@ void ATrainControlls::Tick(float DeltaTime)
 	 * @brief Update the train control rotation based on the setting
 	 * @param ControlSetting The Setting you wish to change to
 	 */
-void ATrainControlls::UpdateControls(ETrainControlSetting ControlSetting)
+void ATrainControlls::UpdateControls(ETrainControlSetting* controlSetting)
 {
 	CurrentRotation = TrainControlMesh->GetRelativeRotation();
 

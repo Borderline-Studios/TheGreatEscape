@@ -15,18 +15,18 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
-#include "MyBTTask_IncrementPathIndex.generated.h"
+#include "BTTask_IncrementPathIndex.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class THEGREATESCAPE_API UMyBTTask_IncrementPathIndex : public UBTTask_BlackboardBase
+class THEGREATESCAPE_API UBTTask_IncrementPathIndex : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-	UMyBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer);
+	UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
