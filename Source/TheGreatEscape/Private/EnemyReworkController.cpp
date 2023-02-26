@@ -28,7 +28,7 @@
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
 
 	// If behaviour tree found, set it
 	if (obj.Succeeded())
