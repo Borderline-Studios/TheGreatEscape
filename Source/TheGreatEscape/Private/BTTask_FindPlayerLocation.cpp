@@ -41,21 +41,21 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 		FVector const PlayerLocation = player->GetActorLocation();
 
 		// If searching for random point
-		if (bSearchRandom)
-		{
-			FNavLocation Location;
+		//if (bSearchRandom)
+		//{
+			//FNavLocation Location;
 
 			// Get nav system and generate random location near the player
-			UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-			if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, SearchRadius, Location, nullptr))
-			{
-				AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
-			}
-		}
-		else // set location as player location
-		{
+			//UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+			//if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, SearchRadius, Location, nullptr))
+			//{
+				//AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
+			//}
+		//}
+		//else // set location as player location
+		//{
 			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
-		}
+		//}
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

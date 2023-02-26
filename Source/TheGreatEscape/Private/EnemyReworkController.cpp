@@ -23,7 +23,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"
 #include "EnemyRework.h"
-#include "TheGreatEscape/TheGreatEscapeCharacter.h"
+#include "Character/QRCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
@@ -67,7 +67,7 @@ void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const s
 {
 	UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
 
-	auto const character = Cast<ATheGreatEscapeCharacter>(actor);
+	auto const character = Cast<AQRCharacter>(actor);
 	
 	if (character)
 	{

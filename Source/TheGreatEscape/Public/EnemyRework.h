@@ -29,6 +29,8 @@ public:
 
 	ANPCPatrolPath* GetPatrolPath();
 
+	void Attack();
+
 private:
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
 	void SetUpStimulus();

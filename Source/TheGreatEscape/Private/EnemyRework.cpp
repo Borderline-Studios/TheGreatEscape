@@ -40,6 +40,12 @@ ANPCPatrolPath* AEnemyRework::GetPatrolPath()
 	return PatrolPath;
 }
 
+void AEnemyRework::Attack()
+{
+	// Attack code
+	UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
+}
+
 void AEnemyRework::SetUpStimulus()
 {
 	Stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulus"));

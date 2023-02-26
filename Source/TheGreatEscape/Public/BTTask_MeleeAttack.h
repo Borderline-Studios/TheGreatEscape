@@ -14,17 +14,28 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "EnemyRework.h"
 #include "BTTask_MeleeAttack.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class THEGREATESCAPE_API UMyBTTask_MeleeAttack : public UBTTask_BlackboardBase
+class THEGREATESCAPE_API UBTTask_MeleeAttack : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-	
+	UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer);
+
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+private:
+	UFUNCTION()
+	void SetCanAttack();
+
+	FTimerHandle AttackDelayHandle;
+	bool bCanAttack = true;
+	float AttackDelay = 3.0f;
 	
 };

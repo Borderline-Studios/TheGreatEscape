@@ -12,4 +12,56 @@
 
 
 #include "BTTask_MeleeAttack.h"
+#include "EnemyReworkController.h"
 
+UBTTask_MeleeAttack::UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer)
+{
+	NodeName = TEXT("Melee Attack");
+}
+
+EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	// get Ai controller and enemy
+	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
+	
+	if (AIController)
+	{
+
+		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
+		// Get Enemy
+		if (Enemy)
+		{
+			if (bCanAttack)
+			{
+				Enemy->Attack();
+				bCanAttack = false;
+				GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
+			}
+			
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyRework failed it is: %s"), *Enemy->GetName());
+		}
+
+		// Finish task
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	
+		return EBTNodeResult::Succeeded;
+	}
+	
+	// Log warning that cast failed and finish task
+	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
+	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	
+	return EBTNodeResult::Failed;
+}
+
+void UBTTask_MeleeAttack::SetCanAttack()
+{
+	// can attack
+	bCanAttack = true;
+
+	// clear timer
+	GetWorld()->GetTimerManager().ClearTimer(AttackDelayHandle);
+}
