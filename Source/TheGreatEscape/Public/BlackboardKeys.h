@@ -7,8 +7,8 @@
 //
 // File Name   : BlackboardKeys.h
 // Description : Lists blackboard keys
-// Author      :  Borderline Studios - Toni Natta
-// Mail        :  toni.natta@mds.ac.nz
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 #pragma once
 #include "Runtime/Core/Public/UObject/NameTypes.h"

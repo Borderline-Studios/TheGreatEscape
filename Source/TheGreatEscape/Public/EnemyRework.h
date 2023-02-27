@@ -1,5 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : EnemyRework.h
+// Description : Parent Enemy class 
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,6 +19,7 @@
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
+#include "Character/QRCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "EnemyRework.generated.h"
@@ -46,14 +56,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDamaged(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
-				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+				   AQRCharacter* InstigatorCharacter, AActor* DamagerCauser);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 
 	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
-				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+				   AQRCharacter* InstigatorCharacter, AActor* DamagerCauser);
 
 	virtual void HandleHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 	
@@ -76,7 +86,7 @@ public:
 
 	ANPCPatrolPath* GetPatrolPath();
 
-	void Attack(UQRAbilitySystemComponent* TargetActorASC);
+	void Attack(UAbilitySystemComponent* TargetActorASC);
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 

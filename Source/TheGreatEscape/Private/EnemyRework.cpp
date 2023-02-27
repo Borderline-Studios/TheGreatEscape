@@ -1,4 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : EnemyRework.h
+// Description : Parent Enemy class 
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 
 #include "EnemyRework.h"
@@ -21,7 +31,7 @@ AEnemyRework::AEnemyRework()
 }
 
 void AEnemyRework::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
-	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
+	AQRCharacter* InstigatorCharacter, AActor* DamagerCauser)
 {
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser); 
 }
@@ -123,15 +133,15 @@ ANPCPatrolPath* AEnemyRework::GetPatrolPath()
 	return PatrolPath;
 }
 
-void AEnemyRework::Attack(UQRAbilitySystemComponent* TargetActorASC)
+void AEnemyRework::Attack(UAbilitySystemComponent* TargetActorASC)
 {
 	if (TargetActorASC)
 	{
-		TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle)
+		//TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle);
 	}
 	
 	// Attack code
-	UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
+	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
 }
 
 void AEnemyRework::SetUpStimulus()

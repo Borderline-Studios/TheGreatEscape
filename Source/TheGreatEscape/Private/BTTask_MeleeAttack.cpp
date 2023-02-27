@@ -13,6 +13,8 @@
 
 #include "BTTask_MeleeAttack.h"
 #include "EnemyReworkController.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Character/QRCharacter.h"
 
 UBTTask_MeleeAttack::UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer)
 {
@@ -33,15 +35,25 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		{
 			if (bCanAttack)
 			{
-				//Enemy->Attack();
-				bCanAttack = false;
-				GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
+				// Get player character & Enemy AI controller
+				//ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+				AQRCharacter* PlayerChar = Cast<AQRCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				
+				if (PlayerChar)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("atac"));
+					Enemy->Attack(PlayerChar->GetAbilitySystemComponent());
+					bCanAttack = false;
+					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);UE_LOG(LogTemp, Warning, TEXT("Cast to ACharacter is: %s"), *PlayerChar->GetName())
+
+				}
 			}
 			
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyRework failed it is: %s"), *Enemy->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyRework failed it is: %s"), *Enemy->GetName());
 		}
 
 		// Finish task

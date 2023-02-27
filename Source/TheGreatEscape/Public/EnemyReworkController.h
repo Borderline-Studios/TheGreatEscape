@@ -31,12 +31,16 @@ public:
 	void OnPossess(APawn* const InPawn) override;
 	class UBlackboardComponent* GetBlackboard() const;
 
-private:
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	class UBehaviorTreeComponent* BehaviorTreeComponent;
+protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviorTree;
+	
+	virtual void SetBehaviourTree();
+
+private:
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	class UBehaviorTreeComponent* BehaviorTreeComponent;
 
 	class UBlackboardComponent* Blackboard;
 
@@ -45,4 +49,5 @@ private:
 	UFUNCTION()
 	void OnTargetDetected(AActor* actor, FAIStimulus const stimulus);
 	void SetupPerceptionSystem();
+	
 };

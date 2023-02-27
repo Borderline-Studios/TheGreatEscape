@@ -28,13 +28,7 @@
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
-
-	// If behaviour tree found, set it
-	if (obj.Succeeded())
-	{
-		BehaviorTree = obj.Object;
-	}
+	SetBehaviourTree();
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
 
@@ -100,4 +94,15 @@ void AEnemyReworkController::SetupPerceptionSystem()
 	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnTargetDetected);
 	GetPerceptionComponent()->ConfigureSense(*SightConfig);
+}
+
+void AEnemyReworkController::SetBehaviourTree()
+{
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+
+	// If behaviour tree found, set it
+	if (obj.Succeeded())
+	{
+		BehaviorTree = obj.Object;
+	}
 }
