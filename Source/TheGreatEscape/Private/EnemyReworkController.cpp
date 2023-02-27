@@ -22,13 +22,42 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"
-#include "EnemyRework.h"
 #include "Character/QRCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	SetBehaviourTree();
+	//AEnemyRework* Enemy = 
+		// UGameplayStatics::GetActorOfClass(this, AQRCharacter::StaticClass())
+	switch (EEnemyType)
+	{
+		case Utilities::EnemyTypes::Melee:
+			{
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+
+				// If behaviour tree found, set it
+				if (obj.Succeeded())
+				{
+					BehaviorTree = obj.Object;
+					UE_LOG(LogTemp, Warning, TEXT("BT set"));
+				}
+			
+				break;
+			}
+		case Utilities::EnemyTypes::Drone:
+			{
+				//static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+
+				// If behaviour tree found, set it
+				//if (obj.Succeeded())
+				//{
+				//BehaviorTree = obj.Object;
+				//}
+			
+				break;
+			}
+		}
+	
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
 
@@ -38,6 +67,9 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 void AEnemyReworkController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+	
 	RunBehaviorTree(BehaviorTree);
 	BehaviorTreeComponent->StartTree(*BehaviorTree);
 }
@@ -94,15 +126,4 @@ void AEnemyReworkController::SetupPerceptionSystem()
 	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnTargetDetected);
 	GetPerceptionComponent()->ConfigureSense(*SightConfig);
-}
-
-void AEnemyReworkController::SetBehaviourTree()
-{
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
-
-	// If behaviour tree found, set it
-	if (obj.Succeeded())
-	{
-		BehaviorTree = obj.Object;
-	}
 }

@@ -14,6 +14,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BlackboardKeys.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "EnemyReworkController.generated.h"
 
@@ -31,12 +32,14 @@ public:
 	void OnPossess(APawn* const InPawn) override;
 	class UBlackboardComponent* GetBlackboard() const;
 
+	
+	Utilities::EnemyTypes EEnemyType = Utilities::EnemyTypes::Melee;
+
 protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviorTree;
-	
-	virtual void SetBehaviourTree();
+
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))

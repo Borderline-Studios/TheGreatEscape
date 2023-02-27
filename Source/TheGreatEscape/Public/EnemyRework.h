@@ -21,6 +21,7 @@
 #include "QRGameplayAbility.h"
 #include "Character/QRCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "BlackboardKeys.h"
 
 #include "EnemyRework.generated.h"
 
@@ -34,6 +35,7 @@ class THEGREATESCAPE_API AEnemyRework : public ACharacter
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this character's properties
 	AEnemyRework();
 
@@ -84,22 +86,22 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	ANPCPatrolPath* GetPatrolPath();
+	//ANPCPatrolPath* GetPatrolPath();
 
 	void Attack(UAbilitySystemComponent* TargetActorASC);
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+
 
 private:
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
 	void SetUpStimulus();
 
 	// NPC STUFF
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	ANPCPatrolPath* PatrolPath;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	//ANPCPatrolPath* PatrolPath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffect", meta = (AllowPrivateAccess = "true"))
 	UGameplayEffect* DamageEffect;
-
 	
 };
