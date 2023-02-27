@@ -33,7 +33,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 		{
 			if (bCanAttack)
 			{
-				Enemy->Attack();
+				//Enemy->Attack();
 				bCanAttack = false;
 				GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
 			}
