@@ -22,3 +22,13 @@ namespace BbKeys
 	TCHAR const * const patrolPathIndex = TEXT("PatrolPathIndex");
 	TCHAR const * const playerInMeleeRange = TEXT("PlayerInMeleeRange");
 }
+
+namespace Utilities
+{
+	enum class EnemyTypes
+	{
+		Melee,
+		Drone,
+		TBD
+	};
+}

@@ -34,13 +34,13 @@ EBTNodeResult::Type UBTTask_FindPatrolPathPoint::ExecuteTask(UBehaviorTreeCompon
 
 		// use index to get the current patrol path from npc ref to patrol path
 		AEnemyRework* const Npc = Cast<AEnemyRework>(AIController->GetPawn());
-		FVector const Point = Npc->GetPatrolPath()->GetPatrolPoint(Index);
+		//FVector const Point = Npc->GetPatrolPath()->GetPatrolPoint(Index);
 
 		// Transform local point to global point using parent
-		FVector const GlobalPoint = Npc->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+		//FVector const GlobalPoint = Npc->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 
 		// write current global path point to blackboard
-		AIController->GetBlackboard()->SetValueAsVector(BbKeys::patrolPathVector, GlobalPoint);
+		//AIController->GetBlackboard()->SetValueAsVector(BbKeys::patrolPathVector, GlobalPoint);
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

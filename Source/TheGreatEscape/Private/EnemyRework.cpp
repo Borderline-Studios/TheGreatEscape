@@ -14,11 +14,12 @@
 #include "EnemyRework.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "EnemyReworkController.h"
 
 // Sets default values
 AEnemyRework::AEnemyRework()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetUpStimulus();
@@ -28,6 +29,7 @@ AEnemyRework::AEnemyRework()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
+	
 }
 
 void AEnemyRework::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
@@ -48,6 +50,18 @@ void AEnemyRework::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	AEnemyReworkController* EnemyController = Cast<AEnemyReworkController>(NewController);
+
+	if (EnemyController)
+	{
+		EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
+		UE_LOG(LogTemp, Warning, TEXT("enemy type set"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyController cast failed"));
+	}
+	
 	//Server Gas Init
 	if(AbilitySystemComponent)
 	{
@@ -128,10 +142,10 @@ void AEnemyRework::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
-ANPCPatrolPath* AEnemyRework::GetPatrolPath()
-{
-	return PatrolPath;
-}
+//ANPCPatrolPath* AEnemyRework::GetPatrolPath()
+//{
+	//return PatrolPath;
+//}
 
 void AEnemyRework::Attack(UAbilitySystemComponent* TargetActorASC)
 {
