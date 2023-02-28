@@ -17,14 +17,14 @@ AHandcart_NewMesh::AHandcart_NewMesh()
 
 	Base = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform Base"));
 	Base->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> BaseObj(TEXT("StaticMesh'/Game/VericalSlice/Train/Handcart/Handcart_Merged_Platform.Handcart_Merged_Platform'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> BaseObj(TEXT("StaticMesh'/Game/Production/Train/Art/Handcart/Handcart_Merged_Platform.Handcart_Merged_Platform'"));
 	Base->SetStaticMesh(BaseObj.Object);
 	Base->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 	//Base->SetWorldScale3D(FVector(5.0f, 5.0f, 0.25f));
 
 	Maglifts = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform Maglifts"));
 	Maglifts->SetupAttachment(Base);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MagliftObj(TEXT("StaticMesh'/Game/VericalSlice/Train/Handcart/Handcart_Merged_Maglifts.Handcart_Merged_Maglifts'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> MagliftObj(TEXT("StaticMesh'/Game/Production/Train/Art/Handcart/Handcart_Merged_Maglifts.Handcart_Merged_Maglifts'"));
 	Maglifts->SetStaticMesh(MagliftObj.Object);
 	Maglifts->SetRelativeLocation(FVector(0.0f, 368.0f, 0.0f));
 
@@ -35,7 +35,7 @@ AHandcart_NewMesh::AHandcart_NewMesh()
 
 	Handle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform Handle"));
 	Handle->SetupAttachment(Base);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleObj(TEXT("StaticMesh'/Game/VericalSlice/Train/Handcart/Handcart_Merged_Handles.Handcart_Merged_Handles'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleObj(TEXT("StaticMesh'/Game/Production/Train/Art/Handcart/Handcart_Merged_Handles.Handcart_Merged_Handles'"));
 	Handle->SetStaticMesh(HandleObj.Object);
 	Handle->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	// Handle->SetWorldScale3D(FVector(1.5f, 0.05f, 0.05f));
