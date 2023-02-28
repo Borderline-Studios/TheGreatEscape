@@ -14,7 +14,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "EnemyReworkController.generated.h"
 
