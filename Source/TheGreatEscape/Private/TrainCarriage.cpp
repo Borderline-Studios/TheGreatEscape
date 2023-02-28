@@ -37,27 +37,6 @@ ATrainCarriage::ATrainCarriage(int AssignedNumber)
 
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
 	Box->SetupAttachment(RootComponent);
-
-	if 	(AssignedNumber == 0)	// Full Base Car
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> FullBase(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
-		Box->SetStaticMesh(FullBase.Object);
-	}
-	else if (AssignedNumber == 1)	// FlatBed Car
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> FlatBed(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
-		Box->SetStaticMesh(FlatBed.Object);
-	}
-	else if (AssignedNumber == 2)	// Weapons Car
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> Weapons(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
-		Box->SetStaticMesh(Weapons.Object);
-	}
-	else if (AssignedNumber == 3)	// Windows Car 
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> Windows(TEXT("StaticMesh'/Game/VericalSlice/Train/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
-		Box->SetStaticMesh(Windows.Object);
-	}
 	
 	// Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
 
@@ -85,6 +64,27 @@ void ATrainCarriage::Tick(float DeltaTime)
 void ATrainCarriage::SetCarriageNumber(int AssignedNumber)
 {
 	CarriageNumber = AssignedNumber;
+
+	if 	(CarriageNumber == 0)	// Full Base Car
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> FullBase(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
+		Box->SetStaticMesh(FullBase.Object);
+	}
+	else if (CarriageNumber == 1)	// FlatBed Car
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> FlatBed(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
+		Box->SetStaticMesh(FlatBed.Object);
+	}
+	else if (CarriageNumber == 2)	// Weapons Car
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Weapons(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
+		Box->SetStaticMesh(Weapons.Object);
+	}
+	else if (CarriageNumber == 3)	// Windows Car 
+	{
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Windows(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
+		Box->SetStaticMesh(Windows.Object);
+	}
 }
 
 bool ATrainCarriage::ChangeTrack(AActor* NewTrack)

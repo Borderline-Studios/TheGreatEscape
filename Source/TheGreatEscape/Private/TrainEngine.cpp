@@ -77,6 +77,7 @@ void ATrainEngine::BeginPlay()
 
 			CarriageRefs.Add(GetWorld()->SpawnActor<ATrainCarriage>(ATrainCarriage::StaticClass(), CarriageSpawnTransform));
 			CarriageRefs[i]->TrackSplineRef = TrackSplineRef;
+			//CarriageRefs[i]->SetCarriageNumber(i);
 		}
 	}
 }
