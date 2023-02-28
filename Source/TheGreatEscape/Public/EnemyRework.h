@@ -22,6 +22,7 @@
 #include "Character/QRCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "BlackboardKeys.h"
+#include "EnemyReworkController.h"
 
 #include "EnemyRework.generated.h"
 

@@ -46,13 +46,13 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 			}
 		case Utilities::EnemyTypes::Drone:
 			{
-				//static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
 
 				// If behaviour tree found, set it
-				//if (obj.Succeeded())
-				//{
-				//BehaviorTree = obj.Object;
-				//}
+				if (obj.Succeeded())
+				{
+				BehaviorTree = obj.Object;
+				}
 			
 				break;
 			}
