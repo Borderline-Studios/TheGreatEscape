@@ -5,6 +5,7 @@
 
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
+#include "Character/QRCharacter.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
 UQRAttributeSet::UQRAttributeSet()
@@ -38,18 +39,19 @@ void UQRAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	const FGameplayTagContainer& SourceTags = *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
 
 	float DeltaValue {0.f};
-	if (Data.EvaluatedData.ModifierOp = EGameplayModOp::Type::Additive)
+	if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
 	{
 		DeltaValue = Data.EvaluatedData.Magnitude;
 	}
 
-	ATheGreatEscapeCharacter* TargetCharacter{nullptr};
+	// TODO: Figure out why this works as it does
+	AQRCharacter* TargetCharacter{nullptr};
 
 	if (Data.Target.AbilityActorInfo.IsValid()	 && Data.Target.AbilityActorInfo)
 	{
 		AActor* TargetActor {nullptr};
 		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-		TargetCharacter = Cast<ATheGreatEscapeCharacter>(TargetActor);
+		TargetCharacter = Cast<AQRCharacter>(TargetActor);
 	}
 
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())

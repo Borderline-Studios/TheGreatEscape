@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Character/Abilities/Data.h"
 #include "TheGreatEscape/TheGreatEscape.h"
 #include "GASGameplayAbility.generated.h"
 
