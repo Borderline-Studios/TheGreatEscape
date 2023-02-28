@@ -45,7 +45,8 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 					UE_LOG(LogTemp, Warning, TEXT("atac"));
 					Enemy->Attack(PlayerChar->GetAbilitySystemComponent());
 					bCanAttack = false;
-					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);UE_LOG(LogTemp, Warning, TEXT("Cast to ACharacter is: %s"), *PlayerChar->GetName())
+					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
+					//UE_LOG(LogTemp, Warning, TEXT("Cast to ACharacter is: %s"), *PlayerChar->GetName())
 
 				}
 			}

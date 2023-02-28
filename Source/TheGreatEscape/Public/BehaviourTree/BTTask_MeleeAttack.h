@@ -38,6 +38,8 @@ private:
 
 	FTimerHandle AttackDelayHandle;
 	bool bCanAttack = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float AttackDelay = 3.0f;
 	
 };

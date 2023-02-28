@@ -27,4 +27,11 @@ class THEGREATESCAPE_API UBTTask_FollowTrain : public UBTTask_BlackboardBase
 public:
 	UBTTask_FollowTrain(FObjectInitializer const& ObjectInitializer);
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
+	float EvelvationHeight = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
+	float Speed = 10.0f;
 };

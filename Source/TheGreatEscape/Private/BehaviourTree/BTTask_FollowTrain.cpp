@@ -16,6 +16,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviourTree/BlackboardKeys.h"
 #include "TrainEngine.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 UBTTask_FollowTrain::UBTTask_FollowTrain(FObjectInitializer const& ObjectInitializer)
@@ -32,13 +33,22 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
+		APawn* const Enemy = AIController->GetPawn();
+		
 		if (Train)
 		{
-			FVector const TrainLocation = Train->GetActorLocation();
+			FVector TrainLocation = Train->GetActorLocation();
+
+			FVector EnemyLocation = Enemy->GetActorLocation();
+
+			FVector direction = FVector(TrainLocation.X, TrainLocation.Y, TrainLocation.Z + EvelvationHeight) - EnemyLocation;
+
+			direction *= Speed;
+			
+			Enemy->GetMovementComponent()->Velocity = direction;
 			
 			// move to player location
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TrainLocation);
-
+			//UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TrainLocation);			
 		}
 		else
 		{

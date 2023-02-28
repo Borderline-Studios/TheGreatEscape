@@ -21,6 +21,7 @@ namespace BbKeys
 	TCHAR const * const patrolPathVector = TEXT("PatrolPathVector");
 	TCHAR const * const patrolPathIndex = TEXT("PatrolPathIndex");
 	TCHAR const * const playerInMeleeRange = TEXT("PlayerInMeleeRange");
+	TCHAR const * const droneInAttackRange = TEXT("DroneInAttackRange");
 }
 
 namespace Utilities
