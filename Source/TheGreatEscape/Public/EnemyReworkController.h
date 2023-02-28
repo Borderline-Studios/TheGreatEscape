@@ -32,12 +32,17 @@ public:
 	void OnPossess(APawn* const InPawn) override;
 	class UBlackboardComponent* GetBlackboard() const;
 
+	void SetBehaviourTree(Utilities::EnemyTypes EEnemyType);
 	
-	Utilities::EnemyTypes EEnemyType = Utilities::EnemyTypes::Melee;
+	//Utilities::EnemyTypes EEnemyType = Utilities::EnemyTypes::Melee;
+
+	
 
 protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	class UBehaviorTree* BehaviorTreeMelee;
+	class UBehaviorTree* BehaviorTreeDrone;
 	class UBehaviorTree* BehaviorTree;
 
 

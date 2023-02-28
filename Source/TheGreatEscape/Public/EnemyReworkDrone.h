@@ -1,4 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : EnemyReworKDrone.h
+// Description : Drone enemy
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
+
 
 #pragma once
 

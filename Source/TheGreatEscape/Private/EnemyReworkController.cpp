@@ -27,36 +27,23 @@
 
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	//AEnemyRework* Enemy = 
-		// UGameplayStatics::GetActorOfClass(this, AQRCharacter::StaticClass())
-	switch (EEnemyType)
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj1(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+
+	// If behaviour tree found, set it
+	if (obj1.Succeeded())
 	{
-		case Utilities::EnemyTypes::Melee:
-			{
-				static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+		BehaviorTreeMelee = obj1.Object;
+		UE_LOG(LogTemp, Warning, TEXT("BT set"));
+	}
 
-				// If behaviour tree found, set it
-				if (obj.Succeeded())
-				{
-					BehaviorTree = obj.Object;
-					UE_LOG(LogTemp, Warning, TEXT("BT set"));
-				}
-			
-				break;
-			}
-		case Utilities::EnemyTypes::Drone:
-			{
-				static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj2(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
 
-				// If behaviour tree found, set it
-				if (obj.Succeeded())
-				{
-				BehaviorTree = obj.Object;
-				}
-			
-				break;
-			}
-		}
+	// If behaviour tree found, set it
+	if (obj2.Succeeded())
+	{
+		BehaviorTreeDrone = obj2.Object;
+		UE_LOG(LogTemp, Warning, TEXT("Drone bt set"));
+	}
 	
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
@@ -67,8 +54,6 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 void AEnemyReworkController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 	
 	RunBehaviorTree(BehaviorTree);
 	BehaviorTreeComponent->StartTree(*BehaviorTree);
@@ -87,6 +72,31 @@ void AEnemyReworkController::OnPossess(APawn* const InPawn)
 UBlackboardComponent* AEnemyReworkController::GetBlackboard() const
 {
 	return Blackboard;
+}
+
+void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
+{
+	//AEnemyRework* Enemy = 
+	// UGameplayStatics::GetActorOfClass(this, AQRCharacter::StaticClass())
+	switch (EEnemyType)
+	{
+	case Utilities::EnemyTypes::Melee:
+		{
+			BehaviorTree = BehaviorTreeMelee;
+
+			UE_LOG(LogTemp, Warning, TEXT("MELEE"));
+			
+			break;
+		}
+	case Utilities::EnemyTypes::Drone:
+		{
+			BehaviorTree = BehaviorTreeDrone;
+			
+			UE_LOG(LogTemp, Warning, TEXT("DRONE"));
+
+			break;
+		}
+	}
 }
 
 void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const stimulus)

@@ -54,19 +54,21 @@ void AEnemyRework::PossessedBy(AController* NewController)
 
 	if (EnemyController)
 	{
-		EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
-		UE_LOG(LogTemp, Warning, TEXT("enemy type set"));
+		//EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
+		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::Melee);
+		UE_LOG(LogTemp, Warning, TEXT("enemy type set melee"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyController cast failed"));
+		UE_LOG(LogTemp, Warning, TEXT("EnemyController cast failed melee"));
 	}
-	
+
 	//Server Gas Init
 	if(AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
+	
 	AddStartupGameplayAbilities();
 }
 
