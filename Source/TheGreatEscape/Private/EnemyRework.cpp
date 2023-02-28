@@ -14,7 +14,7 @@
 #include "EnemyRework.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
-#include "EnemyReworkController.h"
+
 
 // Sets default values
 AEnemyRework::AEnemyRework()
