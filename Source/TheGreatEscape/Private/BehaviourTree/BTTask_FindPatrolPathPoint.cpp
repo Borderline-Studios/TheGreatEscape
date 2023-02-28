@@ -11,11 +11,11 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "BTTask_FindPatrolPathPoint.h"
+#include "BehaviourTree/BTTask_FindPatrolPathPoint.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyRework.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_FindPatrolPathPoint::UBTTask_FindPatrolPathPoint(FObjectInitializer const& ObjectInitializer)
 {

@@ -11,11 +11,11 @@
 // Mail        :  toni.natta@mds.ac.nz
 
 
-#include "BTTask_ChasePlayer.h"
+#include "BehaviourTree/BTTask_ChasePlayer.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer)
 {

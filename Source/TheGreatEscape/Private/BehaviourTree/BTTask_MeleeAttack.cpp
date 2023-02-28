@@ -11,7 +11,7 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "BTTask_MeleeAttack.h"
+#include "BehaviourTree/BTTask_MeleeAttack.h"
 #include "EnemyReworkController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Character/QRCharacter.h"

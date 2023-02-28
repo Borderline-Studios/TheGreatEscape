@@ -18,7 +18,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"

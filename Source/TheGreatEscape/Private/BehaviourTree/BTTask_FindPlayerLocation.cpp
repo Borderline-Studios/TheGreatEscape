@@ -11,7 +11,7 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "BTTask_FindPlayerLocation.h"
+#include "BehaviourTree/BTTask_FindPlayerLocation.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "EnemyReworkController.h"
@@ -20,7 +20,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_FindPlayerLocation::UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer)
 {

@@ -11,14 +11,14 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "BTService_PlayerInRange.h"
+#include "BehaviourTree/BTService_PlayerInRange.h"
 #include "EnemyRework.h"
 #include "EnemyReworkController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 
 
 UBTService_PlayerInRange::UBTService_PlayerInRange()

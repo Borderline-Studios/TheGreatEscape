@@ -11,11 +11,11 @@
 // Mail        : toni.natta@mds.ac.nz
 
 
-#include "BTTask_IncrementPathIndex.h"
+#include "BehaviourTree/BTTask_IncrementPathIndex.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyRework.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_IncrementPathIndex::UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer)
 {

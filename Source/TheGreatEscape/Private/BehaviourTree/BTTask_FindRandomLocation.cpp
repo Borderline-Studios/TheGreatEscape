@@ -11,13 +11,13 @@
 // Mail        :  toni.natta@mds.ac.nz
 
 
-#include "BTTask_FindRandomLocation.h"
+#include "BehaviourTree/BTTask_FindRandomLocation.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyReworkController.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 //#include "BehaviorTree/Blackboard/BlackboardKeyType.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
-#include "BlackboardKeys.h"
+#include "BehaviourTree/BlackboardKeys.h"
 #include "SNegativeActionButton.h"
 //#include "EnemyReworkController.h"
 
