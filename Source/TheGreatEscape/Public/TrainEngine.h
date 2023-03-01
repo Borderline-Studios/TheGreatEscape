@@ -66,6 +66,7 @@ private:
 	int TimeToComplete = 30;
 	float TimeSinceStart;
 	bool bHasStartedMoving;
+	bool firstRun = false;
 
 	// Creating the timer handle used to start the movement after a short delay
 	FTimerHandle StartMoveTimerHandle;
