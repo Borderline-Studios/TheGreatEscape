@@ -58,11 +58,6 @@ void AEnemyRework::Tick(float DeltaTime)
 
 }
 
-//ANPCPatrolPath* AEnemyRework::GetPatrolPath()
-//{
-	//return PatrolPath;
-//}
-
 void AEnemyRework::Attack()
 {
 	

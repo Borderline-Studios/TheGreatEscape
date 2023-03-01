@@ -14,13 +14,7 @@
 #include <Character/BASE/GASBASECharacter.h>
 
 #include "CoreMinimal.h"
-#include "NPCPatrolPath.h"
-//#include "QRAbilitySystemComponent.h"
-//#include "Character/BASE/GASBASECharacter.h"
 
-//#include "QRAttributeSet.h"
-//#include "QRAbilitySystemComponent.h"
-//#include "QRGameplayAbility.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviourTree/BlackboardKeys.h"
@@ -50,16 +44,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//ANPCPatrolPath* GetPatrolPath();
-
 	void Attack();
 
 
 private:
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
 	void SetUpStimulus();
-
-	// NPC STUFF
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	//ANPCPatrolPath* PatrolPath;
 };
