@@ -43,6 +43,5 @@ void UBTService_TrainInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp
 
 		// Set bool based on if player is in melee range by finding distance between them
 		AIController->GetBlackboard()->SetValueAsBool(BbKeys::droneInAttackRange, Enemy->GetDistanceTo(Train) <= AttackRange);
-		
 	}
 }

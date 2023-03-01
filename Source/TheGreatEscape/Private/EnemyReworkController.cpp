@@ -84,7 +84,7 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 		{
 			BehaviorTree = BehaviorTreeMelee;
 
-			UE_LOG(LogTemp, Warning, TEXT("MELEE"));
+			//UE_LOG(LogTemp, Warning, TEXT("MELEE"));
 			
 			break;
 		}
@@ -92,7 +92,7 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 		{
 			BehaviorTree = BehaviorTreeDrone;
 			
-			UE_LOG(LogTemp, Warning, TEXT("DRONE"));
+			//UE_LOG(LogTemp, Warning, TEXT("DRONE"));
 
 			break;
 		}
@@ -101,14 +101,14 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 
 void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const stimulus)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
+	//UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
 
 	auto const character = Cast<AQRCharacter>(actor);
 	
 	if (character)
 	{
 		GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
-		UE_LOG(LogTemp, Warning, TEXT("sensed"));
+		//UE_LOG(LogTemp, Warning, TEXT("sensed"));
 	}
 	else
 	{

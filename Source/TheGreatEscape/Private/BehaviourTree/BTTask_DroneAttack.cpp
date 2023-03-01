@@ -39,7 +39,10 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 					bCanAttack = false;
 					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_DroneAttack::SetCanAttack, AttackDelay, false);
 					//UE_LOG(LogTemp, Warning, TEXT("Cast to Train is: %s"), *Train->GetName())
-
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("notrain"));
 				}
 			}
 			
