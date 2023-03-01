@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "Character/QRCharacter.h"
+#include "Character/BASE/GASBASECharacter.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
 UQRAttributeSet::UQRAttributeSet()
@@ -45,13 +46,13 @@ void UQRAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	}
 
 	// TODO: Figure out why this works as it does
-	AQRCharacter* TargetCharacter{nullptr};
+	AGASBASECharacter* TargetCharacter{nullptr};
 
 	if (Data.Target.AbilityActorInfo.IsValid()	 && Data.Target.AbilityActorInfo)
 	{
 		AActor* TargetActor {nullptr};
 		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
-		TargetCharacter = Cast<AQRCharacter>(TargetActor);
+		TargetCharacter = Cast<AGASBASECharacter>(TargetActor);
 	}
 
 	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
