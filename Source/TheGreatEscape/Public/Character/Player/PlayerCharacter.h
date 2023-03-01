@@ -31,5 +31,15 @@ public:
 
 	APlayerCharacter();
 
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	void StartDeath();
+	
+
 	UCameraComponent* GetFirstPersonCameraComponent();
+
+
+
+	APlayerCharacter* GetPlayerController();
 };

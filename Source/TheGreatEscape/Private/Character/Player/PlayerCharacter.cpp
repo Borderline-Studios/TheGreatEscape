@@ -2,6 +2,8 @@
 
 
 #include "Character/Player/PlayerCharacter.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -30,6 +32,27 @@ APlayerCharacter::APlayerCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+}
+
+void APlayerCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+		bool Found;
+		float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
+	if(Found)
+	{
+		if (Value <= 0.0f)
+		{
+			StartDeath();
+		}
+	}
+}
+
+void APlayerCharacter::StartDeath()
+{
+	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
 UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
