@@ -23,27 +23,7 @@ AEnemyRework::AEnemyRework()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetUpStimulus();
-
-	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-
-	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
 	
-}
-
-void AEnemyRework::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
-	AQRCharacter* InstigatorCharacter, AActor* DamagerCauser)
-{
-	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser); 
-}
-
-void AEnemyRework::HandleHealthChanged(float Deltavalue, const FGameplayTagContainer& EventTags)
-{
-	if(bAbilitiesInitalized)
-	{
-		OnHealthChanged(Deltavalue, EventTags); 
-	}	
 }
 
 void AEnemyRework::PossessedBy(AController* NewController)
@@ -62,65 +42,6 @@ void AEnemyRework::PossessedBy(AController* NewController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyController cast failed melee"));
 	}
-
-	//Server Gas Init
-	if(AbilitySystemComponent)
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
-	
-	AddStartupGameplayAbilities();
-}
-
-void AEnemyRework::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	//Server Gas Init
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	if (AbilitySystemComponent && InputComponent)
-	{
-		const FGameplayAbilityInputBinds Binds("Confirm", "Cancel", "EGASAbilityInputID",
-			static_cast<int32>(EGASAbilityInputID::Confirm),static_cast<int32>(EGASAbilityInputID::Cancel));
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
-	}
-}
-
-void AEnemyRework::AddStartupGameplayAbilities()
-{
-	check(AbilitySystemComponent);
-	if(GetLocalRole() == ROLE_Authority && !bAbilitiesInitalized)
-	{
-		//Grant Abilities, but only on Server
-		for(TSubclassOf<UQRGameplayAbility>& StartupAbility : GameplayAbilities)
-		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
-				StartupAbility, 1,
-				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
-		}
-	}
-
-	for (const TSubclassOf<UGameplayEffect>& GameplayEffect : PassiveGameplayEffects)
-	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 1, EffectContext);
-
-		if (NewHandle.IsValid())
-		{
-			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
-				*NewHandle.Data.Get(), AbilitySystemComponent);
-		}
-
-		bAbilitiesInitalized = true;
-	}
-}
-
-UAbilitySystemComponent* AEnemyRework::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
 }
 
 // Called when the game starts or when spawned
@@ -137,24 +58,15 @@ void AEnemyRework::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AEnemyRework::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 //ANPCPatrolPath* AEnemyRework::GetPatrolPath()
 //{
 	//return PatrolPath;
 //}
 
-void AEnemyRework::Attack(UAbilitySystemComponent* TargetActorASC)
+void AEnemyRework::Attack()
 {
-	if (TargetActorASC)
-	{
-		//TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle);
-	}
+	
+	//TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle);
 	
 	// Attack code
 	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
