@@ -31,5 +31,5 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float AttackRange = 100.0f;
+	float AttackRange = 600.0f;
 };

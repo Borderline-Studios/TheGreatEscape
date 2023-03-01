@@ -102,15 +102,11 @@ void ATrainEngine::Tick(float DeltaTime)
 			CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
 			TempTrackRef = TempTrackRef->GetNextSpline();
 			TempTrackRef->PopulateTrainRef(this);
-
-			// If this is the final spline, connect that up too before exiting the loop
-			if (!TempTrackRef->GetNextSpline())
-			{
-				TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
-				CompleteTrackRefs.AddUnique(TempTrackRef);
-				CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
-			}
 		}
+		
+		TempTrackRef->GetSpline()->SetUnselectedSplineSegmentColor(FColor::Cyan);
+		CompleteTrackRefs.AddUnique(TempTrackRef);
+		CompleteSplineLength += TempTrackRef->GetSpline()->GetSplineLength();
 
 		//GEngine->AddOnScreenDebugMessage(20, 20, FColor::Emerald, FString::Printf(TEXT("Complete Spline Length = %f"), CompleteSplineLength));
 

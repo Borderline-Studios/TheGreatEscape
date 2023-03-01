@@ -6,6 +6,8 @@
 #include "Camera/CameraComponent.h"
 
 #include "Character/QRCharacter.h"
+#include "Character/BASE/GASBASECharacter.h"
+#include "Character/Player/PlayerCharacter.h"
 
 UQRGA_Shoot::UQRGA_Shoot()
 {
@@ -17,8 +19,14 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("Ability Acti"));
+	}
+	
+
 	FHitResult HitResult;
-	AQRCharacter* CharacterRef = Cast<AQRCharacter>(GetAvatarActorFromActorInfo());
+	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,CharacterRef->GetFirstPersonCameraComponent()->GetComponentLocation(),
 	                                               CharacterRef->GetFirstPersonCameraComponent()->GetComponentLocation() + CharacterRef->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
