@@ -56,7 +56,7 @@ void AEnemyRework::PossessedBy(AController* NewController)
 	{
 		//EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
 		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::Melee);
-		UE_LOG(LogTemp, Warning, TEXT("enemy type set melee"));
+		//UE_LOG(LogTemp, Warning, TEXT("enemy type set melee"));
 	}
 	else
 	{
