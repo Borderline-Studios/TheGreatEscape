@@ -9,6 +9,7 @@
 // Description : Chases after the player
 // Author      :  Borderline Studios - Toni Natta
 // Mail        :  toni.natta@mds.ac.nz
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,6 +29,4 @@ class THEGREATESCAPE_API UBTTask_ChasePlayer : public UBTTask_BlackboardBase
 public:
 	UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
-	
 };

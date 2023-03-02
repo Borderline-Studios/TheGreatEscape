@@ -24,7 +24,7 @@
 UBTService_PlayerInRange::UBTService_PlayerInRange()
 {
 	bNotifyBecomeRelevant = true;
-	NodeName = TEXT("Is Player In Melee Range");
+	NodeName = TEXT("Is Player In Range");
 }
 
 void UBTService_PlayerInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

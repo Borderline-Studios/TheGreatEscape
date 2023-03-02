@@ -14,7 +14,7 @@
 #include "BehaviourTree/BTTask_IncrementPathIndex.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "EnemyRework.h"
+#include "NPC.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_IncrementPathIndex::UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer)
@@ -25,37 +25,37 @@ UBTTask_IncrementPathIndex::UBTTask_IncrementPathIndex(FObjectInitializer const&
 EBTNodeResult::Type UBTTask_IncrementPathIndex::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// get Ai controller 
-	//AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
+	AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 	
-	//if (AIController)
-	//{
-		//AEnemyRework* const Npc = Cast<AEnemyRework>(AIController->GetPawn());
-		//int const NumOfPoints = Npc->GetPatrolPath()->Num(); // get number of points
-		//int const MinIndex = 0;
-		//int const MaxIndex = NumOfPoints - 1;
+	if (AIController)
+	{
+		ANPC* const Npc = Cast<ANPC>(AIController->GetPawn());
+		int const NumOfPoints = Npc->GetPatrolPath()->Num(); // get number of points
+		int const MinIndex = 0;
+		int const MaxIndex = NumOfPoints - 1;
 
 		// Get and set blackboard key
-		//int index = AIController->GetBlackboard()->GetValueAsInt(BbKeys::patrolPathIndex);
+		int index = AIController->GetBlackboard()->GetValueAsInt(BbKeys::patrolPathIndex);
 
 		// Once NPC gets to end of points switch direction
-		//if (index >= MaxIndex && Direction == EDirectionType::Forward)
-		//{
-			//Direction = EDirectionType::Backwards;
-		//}
-		//else if (index == MinIndex && Direction == EDirectionType::Backwards)
-		//{
-			//Direction = EDirectionType::Forward;
-		//}
+		if (index >= MaxIndex && Direction == EDirectionType::Forward)
+		{
+			Direction = EDirectionType::Backwards;
+		}
+		else if (index == MinIndex && Direction == EDirectionType::Backwards)
+		{
+			Direction = EDirectionType::Forward;
+		}
 
 		// Increment / decrement patrol index based on direction of NPC
-		//AIController->GetBlackboard()->SetValueAsInt(BbKeys::patrolPathIndex,(Direction == EDirectionType::Forward ? ++index : --index) % NumOfPoints);
+		AIController->GetBlackboard()->SetValueAsInt(BbKeys::patrolPathIndex,(Direction == EDirectionType::Forward ? ++index : --index) % NumOfPoints);
 		// Finish task
-		//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		//return EBTNodeResult::Succeeded;
-	//}
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return EBTNodeResult::Succeeded;
+	}
 
 	// Log warning that cast failed and finish task
-	//UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
-	//FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
+	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	return EBTNodeResult::Failed;
 }

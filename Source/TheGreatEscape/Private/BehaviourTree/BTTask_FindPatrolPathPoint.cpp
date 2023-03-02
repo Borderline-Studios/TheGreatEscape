@@ -14,7 +14,7 @@
 #include "BehaviourTree/BTTask_FindPatrolPathPoint.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "EnemyRework.h"
+#include "NPC.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
 UBTTask_FindPatrolPathPoint::UBTTask_FindPatrolPathPoint(FObjectInitializer const& ObjectInitializer)
@@ -33,14 +33,14 @@ EBTNodeResult::Type UBTTask_FindPatrolPathPoint::ExecuteTask(UBehaviorTreeCompon
 		int const Index = AIController->GetBlackboard()->GetValueAsInt(BbKeys::patrolPathIndex);
 
 		// use index to get the current patrol path from npc ref to patrol path
-		AEnemyRework* const Npc = Cast<AEnemyRework>(AIController->GetPawn());
-		//FVector const Point = Npc->GetPatrolPath()->GetPatrolPoint(Index);
+		ANPC* const Npc = Cast<ANPC>(AIController->GetPawn());
+		FVector const Point = Npc->GetPatrolPath()->GetPatrolPoint(Index);
 
 		// Transform local point to global point using parent
-		//FVector const GlobalPoint = Npc->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+		FVector const GlobalPoint = Npc->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 
 		// write current global path point to blackboard
-		//AIController->GetBlackboard()->SetValueAsVector(BbKeys::patrolPathVector, GlobalPoint);
+		AIController->GetBlackboard()->SetValueAsVector(BbKeys::patrolPathVector, GlobalPoint);
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

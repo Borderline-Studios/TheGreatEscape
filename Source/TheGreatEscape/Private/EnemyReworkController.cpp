@@ -25,24 +25,39 @@
 #include "Character/QRCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
+TArray<UBehaviorTree*> AEnemyReworkController::BehaviorTreeReferences;
+
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj1(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+
+	// MELEE ENEMY TREE SET UP
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objMelee(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
 
 	// If behaviour tree found, set it
-	if (obj1.Succeeded())
+	if (objMelee.Succeeded())
 	{
-		BehaviorTreeMelee = obj1.Object;
+		BehaviorTreeReferences.Push(objMelee.Object);
 		UE_LOG(LogTemp, Warning, TEXT("BT set"));
 	}
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>obj2(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
+	// DRONE ENEMY TREE SET UP
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objDrone(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
 
 	// If behaviour tree found, set it
-	if (obj2.Succeeded())
+	if (objDrone.Succeeded())
 	{
-		BehaviorTreeDrone = obj2.Object;
+		BehaviorTreeReferences.Push(objDrone.Object);
 		UE_LOG(LogTemp, Warning, TEXT("Drone bt set"));
+	}
+
+	// NPC TREE SET UP
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objNPC(TEXT("BehaviorTree'/Game/Production/NPCs/BT_NPC.BT_NPC'"));
+
+	// If behaviour tree found, set it
+	if (objNPC.Succeeded())
+	{
+		BehaviorTreeReferences.Push(objNPC.Object);
+		UE_LOG(LogTemp, Warning, TEXT("NPC bt set"));
 	}
 	
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
@@ -82,7 +97,7 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 	{
 	case Utilities::EnemyTypes::Melee:
 		{
-			BehaviorTree = BehaviorTreeMelee;
+			BehaviorTree = BehaviorTreeReferences[0];
 
 			//UE_LOG(LogTemp, Warning, TEXT("MELEE"));
 			
@@ -90,10 +105,16 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 		}
 	case Utilities::EnemyTypes::Drone:
 		{
-			BehaviorTree = BehaviorTreeDrone;
+			BehaviorTree = BehaviorTreeReferences[1];
 			
 			//UE_LOG(LogTemp, Warning, TEXT("DRONE"));
 
+			break;
+		}
+	case Utilities::EnemyTypes::NPC:
+		{
+			BehaviorTree = BehaviorTreeReferences[2];
+			UE_LOG(LogTemp, Warning, TEXT("NPC"));
 			break;
 		}
 	}

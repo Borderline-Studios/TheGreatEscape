@@ -45,6 +45,7 @@ protected:
 	class UBehaviorTree* BehaviorTreeDrone;
 	class UBehaviorTree* BehaviorTree;
 
+	static TArray<UBehaviorTree*> BehaviorTreeReferences;
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))

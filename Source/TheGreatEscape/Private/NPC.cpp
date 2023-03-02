@@ -13,8 +13,11 @@
 
 #include "NPC.h"
 
+#include "EnemyReworkController.h"
+
 ANPC::ANPC()
 {
+	//npc
 }
 
 void ANPC::PossessedBy(AController* NewController)
@@ -26,12 +29,12 @@ void ANPC::PossessedBy(AController* NewController)
 	if (EnemyController)
 	{
 		//EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
-		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::Melee);
-		//UE_LOG(LogTemp, Warning, TEXT("enemy type set melee"));
+		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::NPC);
+		UE_LOG(LogTemp, Warning, TEXT("enemy type set NPC"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EnemyController cast failed melee"));
+		UE_LOG(LogTemp, Warning, TEXT("EnemyController NPC cast failed is: %s"), *NewController->GetName());
 	}
 }
 

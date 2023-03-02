@@ -30,6 +30,7 @@ namespace Utilities
 	{
 		Melee,
 		Drone,
-		TBD
+		TBD,
+		NPC
 	};
 }
