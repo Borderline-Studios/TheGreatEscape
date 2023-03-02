@@ -2,6 +2,7 @@
 
 
 #include "TrainTrack.h"
+#include "TrainTrackPoint.h"
 
 // Sets default values
 ATrainTrack::ATrainTrack()
@@ -49,6 +50,30 @@ void ATrainTrack::Tick(float DeltaTime)
 
 }
 
+void ATrainTrack::AddToArray(ATrainTrackPoint* NewPoint)
+{
+	if (PointRefs.Find(NewPoint) == INDEX_NONE)
+	{
+		PointRefs.Add(NewPoint);
+		UE_LOG(LogTemp, Warning, TEXT("NewPoint has been added to the Array"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NewPoint is either already in there or has otherwise failed to be added"));
+	}
+}
+
+void ATrainTrack::RemoveFromArray(ATrainTrackPoint* PointToRemove)
+{
+	if (const int RemoveIndex = PointRefs.Find(PointToRemove) != INDEX_NONE)
+	{
+		PointRefs.RemoveAt(RemoveIndex);
+		UE_LOG(LogTemp, Warning, TEXT("Removed From Array"));
+
+		PointRefs.Shrink();
+	}
+}
+
 #if WITH_EDITOR
 void ATrainTrack::PostEditMove(bool bFinished)
 {
@@ -64,11 +89,11 @@ void ATrainTrack::PostEditMove(bool bFinished)
 	// Code only runs here during specific stages of the Editor Move
 	if (!bFinished)	// Only runs during the actual moving of the item
 	{
-	
+		
 	}
 	else			// Only runs at the end of the Move action
 	{
-	
+		
 	}
 }
 

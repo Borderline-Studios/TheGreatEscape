@@ -27,7 +27,8 @@ public:
 
 public:
 	// VARIABLES
-
+	void AddToArray(ATrainTrackPoint* NewPoint);
+	void RemoveFromArray(ATrainTrackPoint* PointToRemove);
 
 	// FUNCTIONS
 
@@ -48,8 +49,9 @@ private:
 	UStaticMeshComponent* StartNotifier;
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* EndNotifier;
-	
-	TArray<ATrainTrackPoint*> StaticMeshRefs;
+
+	UPROPERTY(EditInstanceOnly)
+	TArray<ATrainTrackPoint*> PointRefs;
 
 	
 	// FUNCTIONS
