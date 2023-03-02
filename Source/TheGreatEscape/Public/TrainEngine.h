@@ -11,111 +11,100 @@
 UCLASS()
 class THEGREATESCAPE_API ATrainEngine : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ATrainEngine();
+    GENERATED_BODY()
+    
+public:    
+    // Sets default values for this actor's properties
+    ATrainEngine();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:    
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	// Custom section containing everything added beyond the default Unreal code
-	// Track Changing
-	UPROPERTY(BlueprintReadWrite)
-	bool ShouldChangeTracks = true;
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
-	AActor* TrackActorRef;
+    // Custom section containing everything added beyond the default Unreal code
+    // Track Changing
+    UPROPERTY(BlueprintReadWrite)
+    bool ShouldChangeTracks = true;
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
+    AActor* TrackActorRef;
 
-	// Functions
-	UFUNCTION(BlueprintCallable)
-	bool ChangeTrack(AActor* NewTrack);
+    // Functions
+    UFUNCTION(BlueprintCallable)
+    bool ChangeTrack(AActor* NewTrack);
 
-	UFUNCTION(BlueprintCallable)
-	void GetSplineReferences(TArray<class ASplineTrack*>& Array);
+    UFUNCTION(BlueprintCallable)
+    void GetSplineReferences(TArray<class ASplineTrack*>& Array);
 
-	UFUNCTION(BlueprintCallable)
-	void BPOverrideTrack(AActor* TrackOverride);
-	bool GetTrackOverrideState();
+    UFUNCTION(BlueprintCallable)
+    void BPOverrideTrack(AActor* TrackOverride);
+    bool GetTrackOverrideState();
 
 protected:
 
 
 private:
-	// Structs
-	struct FSplineTraversalParameters
-	{
-		float TimeToTraverse;
-		float LengthToTraverse;
-		float TimeToSwap;
-		float Ratio;
-	};
-	
-	// Variables
-	// Obtaining the spline for the train to follow
-	// UPROPERTY(EditInstanceOnly, BlueprintReadWrite)		// The actor passed in from the editor
-	// AActor* TrackActorRef;
-	USplineComponent* TrackSplineRef;
-	float SplineLength;
-	UPROPERTY(EditInstanceOnly)
-	int TimeToComplete = 30;
-	float TimeSinceStart;
-	bool bHasStartedMoving;
-	bool firstRun = false;
+    // Structs
+    struct FSplineTraversalParameters
+    {
+        float TimeToTraverse;
+        float LengthToTraverse;
+        float TimeToSwap;
+        float Ratio;
+    };
+    
+    // Variables
+    // Obtaining the spline for the train to follow
+    // UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
+    // AActor* TrackActorRef;
+    USplineComponent* TrackSplineRef;
+    float SplineLength;
+    UPROPERTY(EditInstanceOnly)
+    int TimeToComplete = 30;
+    float TimeSinceStart;
+    bool bHasStartedMoving;
+    bool firstRun = false;
 
-	// Creating the timer handle used to start the movement after a short delay
-	FTimerHandle StartMoveTimerHandle;
+    // Creating the timer handle used to start the movement after a short delay
+    FTimerHandle StartMoveTimerHandle;
 
-	// Used to keep track for the lerp
-	float LerpTimer;
-	
-	// Train Creation Functionality
-	UPROPERTY(EditInstanceOnly)
-	float DistanceBetweenCars;
-	float CarriageOffset;
+    // Used to keep track for the lerp
+    float LerpTimer;
+    
+    UPROPERTY(EditInstanceOnly)
+    int StartDelayTime;
 
-	UPROPERTY(EditInstanceOnly)
-	int StartDelayTime;
-	UPROPERTY(EditInstanceOnly)
-	int CarriageCount;
+    float EngineStart;
 
-	TArray<ATrainCarriage*> CarriageRefs;
-	TArray<float> CarriageStartPositions;
+    // Keeping track of the entire track (pun intended)
+    TArray<class ASplineTrack*> CompleteTrackRefs;
 
-	float EngineStart;
+    // Checking if the track has been overridden
+    bool isTrackOverridden = false;
 
-	// Keeping track of the entire track (pun intended)
-	TArray<class ASplineTrack*> CompleteTrackRefs;
+    // Complete Track Information
+    float CompleteSplineLength;
+    TArray<FSplineTraversalParameters> SplineTravelParameters;
 
-	// Checking if the track has been overridden
-	bool isTrackOverridden = false;
+    // Tracking current Spline
+    int CurrentSplineIndex;
+    float CurrentSplineTimeToTraverse;
 
-	// Complete Track Information
-	float CompleteSplineLength;
-	TArray<FSplineTraversalParameters> SplineTravelParameters;
+    // Holds the Shapes used to show the engine
+    USceneComponent* SceneRoot;
 
-	// Tracking current Spline
-	int CurrentSplineIndex;
-	float CurrentSplineTimeToTraverse;
+    UPROPERTY(EditInstanceOnly)
+    UStaticMeshComponent* BoxComp;
 
-	// Holds the Shapes used to show the engine
-	UPROPERTY(EditInstanceOnly)
-	USceneComponent* SceneRoot;
+    UPROPERTY(EditInstanceOnly)
+    UArrowComponent* ArrowComp;
 
-	UPROPERTY(EditInstanceOnly)
-	UStaticMeshComponent* BoxComp;
+    // Track Changing
+    // UPROPERTY(BlueprintReadWrite)
+    // bool ShouldChangeTracks = false;
 
-	UPROPERTY(EditInstanceOnly)
-	UArrowComponent* ArrowComp;
-
-	// Track Changing
-	// UPROPERTY(BlueprintReadWrite)
-	// bool ShouldChangeTracks = false;
-
-	// Functions
+    // Functions
 };
