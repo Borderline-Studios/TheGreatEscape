@@ -3,6 +3,9 @@
 
 #include "TrainTrackPoint.h"
 
+#include "TrainTrack.h"
+#include "Kismet/GameplayStatics.h"
+
 // Static Variable declaration
 TArray<ATrainTrackPoint*> ATrainTrackPoint::StaticArray;
 
@@ -13,16 +16,23 @@ ATrainTrackPoint::ATrainTrackPoint()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Marker = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Position Marker"));
-	Marker->SetupAttachment(RootComponent);
+	RootComponent = Marker;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	Marker->SetStaticMesh(MeshObj.Object);
-	
-	StaticArray.AddUnique(this);
+
+	AActor* ActorCollector = UGameplayStatics::GetActorOfClass(this, ATrainTrack::StaticClass());
+    if (ATrainTrack* TempRef = Cast<ATrainTrack>(ActorCollector))
+    {
+	    TrackRef = TempRef;
+    }
 }
 
 ATrainTrackPoint::~ATrainTrackPoint()
 {
-	StaticArray.RemoveAt(StaticArray.Find(this));
+	if (TrackRef)
+	{
+		TrackRef->RemoveFromArray(this);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -39,8 +49,38 @@ void ATrainTrackPoint::Tick(float DeltaTime)
 
 }
 
+void ATrainTrackPoint::AddToStaticArray()
+{
+	if (TrackRef)
+	{
+		TrackRef->AddToArray(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TrackRef hasn't been populated, destroying this item"));
+	}
+	// if (StaticArray.Find(this) == INDEX_NONE /*&& !IsInPersistentLevel()*/)
+	// {
+	// 	StaticArray.AddUnique(this);
+	//
+	// 	UE_LOG(LogTemp, Warning, TEXT("The Current size of the Static Array is %i"), StaticArray.Num());
+	// 	UE_LOG(LogTemp, Warning, TEXT("The world this item exists in is %s"), *GetWorld()->GetMapName());
+	//
+	// 	for (int i = 0; i < StaticArray.Num(); i++)
+	// 	{
+	// 		UE_LOG(LogTemp, Warning, TEXT("Point #%i exists in world %s"), i, *StaticArray[i]->GetWorld()->GetMapName());
+	// 	}
+	// }
+}
+
 TArray<ATrainTrackPoint*> ATrainTrackPoint::GetStaticArray()
 {
 	return StaticArray;
 }
 
+#if WITH_EDITOR
+void ATrainTrackPoint::PostActorCreated()
+{
+	// AddToStaticArray();
+}
+#endif

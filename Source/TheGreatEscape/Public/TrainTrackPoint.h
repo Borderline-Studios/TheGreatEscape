@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TrainTrackPoint.generated.h"
 
+class ATrainTrack;
 UCLASS()
 class THEGREATESCAPE_API ATrainTrackPoint : public AActor
 {
@@ -27,9 +28,17 @@ public:
 private:
 	UStaticMeshComponent* Marker;
 
+	ATrainTrack* TrackRef;
+
+	void AddToStaticArray();
+
 protected:
 	static TArray<ATrainTrackPoint*> StaticArray;
 
 public:
-	TArray<ATrainTrackPoint*> GetStaticArray();
+	static TArray<ATrainTrackPoint*> GetStaticArray();
+
+#if WITH_EDITOR
+void PostActorCreated();
+#endif
 };
