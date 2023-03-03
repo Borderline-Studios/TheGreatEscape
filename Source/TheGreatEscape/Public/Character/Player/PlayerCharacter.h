@@ -29,6 +29,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ShootMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	bool bIsShooting = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	bool bIsAimDownSights = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	bool bIsIdle = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	bool bIsFanning = false;
+
 	APlayerCharacter();
 
 
