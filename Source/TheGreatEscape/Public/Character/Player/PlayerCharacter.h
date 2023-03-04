@@ -43,6 +43,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
 	bool bIsFanning = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	bool bIsReloading = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	int PlayerAmmo = 6;
 
 	APlayerCharacter();
 

@@ -22,44 +22,48 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if(GEngine)
+	if(GetPlayerReferance()->PlayerAmmo <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shooting"));
-	}
-
-	GetPlayerReferance()->bIsShooting = true; 
-	FHitResult HitResult;
-
-	FTimerHandle ShootingHandle;
-		GetWorld()->GetTimerManager().SetTimer(ShootingHandle, this, &UQRGA_Shoot::ToggleShooting, 1.0f, false, 0.1f);
-
-	if(GetWorld()->GetTimerManager().TimerExists(ShootingHandle))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shit Real"));
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Nah Dawg"));
-	}
-	
-	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-	                                               GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
-	                                                   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
-	                                                   ECC_Visibility))
-	{
-		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		
-		if(ASC)
+		GetPlayerReferance()->PlayerAmmo--;
+		if(GEngine)
 		{
-			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shooting"));
 		}
-	}
 
+		GetPlayerReferance()->bIsShooting = true; 
+		FHitResult HitResult;
 
+		FTimerHandle ShootingHandle;
+		GetWorld()->GetTimerManager().SetTimer(ShootingHandle, this, &UQRGA_Shoot::ToggleShooting, 1.0f, false, 0.1f);
+
+		if(GetWorld()->GetTimerManager().TimerExists(ShootingHandle))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shit Real"));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Nah Dawg"));
+		}
 	
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
+														   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
+														   ECC_Visibility))
+		{
+			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		
+			if(ASC)
+			{
+				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			}
+		}
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }
 
 void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
