@@ -59,3 +59,9 @@ UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 {
 	return FirstPersonCameraComponent;
 }
+
+APlayerCharacter* APlayerCharacter::GetPlayerReference()
+{
+	APlayerCharacter* PlayerCharacter = this;
+	return PlayerCharacter;
+}

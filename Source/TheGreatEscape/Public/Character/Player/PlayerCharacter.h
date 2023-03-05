@@ -32,22 +32,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ShootMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsShooting = false;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsAimDownSights = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsIdle = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsFanning = false;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsReloading = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation,meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	int PlayerAmmo = 6;
 
 	APlayerCharacter();
@@ -60,7 +60,8 @@ public:
 
 	UCameraComponent* GetFirstPersonCameraComponent();
 
-
+	UFUNCTION(BlueprintCallable)
+	APlayerCharacter* GetPlayerReference();
 
 	APlayerCharacter* GetPlayerController();
 };

@@ -5,7 +5,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "BlueprintNodeHelpers.h"
 #include "ShaderCompiler.h"
-#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
@@ -28,41 +27,33 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 	else
 	{
+		GetPlayerReferance()->bIsShooting = true;
 		GetPlayerReferance()->PlayerAmmo--;
 		if(GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shooting"));
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shooting"));
 		}
-
-		GetPlayerReferance()->bIsShooting = true; 
 		FHitResult HitResult;
-
-		FTimerHandle ShootingHandle;
-		GetWorld()->GetTimerManager().SetTimer(ShootingHandle, this, &UQRGA_Shoot::ToggleShooting, 1.0f, false, 0.1f);
-
-		if(GetWorld()->GetTimerManager().TimerExists(ShootingHandle))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shit Real"));
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Nah Dawg"));
-		}
-	
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 														   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
 														   ECC_Visibility))
 		{
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		
+	
 			if(ASC)
 			{
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}
 		}
+	}
+	
+	if (!GetPlayerReferance()->bIsShooting)
+	{
+		GetPlayerReferance()->bIsShooting = false;
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+
 	}
 }
 
