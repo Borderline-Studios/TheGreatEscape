@@ -25,11 +25,16 @@ public:
 
 	void ToggleShooting();
 	APlayerCharacter* GetPlayerReferance();
+	
 	FTimerHandle ShootHandle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Animation)
+	UAnimMontage* AM_Fire;
 
+	UFUNCTION()
+	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 };
 

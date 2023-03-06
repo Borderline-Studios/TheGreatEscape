@@ -16,8 +16,10 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	GetPlayerReferance()->PlayerAmmo = 6;
 
-
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+	GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+	
+	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Reload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -37,4 +39,17 @@ APlayerCharacter* UQRGA_Reload::GetPlayerReferance()
 {
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	return CharacterRef;
+}
+
+void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Noti Received"));
+	
+	if (NotifyName == FName("FinishedReload"))
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Is Finished Firing"));
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	
 }
