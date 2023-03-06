@@ -20,19 +20,17 @@ UQRGA_Shoot::UQRGA_Shoot()
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	if(GetPlayerReferance()->PlayerAmmo <= 0)
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	else
 	{
-		GetPlayerReferance()->bIsShooting = true;
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		GetPlayerReferance()->PlayerAmmo--;
-		if(GEngine)
-		{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shooting"));
-		}
+		
 		FHitResult HitResult;
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
@@ -40,7 +38,6 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 														   ECC_Visibility))
 		{
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-	
 			if(ASC)
 			{
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
@@ -49,12 +46,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		}
 	}
 	
-	if (!GetPlayerReferance()->bIsShooting)
-	{
-		GetPlayerReferance()->bIsShooting = false;
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-
-	}
+	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -67,11 +59,6 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 void UQRGA_Shoot::ToggleShooting()
 {
-	GetPlayerReferance()->bIsShooting = false;
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Shit Poo Ass"));
-	}
 }
 
 
@@ -79,6 +66,18 @@ APlayerCharacter* UQRGA_Shoot::GetPlayerReferance()
 {
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	return CharacterRef;
+}
+
+void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Noti Received"));
+	
+	if (NotifyName == FName("FinishedFire"))
+	{
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Is Finished Firing"));
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }
 
 bool UQRGA_Shoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
