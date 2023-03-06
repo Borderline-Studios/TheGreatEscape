@@ -14,6 +14,7 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	GetPlayerReferance()->PlayerAmmo = 0;
 	GetPlayerReferance()->PlayerAmmo = 6;
 
 	GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
@@ -43,12 +44,8 @@ APlayerCharacter* UQRGA_Reload::GetPlayerReferance()
 
 void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Noti Received"));
-	
 	if (NotifyName == FName("FinishedReload"))
 	{
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Is Finished Firing"));
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	

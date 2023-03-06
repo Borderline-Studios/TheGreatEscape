@@ -12,9 +12,14 @@
 
 
 #include "BehaviourTree/BTTask_MeleeAttack.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnemyReworkController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Character/BASE/GASBASECharacter.h"
 #include "Character/QRCharacter.h"
+
+
 
 UBTTask_MeleeAttack::UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer)
 {
@@ -38,12 +43,15 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				// Get player character & Enemy AI controller
 				//ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 
-				AQRCharacter* PlayerChar = Cast<AQRCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 				
 				if (PlayerChar)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("atac"));
-					//Enemy->Attack();
+					
+					// call attack
+					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
+					
 					bCanAttack = false;
 					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
 					//UE_LOG(LogTemp, Warning, TEXT("Cast to ACharacter is: %s"), *PlayerChar->GetName())
