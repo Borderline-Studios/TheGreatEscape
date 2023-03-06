@@ -12,6 +12,8 @@
 
 
 #include "EnemyRework.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 
@@ -56,12 +58,29 @@ void AEnemyRework::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+
+	bool bFound;
+	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), bFound);
+
+	if (bFound)
+	{
+		if (Value <= 0)
+		{
+			// die
+			UE_LOG(LogTemp, Warning, TEXT("die"));
+			Destroy();
+		}
+	}
+	
+
 }
 
 void AEnemyRework::Attack()
 {
 	
 	//TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle);
+
 	
 	// Attack code
 	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
