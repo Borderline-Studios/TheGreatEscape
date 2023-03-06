@@ -13,6 +13,8 @@
 
 #include "Character/Abilities/QRGA_MeleeEnemyAttack.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+
 UQRGA_MeleeEnemyAttack::UQRGA_MeleeEnemyAttack()
 {
 }
@@ -22,6 +24,21 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+
+	FHitResult HitResult;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, GetEnemyRef()->GetActorLocation(), GetEnemyRef()->GetActorLocation() +
+		GetEnemyRef()->GetActorForwardVector() * 500, ECC_Visibility))
+	{
+		// attac
+		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		if(ASC)
+		{
+			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+		}
+	}
+	
 }
 
 void UQRGA_MeleeEnemyAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -36,4 +53,10 @@ bool UQRGA_MeleeEnemyAttack::CanActivateAbility(const FGameplayAbilitySpecHandle
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+AEnemyRework* UQRGA_MeleeEnemyAttack::GetEnemyRef()
+{
+	AEnemyRework* Enemy = Cast<AEnemyRework>(GetAvatarActorFromActorInfo());
+	return Enemy;
 }

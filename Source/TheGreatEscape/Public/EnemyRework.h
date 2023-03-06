@@ -45,7 +45,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Attack();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayAbility> QRGAAttack;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//FGameplayAbilitySpecHandle* QRQAAttackSpecHandle;
+		
 
 private:
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
