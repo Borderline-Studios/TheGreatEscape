@@ -3,6 +3,8 @@
 
 #include "Train/Tracks/TrainTrackParent.h"
 
+ATrainTrackStart* ATrainTrackParent::StartRef;
+
 // Sets default values
 ATrainTrackParent::ATrainTrackParent()
 {
@@ -25,5 +27,10 @@ void ATrainTrackParent::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+const USplineComponent* ATrainTrackParent::GetSpline() const
+{
+	return Spline;
 }
 

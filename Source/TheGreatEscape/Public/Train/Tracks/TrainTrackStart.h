@@ -26,5 +26,27 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	UStaticMeshComponent* StartMarker;
+
+	UPROPERTY(VisibleInstanceOnly)
+	/*static*/ TArray<ATrainTrackMiddle*> MiddleRefs;
+
+	bool MarkedForDeath = false;
+
+	// FUNCTIONS
+	// Standard Functions
+	void BeginDestroy() override;
+	
+	// Editor Functions
+#if WITH_EDITOR
+	virtual void PostEditMove(bool bFinished) override;
+#endif
+protected:
+
+
+public:
+	void AddToArray(ATrainTrackMiddle* NewTrackRef);
+	void RemoveFromArray(ATrainTrackMiddle* NewTrackRef);
 	
 };

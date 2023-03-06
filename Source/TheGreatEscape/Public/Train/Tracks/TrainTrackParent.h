@@ -51,7 +51,7 @@ public:
 
 
 	// FUNCTIONS
-
+	virtual const USplineComponent* GetSpline() const;
 	
 
 	
