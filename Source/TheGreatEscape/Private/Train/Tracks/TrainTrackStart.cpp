@@ -34,6 +34,41 @@ void ATrainTrackStart::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ATrainTrackStart::ResizeArray()
+{
+	if (MiddleRefs.IsEmpty()) return;
+	
+	TArray<int> Empty;
+	TArray<int> Populated;
+
+	for (int i = 0; i < MiddleRefs.Num(); i++)
+	{
+		if (MiddleRefs[i] == nullptr)
+		{
+			Empty.Push(i);
+		}
+		else
+		{
+			Populated.Push(i);
+		}
+	}
+
+	if (Empty.IsEmpty()) return;
+
+	for (int i = 0; i < Populated.Num(); i++)
+	{
+		if (Empty.IsValidIndex(i) && Populated.IsValidIndex(i))
+		{
+			MiddleRefs.Swap(Empty[i], Populated[i]);
+		}
+	}
+
+	for (int i = 0; i < Empty.Num(); i++)
+	{
+		MiddleRefs.Pop();
+	}
+}
+
 void ATrainTrackStart::BeginDestroy()
 {
 	Super::BeginDestroy();
@@ -55,7 +90,7 @@ void ATrainTrackStart::PostEditMove(bool bFinished)
 
 void ATrainTrackStart::AddToArray(ATrainTrackMiddle* NewTrackRef)
 {
-	MiddleRefs.Shrink();
+	ResizeArray();
 	MiddleRefs.AddUnique(NewTrackRef);
 }
 

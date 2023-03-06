@@ -31,54 +31,11 @@ private:
 	// VARIABLES
 	UPROPERTY(EditInstanceOnly)
 	bool IsSnappingEnabled = true;
-
-	// UPROPERTY(VisibleInstanceOnly)
-	USphereComponent* StartCollider;
-	USphereComponent* EndCollider;
-
-	// ATrainTrackParent* SnappingTarget;
-	// bool isCurrentlyOverlapping = false;
 	
 	// FUNCTIONS
 	void PopulateStartRef();
 
-	// UFUNCTION()
-	void OnStartSphereBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult &SweepResult
-		);
-
-	// UFUNCTION()
-	void OnStartSphereEndOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-		);
-
-	// UFUNCTION()
-	void OnEndSphereBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult &SweepResult
-		);
-
-	// UFUNCTION()
-	void OnEndSphereEndOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-		);
-
-	void BeginDestroy() override;
+	// void BeginDestroy() override;
 	
 	// Editor Functions
 #if WITH_EDITOR
@@ -86,9 +43,8 @@ private:
 	virtual void PostEditUndo() override;
 #endif	
 protected:
-	ATrainTrackParent* SnappingTarget;
-	bool isCurrentlyOverlapping = false;
 
+	
 public:
 
 	

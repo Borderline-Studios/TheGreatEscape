@@ -36,6 +36,7 @@ private:
 
 	// FUNCTIONS
 	// Standard Functions
+	void ResizeArray();
 	void BeginDestroy() override;
 	
 	// Editor Functions
