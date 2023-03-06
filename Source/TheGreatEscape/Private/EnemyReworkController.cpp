@@ -23,6 +23,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"
 #include "Character/QRCharacter.h"
+#include "Character/Player/PlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 TArray<UBehaviorTree*> AEnemyReworkController::BehaviorTreeReferences;
@@ -124,7 +125,7 @@ void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const s
 {
 	//UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
 
-	auto const character = Cast<AQRCharacter>(actor);
+	auto const character = Cast<APlayerCharacter>(actor);
 	
 	if (character)
 	{

@@ -43,7 +43,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				// Get player character & Enemy AI controller
 				//ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 
-				AQRCharacter* PlayerChar = Cast<AQRCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 				
 				if (PlayerChar)
 				{
