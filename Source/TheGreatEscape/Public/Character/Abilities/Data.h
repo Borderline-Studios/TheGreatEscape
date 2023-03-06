@@ -16,4 +16,5 @@ enum class EGASAbilityInputID : uint8
 	EAbility,
 	Interact,
 	DroneShoot,
+	MeleeEnemyAttack,
 };

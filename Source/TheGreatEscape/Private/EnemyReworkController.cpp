@@ -133,7 +133,7 @@ void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const s
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player things name: %s"), *actor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("Player things name: %s"), *actor->GetName());
 	}
 }
 
