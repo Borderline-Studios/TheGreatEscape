@@ -73,7 +73,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float TurnRateGamepad;
 
-public:	
+public:
+
+	float SprintMod = 1.0f;
 
 	/** Handles moving forward/backward */
 	virtual  void MoveForward(float Val);
@@ -97,5 +99,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+
+	virtual void SetSprintMod(float InVal);
 
 };

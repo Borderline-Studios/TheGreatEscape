@@ -65,6 +65,7 @@ void AGASBASECharacter::AddStartupGameplayAbilities()
 		//Grant Abilities, but only on Server
 		for(TSubclassOf<UQRGameplayAbility>& StartupAbility : GameplayAbilities)
 		{
+			if(StartupAbility)
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
 				StartupAbility, 1,
 				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
@@ -93,6 +94,11 @@ UAbilitySystemComponent* AGASBASECharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AGASBASECharacter::SetSprintMod(float InVal)
+{
+	SprintMod = InVal;
+}
+
 // Called when the game starts or when spawned
 void AGASBASECharacter::BeginPlay()
 {
@@ -112,7 +118,7 @@ void AGASBASECharacter::MoveForward(float Val)
 	if (Val != 0.0f)
 	{
 		// add movement in that direction
-		AddMovementInput(GetActorForwardVector(), Val);
+		AddMovementInput(GetActorForwardVector(), Val * SprintMod);
 	}
 }
 
@@ -121,7 +127,7 @@ void AGASBASECharacter::MoveRight(float Val)
 	if (Val != 0.0f)
 	{
 		// add movement in that direction
-		AddMovementInput(GetActorRightVector(), Val);
+		AddMovementInput(GetActorRightVector(), Val * SprintMod);
 	}
 }
 

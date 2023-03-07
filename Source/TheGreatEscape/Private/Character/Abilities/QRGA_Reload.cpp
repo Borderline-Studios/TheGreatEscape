@@ -8,6 +8,10 @@
 UQRGA_Reload::UQRGA_Reload()
 {
 	AbilityInputID = EGASAbilityInputID::Reload;
+
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Reload")));
+
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Shoot")));
 }
 
 void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

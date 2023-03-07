@@ -19,12 +19,14 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetPlayerReferance());
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interact acti!"));	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 												   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
-													   ECC_Visibility))
+													   ECC_Visibility, Params))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Something Hit!"));
 		
@@ -32,7 +34,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interactable!"));
 			HitResult.GetActor()->SetActorEnableCollision(false);
-			HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::KeepRelativeTransform , NAME_None);
+			HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 			ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor());
 			if(HitResult.GetActor() == BatteryInteractableRef)
 			{
@@ -45,13 +47,13 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			}
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
-		
 		else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Not Interactable!"));
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
 	}
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
