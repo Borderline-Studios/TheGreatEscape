@@ -7,8 +7,8 @@
 //
 // File Name   : EnemyReworkController.cpp
 // Description : Custom ai controller
-// Author      :  Borderline Studios - Toni Natta
-// Mail        :  toni.natta@mds.ac.nz
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 
 #include "EnemyReworkController.h"
@@ -20,17 +20,19 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "BehaviourTree/BlackboardKeys.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "Runtime/Engine/Classes/Engine/World.h"
 #include "GameFramework/Character.h"
-#include "Character/QRCharacter.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
+// Set up static array
 TArray<UBehaviorTree*> AEnemyReworkController::BehaviorTreeReferences;
 
+/**
+ * @brief constructor, set up references
+ * @param ObjectInitializer  Finalise creation after c++ constructor is called
+ */
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-
 	// MELEE ENEMY TREE SET UP
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objMelee(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
 
@@ -60,13 +62,18 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 		BehaviorTreeReferences.Push(objNPC.Object);
 		UE_LOG(LogTemp, Warning, TEXT("NPC bt set"));
 	}
-	
+
+	// initalise the behaviour tree comp and blackboard
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
 
+	// call set up for perception system
 	SetupPerceptionSystem();
 }
 
+/**
+ * @brief Runs & starts the behaviour tree 
+ */
 void AEnemyReworkController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -75,72 +82,84 @@ void AEnemyReworkController::BeginPlay()
 	BehaviorTreeComponent->StartTree(*BehaviorTree);
 }
 
+/**
+ * @brief init the blackboard
+ * @param InPawn pawn its possessing
+ */
 void AEnemyReworkController::OnPossess(APawn* const InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	// if blackboard is not nullptr init it
 	if (Blackboard)
 	{
 		Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	}
 }
 
+/**
+ * @brief returns blackboard
+ * @return blackboard
+ */
 UBlackboardComponent* AEnemyReworkController::GetBlackboard() const
 {
 	return Blackboard;
 }
 
+/**
+ * @brief Sets up the behaviour tree depending on what type of enemy it is
+ * @param EEnemyType Takes in what type of enemy it is
+ */
 void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 {
-	//AEnemyRework* Enemy = 
-	// UGameplayStatics::GetActorOfClass(this, AQRCharacter::StaticClass())
+	// check all enemy types
 	switch (EEnemyType)
 	{
-	case Utilities::EnemyTypes::Melee:
+	case Utilities::EnemyTypes::Melee: // MELEE
 		{
 			BehaviorTree = BehaviorTreeReferences[0];
-
 			//UE_LOG(LogTemp, Warning, TEXT("MELEE"));
-			
 			break;
 		}
-	case Utilities::EnemyTypes::Drone:
+	case Utilities::EnemyTypes::Drone: // DRONE
 		{
 			BehaviorTree = BehaviorTreeReferences[1];
-			
 			//UE_LOG(LogTemp, Warning, TEXT("DRONE"));
-
 			break;
 		}
-	case Utilities::EnemyTypes::NPC:
+	case Utilities::EnemyTypes::NPC: // NPC
 		{
 			BehaviorTree = BehaviorTreeReferences[2];
-			UE_LOG(LogTemp, Warning, TEXT("NPC"));
+			//UE_LOG(LogTemp, Warning, TEXT("NPC"));
 			break;
 		}
 	}
 }
 
+/**
+ * @brief When the target becomes seen
+ * @param actor actor seen
+ * @param stimulus what sense has been used
+ */
 void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const stimulus)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("TARGET DETECTED"));
-
+	// check if seen actor is the player
 	auto const character = Cast<APlayerCharacter>(actor);
-	
+
+	// if it is, change a bool in the blackboard
 	if (character)
 	{
 		GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
-		//UE_LOG(LogTemp, Warning, TEXT("sensed"));
 	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Player things name: %s"), *actor->GetName());
-	}
+
 }
 
+/**
+ * @brief Sets up the perception system
+ */
 void AEnemyReworkController::SetupPerceptionSystem()
 {
-	// Create and initalise sight config object
+	// Create and initalises sight config object
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Conifg"));
 	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 	SightConfig->SightRadius = 2000.0f;

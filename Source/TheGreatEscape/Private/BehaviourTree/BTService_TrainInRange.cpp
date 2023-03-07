@@ -26,7 +26,7 @@ UBTService_TrainInRange::UBTService_TrainInRange()
 }
 
 /**
- * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @brief When the helper node becomes relevant it checks if the train is within a specified range of the drone 
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  */

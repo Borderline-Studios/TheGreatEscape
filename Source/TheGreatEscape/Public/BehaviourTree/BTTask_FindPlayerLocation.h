@@ -18,7 +18,7 @@
 #include "BTTask_FindPlayerLocation.generated.h"
 
 /**
- * 
+ * Task to Finds the players location
  */
 UCLASS(Blueprintable)
 class THEGREATESCAPE_API UBTTask_FindPlayerLocation : public UBTTask_BlackboardBase
@@ -26,13 +26,15 @@ class THEGREATESCAPE_API UBTTask_FindPlayerLocation : public UBTTask_BlackboardB
 	GENERATED_BODY()
 
 public:
-	UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer);
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer); // constructor
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 
 protected:
+	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowProtectedAccess = "true"))
-	bool bSearchRandom = false;
+	bool bSearchRandom = false; // Is searching for random point
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowProtectedAccess = "true"))
-	float SearchRadius = 150.0f;
+	float SearchRadius = 150.0f; // Radius to search
 };

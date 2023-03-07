@@ -7,8 +7,8 @@
 //
 // File Name   : EnemyReworkController.h
 // Description : Custom ai controller
-// Author      :  Borderline Studios - Toni Natta
-// Mail        :  toni.natta@mds.ac.nz
+// Author      : Borderline Studios - Toni Natta
+// Mail        : Toni.natta@mds.ac.nz
 
 #pragma once
 
@@ -19,7 +19,7 @@
 #include "EnemyReworkController.generated.h"
 
 /**
- * 
+ * Custom AI controller for the enemies & NPC
  */
 UCLASS()
 class THEGREATESCAPE_API AEnemyReworkController : public AAIController
@@ -27,36 +27,34 @@ class THEGREATESCAPE_API AEnemyReworkController : public AAIController
 	GENERATED_BODY()
 
 public:
-	AEnemyReworkController(FObjectInitializer const& ObjectInitializer = FObjectInitializer::Get());
-	void BeginPlay() override;
-	void OnPossess(APawn* const InPawn) override;
-	class UBlackboardComponent* GetBlackboard() const;
-
-	void SetBehaviourTree(Utilities::EnemyTypes EEnemyType);
-	
-	//Utilities::EnemyTypes EEnemyType = Utilities::EnemyTypes::Melee;
-
-	
+	// *** Functions *** ///
+	AEnemyReworkController(FObjectInitializer const& ObjectInitializer = FObjectInitializer::Get()); // constructor
+	void BeginPlay() override; // begin play
+	void OnPossess(APawn* const InPawn) override; // On possess
+	class UBlackboardComponent* GetBlackboard() const; // Get the blackboard
+	void SetBehaviourTree(Utilities::EnemyTypes EEnemyType); // Set the behaviour tree
+		
 
 protected:
-
+	// *** Variables *** ///
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	class UBehaviorTree* BehaviorTreeMelee;
-	class UBehaviorTree* BehaviorTreeDrone;
-	class UBehaviorTree* BehaviorTree;
+	class UBehaviorTree* BehaviorTree; // Behaviour tree ref
 
-	static TArray<UBehaviorTree*> BehaviorTreeReferences;
+	static TArray<UBehaviorTree*> BehaviorTreeReferences; // Array of different tree references
 
 private:
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	class UBehaviorTreeComponent* BehaviorTreeComponent;
-
-	class UBlackboardComponent* Blackboard;
-
-	class UAISenseConfig_Sight* SightConfig;
-
+	// *** Functions *** ///
 	UFUNCTION()
-	void OnTargetDetected(AActor* actor, FAIStimulus const stimulus);
-	void SetupPerceptionSystem();
+	void OnTargetDetected(AActor* actor, FAIStimulus const stimulus); // On target detected
+	void SetupPerceptionSystem(); // Sets up the perception system
+
+	// *** Variables *** ///
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	class UBehaviorTreeComponent* BehaviorTreeComponent; // Behaviour tree component
+
+	class UBlackboardComponent* Blackboard; // Blackboard
+
+	class UAISenseConfig_Sight* SightConfig; // Sight sense config
+	
 	
 };

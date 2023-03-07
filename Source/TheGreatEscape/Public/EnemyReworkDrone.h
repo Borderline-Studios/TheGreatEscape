@@ -18,7 +18,7 @@
 #include "EnemyReworkDrone.generated.h"
 
 /**
- * 
+ * Enemy Drone
  */
 UCLASS()
 class THEGREATESCAPE_API AEnemyReworkDrone : public AEnemyRework
@@ -26,7 +26,7 @@ class THEGREATESCAPE_API AEnemyReworkDrone : public AEnemyRework
 	GENERATED_BODY()
 
 public:
-	AEnemyReworkDrone();
-
-	virtual void PossessedBy(AController* NewController) override;
+	// *** Functions *** ///
+	AEnemyReworkDrone(); // constructor
+	virtual void PossessedBy(AController* NewController) override; // possessed by
 };

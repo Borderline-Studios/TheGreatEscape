@@ -15,18 +15,26 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "EnemyReworkController.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_FindPlayerLocation::UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Find Player Location");
 }
 
+/**
+ * @brief When node is executed it finds a random location based on players location
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// Get player character & Enemy AI controller
@@ -40,23 +48,9 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 		// Get player location
 		FVector const PlayerLocation = player->GetActorLocation();
 
-		// If searching for random point
-		//if (bSearchRandom)
-		//{
-			//FNavLocation Location;
-
-			// Get nav system and generate random location near the player
-			//UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-			//if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, SearchRadius, Location, nullptr))
-			//{
-				//AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
-			//}
-		//}
-		//else // set location as player location
-		//{
-			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
-		//}
-
+		// Update bb key
+		AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+		
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	
@@ -66,6 +60,5 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 	// Log warning that cast failed and finish task
 	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
 	return EBTNodeResult::Failed;
 }

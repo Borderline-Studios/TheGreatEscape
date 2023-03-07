@@ -27,7 +27,7 @@ UBTTask_DroneAttack::UBTTask_DroneAttack(FObjectInitializer const& ObjectInitial
 }
 
 /**
- * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @brief When node is executed it attacks the train
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  * @return result of the node (successful or not)

@@ -16,7 +16,7 @@
 #include "EnemyReworkController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Character/BASE/GASBASECharacter.h"
-#include "Character/QRCharacter.h"
+#include "Character/Player/PlayerCharacter.h"
 
 /**
  * @brief constructor, name the node
@@ -28,7 +28,7 @@ UBTTask_MeleeAttack::UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitial
 }
 
 /**
- * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @brief When the helper node becomes relevant it attacks the player
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  * @return result of the node (successful or not)

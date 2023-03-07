@@ -44,7 +44,7 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 		}
 	}
-	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
 	
 }
 

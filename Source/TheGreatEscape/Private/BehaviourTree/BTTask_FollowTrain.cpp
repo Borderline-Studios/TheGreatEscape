@@ -14,41 +14,55 @@
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "BehaviourTree/BlackboardKeys.h"
 #include "TrainEngine.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_FollowTrain::UBTTask_FollowTrain(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Follow Train");
 }
 
+/**
+ * @brief When node is executed it follows the train
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// get controller
 	AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
 	// If ai controller not empty
 	if (AIController)
 	{
+		// get train engine
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
+		// get enemy
 		APawn* const Enemy = AIController->GetPawn();
-		
+
+		// if train not nullptr
 		if (Train)
 		{
+			// locations
 			FVector TrainLocation = Train->GetActorLocation();
-
 			FVector EnemyLocation = Enemy->GetActorLocation();
 
+			// find direction
 			FVector direction = FVector(TrainLocation.X, TrainLocation.Y, TrainLocation.Z + EvelvationHeight) - EnemyLocation;
 
+			// multiple direction by speed
 			direction *= Speed;
-			
+
+			// set velocity of enemy
 			Enemy->GetMovementComponent()->Velocity = direction;
-			
-			// move to player location
-			//UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TrainLocation);			
+	
 		}
 		else
 		{

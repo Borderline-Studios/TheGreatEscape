@@ -17,7 +17,7 @@
 #include "BTTask_NPCMoveToNode.generated.h"
 
 /**
- * 
+ *  Task to move NPC to next node
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_NPCMoveToNode : public UBTTask_BlackboardBase
@@ -25,11 +25,13 @@ class THEGREATESCAPE_API UBTTask_NPCMoveToNode : public UBTTask_BlackboardBase
 	GENERATED_BODY()
 
 public:
-	UBTTask_NPCMoveToNode(FObjectInitializer const& ObjectInitializer);
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_NPCMoveToNode(FObjectInitializer const& ObjectInitializer); // constructor
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called 
 
 private:
+	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float AcceptanceRadius = 50.0f;
+	float AcceptanceRadius = 50.0f; // Radius it can accept
 	
 };
