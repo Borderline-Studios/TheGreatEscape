@@ -33,10 +33,12 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReferance()->PlayerAmmo--;
 		
 		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(GetPlayerReferance());
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 														   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
-														   ECC_Visibility))
+														   ECC_Visibility, Params))
 		{
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 			if(ASC)

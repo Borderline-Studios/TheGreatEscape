@@ -6,6 +6,7 @@
 #include "QRGameplayAbility.h"
 #include "QRGA_Interact.generated.h"
 
+class APlayerCharacter;
 /**
  * 
  */
@@ -20,6 +21,4 @@ class THEGREATESCAPE_API UQRGA_Interact : public UQRGameplayAbility
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	
 	APlayerCharacter* GetPlayerReferance();
-	AActor* GetPLayerActor();
-	
 };
