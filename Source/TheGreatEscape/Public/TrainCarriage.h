@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "TrainCarriage.generated.h"
 
+class USplineComponent;
 UCLASS()
 class THEGREATESCAPE_API ATrainCarriage : public AActor
 {
@@ -16,28 +17,20 @@ public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
 
-	ATrainCarriage(int AssignedNumber);
-	
-	// // Sets default values for this actor's properties
-	// explicit ATrainCarriage(int AssignedNumber);
-	
+	void InitialiseFromEngine(int CarriageNum, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// VARIABLES
-	int CurrentSplineIndex;
-	class USplineComponent* TrackSplineRef;
 	
 	// FUNCTIONS
-	void SetCarriageNumber(int AssignedNumber);
-	bool ChangeTrack(AActor* NewTrack);
+	void ProcessMovement(float EngineSplineDist);
 	
 private:
 	// VARIABLES
@@ -51,6 +44,11 @@ private:
 
 	UPROPERTY(EditInstanceOnly)
 	UArrowComponent* Arrow;
+
+	// inline static TStaticArray<int, 4> CarriageDistances = TStaticArray<int, 4>(EInPlace::InPlace, 1800);
+	float DistanceFromFront = 0;
+
+	USplineComponent* SplineRef;
 
 	// FUNCTIONS
 	// // Sets default values for this actor's properties

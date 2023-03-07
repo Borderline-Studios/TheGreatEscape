@@ -48,15 +48,6 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SetTrainSpeed(TrainSpeed NewSpeed);
-    // UFUNCTION(BlueprintCallable)
-    // bool ChangeTrack(AActor* NewTrack);
-    //
-    // UFUNCTION(BlueprintCallable)
-    // void GetSplineReferences(TArray<class ASplineTrack*>& Array);
-    //
-    // UFUNCTION(BlueprintCallable)
-    // void BPOverrideTrack(AActor* TrackOverride);
-    // bool GetTrackOverrideState();
 
 protected:
 
@@ -73,42 +64,21 @@ private:
     
     // Variables
     // Obtaining the spline for the train to follow
-    // UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
-    // AActor* TrackActorRef;
     USplineComponent* TrackSplineRef;
     float SplineLength;
     UPROPERTY(EditInstanceOnly)
     int TimeToComplete = 30;
+    UPROPERTY(EditInstanceOnly)
+    int StartDelayTime;
+    
     float TimeSinceStart;
-    bool bHasStartedMoving;
+    bool bHasStartedMoving = false;
     bool firstRun = false;
     bool isTrainMoving = true;
     float TrainSpeedModifier = 1.0f;
-
-    // Creating the timer handle used to start the movement after a short delay
-    FTimerHandle StartMoveTimerHandle;
-
-    // Used to keep track for the lerp
-    float LerpTimer;
     
-    UPROPERTY(EditInstanceOnly)
-    int StartDelayTime;
-
-    float EngineStart;
-
     // Keeping track of the entire track (pun intended)
     TArray<class ASplineTrack*> CompleteTrackRefs;
-
-    // Checking if the track has been overridden
-    bool isTrackOverridden = false;
-
-    // Complete Track Information
-    float CompleteSplineLength;
-    TArray<FSplineTraversalParameters> SplineTravelParameters;
-
-    // Tracking current Spline
-    int CurrentSplineIndex;
-    float CurrentSplineTimeToTraverse;
 
     // Holds the Shapes used to show the engine
     USceneComponent* SceneRoot;
@@ -119,9 +89,13 @@ private:
     UPROPERTY(EditInstanceOnly)
     UArrowComponent* ArrowComp;
 
-    // Track Changing
-    // UPROPERTY(BlueprintReadWrite)
-    // bool ShouldChangeTracks = false;
+    // CARRIAGE HANDLING SECTION
+    static TStaticArray<UStaticMesh*, 4> StaticMeshRefs;
+    TArray<ATrainCarriage*> CarriageRefs;
+    UPROPERTY(EditInstanceOnly)
+    int CarriageCount = 0;
+
+    float EngineStart = 0;
 
     // Functions
 };
