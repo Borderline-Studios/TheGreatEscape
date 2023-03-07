@@ -55,13 +55,13 @@ void ATrainEngine::BeginPlay()
 		SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 		SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 	}
-
+	
 	FTimerHandle TrainStartHandle;
 	GetWorld()->GetTimerManager().SetTimer(TrainStartHandle, [&]()
 	{
 		bHasStartedMoving = true;
 		isTrainMoving = true;
-	}, StartDelayTime, false);
+	}, (StartDelayTime >= 1) ? StartDelayTime : 0.1f, false);
 
 	//GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
 }
@@ -76,7 +76,7 @@ void ATrainEngine::Tick(float DeltaTime)
     {
     	if (isTrainMoving)
     	{
-    		TimeSinceStart += DeltaTime;
+    		TimeSinceStart += (DeltaTime * TrainSpeedModifier);
     	}
     	
 	    const float TimerTrack = TimeSinceStart / TimeToComplete;
@@ -137,6 +137,25 @@ void ATrainEngine::Tick(float DeltaTime)
 void ATrainEngine::ToggleTrainStop()
 {
 	isTrainMoving = !isTrainMoving;
+}
+
+void ATrainEngine::SetTrainSpeed(TrainSpeed NewSpeed)
+{
+	switch (NewSpeed)
+	{
+	case TrainSpeed::Slow:
+		TrainSpeedModifier = 0.5f;
+		break;
+	case TrainSpeed::Standard:
+		TrainSpeedModifier = 1.0f;
+		break;
+	case TrainSpeed::Fast:
+		TrainSpeedModifier = 2.0f;
+		break;
+	default:
+		TrainSpeedModifier = 1.0f;
+		break;
+	}
 }
 
 // bool ATrainEngine::ChangeTrack(AActor* NewTrack)

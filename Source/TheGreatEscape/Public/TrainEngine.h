@@ -8,6 +8,15 @@
 #include "TrainCarriage.h"
 #include "TrainEngine.generated.h"
 
+// Enums
+UENUM(BlueprintType)
+enum class TrainSpeed : uint8
+{
+    Slow,
+    Standard,
+    Fast
+};
+
 UCLASS()
 class THEGREATESCAPE_API ATrainEngine : public AActor
 {
@@ -26,6 +35,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     // Custom section containing everything added beyond the default Unreal code
+    
     // Track Changing
     UPROPERTY(BlueprintReadWrite)
     bool ShouldChangeTracks = true;
@@ -35,6 +45,9 @@ public:
     // Functions
     UFUNCTION(BlueprintCallable)
     void ToggleTrainStop();
+
+    UFUNCTION(BlueprintCallable)
+    void SetTrainSpeed(TrainSpeed NewSpeed);
     // UFUNCTION(BlueprintCallable)
     // bool ChangeTrack(AActor* NewTrack);
     //
@@ -57,14 +70,6 @@ private:
         float TimeToSwap;
         float Ratio;
     };
-
-    // Enums
-    enum TrainSpeed
-    {
-        Slow = 0,
-        Standard,
-        Fast
-    };
     
     // Variables
     // Obtaining the spline for the train to follow
@@ -78,7 +83,7 @@ private:
     bool bHasStartedMoving;
     bool firstRun = false;
     bool isTrainMoving = true;
-    
+    float TrainSpeedModifier = 1.0f;
 
     // Creating the timer handle used to start the movement after a short delay
     FTimerHandle StartMoveTimerHandle;
