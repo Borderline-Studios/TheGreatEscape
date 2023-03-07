@@ -19,22 +19,32 @@
 #include "BehaviourTree/BlackboardKeys.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 
+/**
+ * @brief Constructor, defines the node's name
+ */
 UBTService_NPCInRange::UBTService_NPCInRange()
 {
 	bNotifyBecomeRelevant = true;
 	NodeName = TEXT("Is NPC In Range");
 }
 
+/**
+ * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ */
 void UBTService_NPCInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// Call super
 	Super::OnBecomeRelevant(OwnerComp, NodeMemory);
 	
-	// get Ai controller and enemy
+	// Get Ai controller
 	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	
+
+	// If AIController is not a nullptr
 	if (AIController)
 	{
-		// Get Enemy
+		// Get NPC from the ai controller
 		APawn* const NPC = AIController->GetPawn();
 
 		// Get player character
@@ -42,6 +52,5 @@ void UBTService_NPCInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, 
 
 		// Set bool based on if player is in melee range by finding distance between them
 		AIController->GetBlackboard()->SetValueAsBool(BbKeys::NPCInPlayerRange, NPC->GetDistanceTo(Player) <= PlayerRange);
-		
 	}
 }

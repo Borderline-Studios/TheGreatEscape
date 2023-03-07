@@ -10,7 +10,6 @@
 // Author      : Borderline Studios - Toni Natta
 // Mail        : toni.natta@mds.ac.nz
 
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,7 +17,7 @@
 #include "BTService_TrainInRange.generated.h"
 
 /**
- * 
+ * Service to check a bool
  */
 UCLASS()
 class THEGREATESCAPE_API UBTService_TrainInRange : public UBTService_BlackboardBase
@@ -26,10 +25,12 @@ class THEGREATESCAPE_API UBTService_TrainInRange : public UBTService_BlackboardB
 	GENERATED_BODY()
 
 public:
-	UBTService_TrainInRange();
-	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTService_TrainInRange(); // constructor
+	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // called when node is active
 
 private:
+	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float AttackRange = 600.0f;
+	float AttackRange = 600.0f; // Range drone can attack in
 };

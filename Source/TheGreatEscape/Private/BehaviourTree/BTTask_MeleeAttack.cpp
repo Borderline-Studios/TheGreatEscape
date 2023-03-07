@@ -12,72 +12,76 @@
 
 
 #include "BehaviourTree/BTTask_MeleeAttack.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnemyReworkController.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Character/QRCharacter.h"
 
-
-
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_MeleeAttack::UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Melee Attack");
 }
 
+/**
+ * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// get Ai controller and enemy
+	// get Ai controller
 	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	
+
+	// if AI controller is not nullptr
 	if (AIController)
 	{
-
+		// Get enemy
 		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
-		// Get Enemy
+		
+		// if enemy is not null
 		if (Enemy)
 		{
+			// if can attack
 			if (bCanAttack)
 			{
-				// Get player character & Enemy AI controller
-				//ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
+				// Get player character
 				APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-				
+
+				// if it is the player
 				if (PlayerChar)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("atac"));
 					
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
-					
+
+					// set bool to false and set timer
 					bCanAttack = false;
 					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_MeleeAttack::SetCanAttack, AttackDelay, false);
-					//UE_LOG(LogTemp, Warning, TEXT("Cast to ACharacter is: %s"), *PlayerChar->GetName())
-
 				}
 			}
-			
-		}
-		else
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyRework failed it is: %s"), *Enemy->GetName());
 		}
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	
 		return EBTNodeResult::Succeeded;
 	}
 	
 	// Log warning that cast failed and finish task
 	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
 	return EBTNodeResult::Failed;
 }
 
+/**
+ * @brief Sets the attack bool to true and clears the timer
+ */
 void UBTTask_MeleeAttack::SetCanAttack()
 {
 	// can attack
