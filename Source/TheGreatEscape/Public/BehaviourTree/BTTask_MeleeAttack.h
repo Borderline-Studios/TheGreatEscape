@@ -15,12 +15,11 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "EnemyRework.h"
-#include "QRGameplayAbility.h"
 #include "BTTask_MeleeAttack.generated.h"
 
 
 /**
- * 
+ * Behaviour Tree task for the drone attack
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_MeleeAttack : public UBTTask_BlackboardBase
@@ -28,20 +27,20 @@ class THEGREATESCAPE_API UBTTask_MeleeAttack : public UBTTask_BlackboardBase
 	GENERATED_BODY()
 
 public:
-	UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer);
-
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
-
+	// *** Functions *** ///
+	UBTTask_MeleeAttack(FObjectInitializer const& ObjectInitializer); // constructor
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called 
+	
 private:
+	// *** Functions *** ///
 	UFUNCTION()
-	void SetCanAttack();
+	void SetCanAttack(); // reset attack bool & timer
 
-
-	FTimerHandle AttackDelayHandle;
-	bool bCanAttack = true;
+	// *** Variables *** ///
+	FTimerHandle AttackDelayHandle; // Timer handle to handle the attack delay
+	bool bCanAttack = true; // bool to check if drone can attack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
-	float AttackDelay = 3.0f;
+	float AttackDelay = 3.0f; // Delay between attacks
 	
 };

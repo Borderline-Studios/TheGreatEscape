@@ -1,5 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : BTTask_DroneAttack.cpp
+// Description : Attack functionality for the drone
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 #include "BehaviourTree/BTTask_DroneAttack.h"
 
@@ -8,37 +17,48 @@
 #include "TrainEngine.h"
 #include "Kismet/GameplayStatics.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_DroneAttack::UBTTask_DroneAttack(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Drone Attack");
 }
 
+/**
+ * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// get Ai controller and enemy
+	// get Ai controller
 	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	
+
+	// check AI controller is not nullptr
 	if (AIController)
 	{
-
+		// Get enemy
 		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
-		// Get Enemy
+
+		// if enemy is not nullptr
 		if (Enemy)
 		{
+			// if drone can attack
 			if (bCanAttack)
 			{
-				// Get player character & Enemy AI controller
-				ACharacter* const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
+				// Get train
 				ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
-				
+
+				// If it is the train
 				if (Train)
 				{
+					// attack the train, set can attack to false and start timer
 					UE_LOG(LogTemp, Warning, TEXT("drone attack"));
-					//Enemy->Attack(player->GetAbilitySystemComponent());
 					bCanAttack = false;
 					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_DroneAttack::SetCanAttack, AttackDelay, false);
-					//UE_LOG(LogTemp, Warning, TEXT("Cast to Train is: %s"), *Train->GetName())
 				}
 				else
 				{
@@ -47,24 +67,21 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			
 		}
-		else
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyRework failed it is: %s"), *Enemy->GetName());
-		}
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	
 		return EBTNodeResult::Succeeded;
 	}
 	
 	// Log warning that cast failed and finish task
 	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
 	return EBTNodeResult::Failed;
 }
 
+/**
+ * @brief Sets the attack bool to true and clears the timer
+ */
 void UBTTask_DroneAttack::SetCanAttack()
 {
 	// can attack

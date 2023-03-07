@@ -7,9 +7,8 @@
 //
 // File Name   : BTTask_ChasePlayer.h
 // Description : Chases after the player
-// Author      :  Borderline Studios - Toni Natta
-// Mail        :  toni.natta@mds.ac.nz
-
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 #include "BehaviourTree/BTTask_ChasePlayer.h"
 #include "EnemyReworkController.h"
@@ -17,13 +16,24 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Chase Player");
 }
 
+/**
+ * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// Get Ai controller
 	AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
 	// If ai controller not empty
@@ -40,9 +50,8 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Succeeded;
 	}
 
-	// Log warning that cast failed and finish task
+	// Log warning that cast failed and finish task 
 	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
 	return EBTNodeResult::Failed;
 }

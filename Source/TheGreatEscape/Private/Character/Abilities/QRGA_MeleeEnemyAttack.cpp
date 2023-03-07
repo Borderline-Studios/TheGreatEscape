@@ -26,11 +26,15 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 
+	FVector start = GetEnemyRef()->GetActorLocation();
+	FVector end = start + GetEnemyRef()->GetActorForwardVector() * LineTraceMultiplier;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetEnemyRef());
+	
 	FHitResult HitResult;
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, GetEnemyRef()->GetActorLocation(), GetEnemyRef()->GetActorLocation() +
-		GetEnemyRef()->GetActorForwardVector() * 5000, ECC_Visibility))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility, Params))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("atac player boi"));
+		//UE_LOG(LogTemp, Warning, TEXT("atac player boi"));
 		// attac
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
@@ -40,6 +44,7 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 		}
 	}
+	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
 	
 }
 

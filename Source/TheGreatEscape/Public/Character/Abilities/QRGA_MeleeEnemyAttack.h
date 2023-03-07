@@ -38,5 +38,7 @@ public:
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 	
 	AEnemyRework* GetEnemyRef();
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LineTrace")
+	float LineTraceMultiplier = 1000.0f;
 };
