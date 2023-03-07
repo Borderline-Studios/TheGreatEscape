@@ -1,5 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2023 Media Design School
+//
+// File Name   :	TrainCarriage.cpp
+// Description :	Contains the implementation of the Train Carriage functionality
+// Author      :	Borderline Studios - Jake Laird
+// Mail        :	jake.laird@mds.ac.nz
 
 #include "TrainCarriage.h"
 
@@ -8,7 +17,10 @@
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
 
-// Sets default values
+/**
+ * @brief
+ * Sets default values for the TrainCarriage. This object is typically only spawned in by the engine.
+ */
 ATrainCarriage::ATrainCarriage()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -30,6 +42,15 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
+/**
+ * @brief
+ * An initialiser function that is intended to be called from the engine.
+ * Populates the carriage's Number, Static Mesh, and Spline Reference.
+ * Must be called when initialising each carriage
+ * @param CarriageNum The number of carriage this is relative to the engine.
+ * @param AssignedMesh The train carriage mesh being assigned to this carriage.
+ * @param NewSplineRef The reference to the spline that the engine is using to travel
+ */
 void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef)
 {
 	CarriageNumber = CarriageNum;
@@ -59,6 +80,12 @@ void ATrainCarriage::Tick(float DeltaTime)
 
 }
 
+/**
+ * @brief
+ * This is the function that updates the position of the carriage based on the engine's distance along the spline and an offset specific to each carriage.
+ * This is called typically inside the tick function of the engine.
+ * @param EngineSplineDist The engine's current distance along the spline
+ */
 void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 {
 	float CarriageDist = EngineSplineDist - DistanceFromFront;

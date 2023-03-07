@@ -19,9 +19,9 @@ ATrainEngine::ATrainEngine()
 
 	BoxComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
 	BoxComp->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Temporary-Meshes/Train/Engine/S_Train_Merged.S_Train_Merged'"));
 	BoxComp->SetStaticMesh(MeshObj.Object);
-	BoxComp->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
+	// BoxComp->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
 
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	ArrowComp->SetupAttachment(RootComponent);
@@ -138,7 +138,7 @@ void ATrainEngine::BeginPlay()
 		SplineLength = TrackSplineRef->GetSplineLength();
 
 		SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
-		SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
+		SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 	}
 	
 	FTimerHandle TrainStartHandle;
@@ -189,7 +189,7 @@ void ATrainEngine::Tick(float DeltaTime)
     	const float CurrentSplineProgress = FMath::Lerp(0, SplineLength, TimerTrack);
 
     	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
-    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
+    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 
         for (int i = 0; i < CarriageRefs.Num(); i++)
         {
@@ -200,47 +200,6 @@ void ATrainEngine::Tick(float DeltaTime)
     	{
     		TimeSinceStart = 0;
     	}
-    
-    	// This code seems expensive. If we can move it to the carriages then it might be more effective.
-    	// As it stands, it runs and keeps the train moving through the spline.
-    	// However, it causes each train segment to hang on the point of track change.
-    	// Might be an issue with resetting the train on the new spline but it seems weird that it happens with each carriage.
-    	// if (CarriageCount > 0)	
-	    // {
-		   //  for (int i = 0; i < CarriageRefs.Num(); i++)
-		   //  {
-		   //  	int NewSplineIndex = 0;
-		   //  	const float CarriageTimerTrack = TimerTrack - ((i + 1) * (CompleteSplineLength * DistanceBetweenCars / 100) / CompleteSplineLength);
-		   //  
-		   //  	for (int j = CompleteTrackRefs.Num() - 1; j > 0; j--)
-		   //  	{
-		   //  		if (UKismetMathLibrary::InRange_FloatFloat(CarriageTimerTrack, SplineTravelParameters[j - 1].TimeToSwap, SplineTravelParameters[j].TimeToSwap, true, false))
-		   //  		{
-		   //  			NewSplineIndex = j;
-		   //  			break;
-		   //  		}
-		   //  	}
-	    //
-		   //  	if (CarriageRefs[i]->CurrentSplineIndex != NewSplineIndex)
-		   //  	{
-		   //  		//GEngine->AddOnScreenDebugMessage(5000 + i, 1, FColor::Red, FString::Printf(TEXT("Carriage %d changes track"), i + 1));
-		   //  		CarriageRefs[i]->CurrentSplineIndex = NewSplineIndex;
-		   //  		CarriageRefs[i]->ChangeTrack(CompleteTrackRefs[CarriageRefs[i]->CurrentSplineIndex]);
-		   //  	}
-	    //
-		   //  	float TimeOffset = 0;
-	    //
-		   //  	for (int j = 0; j < CarriageRefs[i]->CurrentSplineIndex; j++)
-		   //  	{
-		   //  		TimeOffset += SplineTravelParameters[j].TimeToTraverse;
-		   //  	}
-	    //
-		   //  	const float CarriageSplineProgress = FMath::Lerp(EngineStart, CompleteSplineLength, CarriageTimerTrack - TimeOffset);
-	    //
-		   //  	CarriageRefs[i]->SetActorLocation(CarriageRefs[i]->TrackSplineRef->GetLocationAtDistanceAlongSpline(CarriageSplineProgress, ESplineCoordinateSpace::World));
-		   //  	CarriageRefs[i]->SetActorRotation(CarriageRefs[i]->TrackSplineRef->GetRotationAtDistanceAlongSpline(CarriageSplineProgress, ESplineCoordinateSpace::World));
-		   //  }
-	    // }
     }
 }
 

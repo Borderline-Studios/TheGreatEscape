@@ -1,41 +1,49 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2023 Media Design School
+//
+// File Name   :	SplineTrack.cpp
+// Description :	Contains implementation of Spline Track functionality
+// Author      :	Borderline Studios - Jake Laird
+// Mail        :	jake.laird@mds.ac.nz
 
 #include "SplineTrack.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-// Sets default values
+/**
+ * @brief
+ * Default constructor for the SplineTrack. 
+ */
 ASplineTrack::ASplineTrack()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Might need a do once gate here to make sure that the spline only populates the first time it's dragged into scene
-	// Creating and attaching components
+	
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Comp"));
 	Spline->SetupAttachment(RootComponent);
-
+	Spline->SetUnselectedSplineSegmentColor(FLinearColor(FColor::Blue));
+	Spline->SetSelectedSplineSegmentColor(FLinearColor(FColor::Magenta));
+	Spline->SetTangentColor(FLinearColor(0.718f, 0.589f, 0.921f, 1.0f));
+	
 	Start = CreateDefaultSubobject<UBoxComponent>(TEXT("Start TriggerBox"));
 	Start->SetupAttachment(Spline);
+	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
 
 	Final = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox #2"));
 	Final->SetupAttachment(Spline);
 	Final->SetWorldScale3D(FVector(0.1f));
-	
-	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::Local));
-
-	// Editing component variables
-	Spline->SetUnselectedSplineSegmentColor(FLinearColor(FColor::Blue));
-	Spline->SetSelectedSplineSegmentColor(FLinearColor(FColor::Magenta));
-	Spline->SetTangentColor(FLinearColor(0.718f, 0.589f, 0.921f, 1.0f));
-
-	//Final->OnComponentBeginOverlap.AddDynamic(this, &ASplineTrack::OnFinalBeginOverlap);
 }
 
-// Called when the game starts or when spawned
+/**
+ * @brief Called when the game starts or when spawned
+ * Was once used to set up snapping of track pieces at the start of runtime but I have since swapped to another method.
+ */
 void ASplineTrack::BeginPlay()
 {
 	Super::BeginPlay();
@@ -164,8 +172,6 @@ void ASplineTrack::BeginPlay()
 	}
 
 	const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
-	// GEngine->AddOnScreenDebugMessage(50, 20.0, FColor::Red, TEXT("Initial Location: " + FinalSplinePoint.GetLocation().ToString()));
-	//GEngine->AddOnScreenDebugMessage(FMath::Rand() * 40, 120.0, FColor::Red, FString::Printf(TEXT("Spline " + GetName() + " length: %d"), Spline->GetSplineLength()));
 }
 
 // Called every frame
@@ -206,6 +212,11 @@ void ASplineTrack::Tick(float DeltaTime)
 	}
 }
 
+/**
+ * @brief
+ * Allows for the train reference to be populated externally but only once. If a new reference is attempted after the first, it will not apply.
+ * @param NewTrainRef The train engine for the spline to reference.
+ */
 void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
 {
 	if (TrainRef == nullptr)
@@ -214,103 +225,53 @@ void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
 	}
 }
 
+/**
+ * @brief
+ * Deprecated. Use GetSplineComponent() instead.
+ * @return 
+ */
 USplineComponent* ASplineTrack::GetSpline()
 {
 	return Spline;
 }
 
+/**
+ * @brief
+ * Allows external access to the segment after this spline's segment.
+ * @return Will return the next spline if populated or a nullptr if not.
+ */
 ASplineTrack* ASplineTrack::GetNextSpline()
 {
 	return NextSpline ? NextSpline : nullptr;
 }
 
-/*void ATest_TrackConnector::BeginOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult
-	)
-{
-	
-	UBoxComponent* BoxComponent = Cast<UBoxComponent>(OverlappedComponent);
-
-	if (BoxComponent == nullptr)
-	{
-		return;
-	}
-
-	if (BoxComponent == Start)
-	{
-		if (OtherActor->GetClass() == Spline->GetClass())
-		{
-			GEngine->AddOnScreenDebugMessage(1, 2, FColor::Green, TEXT("Start: Detected Other Track Actor"));
-			
-			if (OtherComp->GetClass() == Start->GetClass())
-			{
-				GEngine->AddOnScreenDebugMessage(2, 2, FColor::Blue, TEXT("Start: Detected Other Track Component"));
-			}
-		}
-	}
-	else if (BoxComponent == Final)
-	{
-		if (OtherActor->GetClass() == Spline->GetClass())
-		{
-			GEngine->AddOnScreenDebugMessage(1, 2, FColor::Green, TEXT("End: Detected Other Track Actor"));
-			
-			if (OtherComp->GetClass() == Start->GetClass())
-			{
-				GEngine->AddOnScreenDebugMessage(2, 2, FColor::Blue, TEXT("End: Detected Other Track Component"));
-			}
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, TEXT("The Component Didn't really connect right"));
-	}
-	
-}*/
-
+/**
+ * @brief
+ * Allows external access to this segment's spline component
+ * @return This segment's spline component
+ */
 USplineComponent* ASplineTrack::GetSplineComponent() const
 {
 	return Spline;
 }
 
+/**
+ * @brief
+ * Allows external access to the Box Collision component at the beginning of the spline segment.
+ * @return The box collider at the start of the spline segment
+ */
 UBoxComponent* ASplineTrack::GetStartBoxCollider() const
 {
 	return Start;
 }
 
-void ASplineTrack::OnFinalBeginOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
-{
-	//GEngine->AddOnScreenDebugMessage(99, 1.0f, FColor::Blue, TEXT("Overlapped Comp: " + OverlappedComponent->GetName()));
-
-	return;
-	if (OtherActor == Cast<AActor>(TrainRef))
-	{
-		//if (TrainRef->GetTrackOverrideState()) {return;}
-		// if (TrainRef->GetTrackOverrideState()) {return;}
-		//GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
-
-		TrainRef->ShouldChangeTracks = true;
-
-		if (NextSpline)
-		{
-			//TrainRef->ChangeTrack(NextSpline);
-		}
-		
-		//GEngine->AddOnScreenDebugMessage(101, 1.0f, FColor::Green, TEXT("Collision Ending With Train On Final Overlap"));
-	}
-}
-
 #if WITH_EDITOR
+/**
+ * @brief
+ * Editor Function that allows for certain actions to be performed at certain stages during movement.
+ * This function sets the WorldLocation of both Box Collision components so that they move with the start and end of the spline respectively.
+ * @param bFinished Whether the movement has finished or not. Can be used to make things happen only while moving or not moving.
+ */
 void ASplineTrack::PostEditMove(bool bFinished)
 {
 	Super::PostEditMove(bFinished);
@@ -330,6 +291,11 @@ void ASplineTrack::PostEditMove(bool bFinished)
 	}
 }
 
+/**
+ * @brief
+ * Editor function that allows for certain actions to be performed when undo-ing an editor action involving this object
+ * This function sets the location of both Box Colliders to the start and end of the spline component respectively.
+ */
 void ASplineTrack::PostEditUndo()
 {
 	Super::PostEditUndo();
@@ -338,132 +304,3 @@ void ASplineTrack::PostEditUndo()
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::World));
 }
 #endif // WITH_EDITOR
-
-/*
-// Start->GetOverlappingActors(OverlappingActorArray);
-
-if (OverlappingActorArray.Num() > 0)
-{
-	GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("Overlapping Actors Detected"));
-	for (int i = 0; i < OverlappingActorArray.Num(); i++)
-	{
-		if (OverlappingActorArray[i]->GetClass() == this->GetClass())
-		{
-			GEngine->AddOnScreenDebugMessage(11, 5, FColor::Orange, TEXT("Spline Detected"));
-			USplineComponent* OtherSpline = Cast<USplineComponent>(OverlappingActorArray[i]);
-			
-			if (OtherSpline == nullptr)
-			{
-				continue;
-			}
-
-			// Determines whether or not the world position of the end of the spline is within the bounds of the start detection box
-
-			if (UKismetMathLibrary::IsPointInBox(
-				OtherSpline->GetLocationAtSplinePoint(OtherSpline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World),
-				Start->GetComponentLocation(),
-				Start->GetLocalBounds().GetBox().GetExtent()
-			))
-			{
-				GEngine->AddOnScreenDebugMessage(12, 5, FColor::Orange, TEXT("Spline starting to move"));
-				// Sets the world location of the end spline point
-				OtherSpline->SetLocationAtSplinePoint(
-					OtherSpline->GetNumberOfSplinePoints() - 1,
-					Start->GetComponentLocation(),
-					ESplineCoordinateSpace::World
-					);
-
-				GEngine->AddOnScreenDebugMessage(13, 5, FColor::Orange, TEXT("Setting spline leave tangent"));
-				// Sets the arrive tangent of the moved point to be the negation of the leave tangent of the Start of the next spline
-				OtherSpline->SetTangentsAtSplinePoint(
-					OtherSpline->GetNumberOfSplinePoints() - 1,
-					Spline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World) * -1,
-					OtherSpline->GetLeaveTangentAtSplinePoint(OtherSpline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World),
-					ESplineCoordinateSpace::World
-					);
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(11, 2, FColor::Orange,
-					TEXT("The End of the other spline isn't inside the spline box"));
-				continue;
-			}
-			
-			break;
-		}
-	}
-}
-*/
-
-/*
-TArray<AActor*> OverlappingActorArray;
-	Final->GetOverlappingActors(OverlappingActorArray);
-	
-	if (!OverlappingActorArray.IsEmpty())
-	{
-		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("Overlapping Actors Detected"));
-		for (int i = 0; i < OverlappingActorArray.Num(); i++)
-		{
-			GEngine->AddOnScreenDebugMessage(20 + i, 5, FColor::Cyan, TEXT("Name: " + OverlappingActorArray[i]->GetName()));
-
-			if (OverlappingActorArray[i]->GetClass() == this->GetClass())
-			{
-				GEngine->AddOnScreenDebugMessage(11, 5, FColor::Orange, TEXT("Detected Spline"));
-				ASplineTrack* OtherTrack = Cast<ASplineTrack>(OverlappingActorArray[i]);
-				USplineComponent* OtherSpline = OtherTrack->GetSplineComponent();
-				// USplineComponent* OtherSpline = Cast<USplineComponent>(OverlappingActorArray[i]);
-				
-				if (OtherSpline == nullptr)
-				{
-					GEngine->AddOnScreenDebugMessage(11, 5, FColor::Red, TEXT("Spline Detection Failed"));
-					continue;
-				}
-
-				// Determines whether or not the world position of the end of the spline is within the bounds of the End/Final detection box
-
-				if (UKismetMathLibrary::IsPointInBox(
-					OtherSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),
-					Final->GetComponentLocation(),
-					Final->GetScaledBoxExtent()
-				))
-				{
-					GEngine->AddOnScreenDebugMessage(12, 5, FColor::Orange, TEXT("Spline starting to move"));
-					// Sets the world location of the end spline point
-					OtherSpline->SetLocationAtSplinePoint(
-						0,
-						Final->GetComponentLocation(),
-						ESplineCoordinateSpace::World
-						);
-
-					GEngine->AddOnScreenDebugMessage(13, 5, FColor::Orange, TEXT("Setting spline arrive tangent"));
-					// Sets the arrive tangent of the moved point to be the negation of the leave tangent of the Start of the next spline
-					OtherSpline->SetTangentsAtSplinePoint(
-						0,
-						OtherSpline->GetArriveTangentAtSplinePoint(0, ESplineCoordinateSpace::World),
-						Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World),
-						ESplineCoordinateSpace::World
-						);
-
-					GEngine->AddOnScreenDebugMessage(14, 5, FColor::Orange,
-						TEXT("Arrive Tangent" + Spline->GetArriveTangentAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World).ToString()));
-					GEngine->AddOnScreenDebugMessage(15, 5, FColor::Orange,
-						TEXT("Leave Tangent" + OtherSpline->GetLeaveTangentAtSplinePoint(0, ESplineCoordinateSpace::World).ToString()));
-				}
-				else
-				{
-					GEngine->AddOnScreenDebugMessage(11, 2, FColor::Orange,
-						TEXT("The End of the other spline isn't inside the spline box"));
-					continue;
-				}
-				
-				break;
-			}
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(10, 5, FColor::Orange, TEXT("No Overlapping Actors"));
-	}
-
-	GEngine->AddOnScreenDebugMessage(7, 5, FColor::Orange, TEXT("Ending BeginPlay of " + this->GetName()));
- */

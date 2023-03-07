@@ -15,7 +15,6 @@
 
 #include "TrainEngine.generated.h"
 
-
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
 class UQRAttributeSet;
