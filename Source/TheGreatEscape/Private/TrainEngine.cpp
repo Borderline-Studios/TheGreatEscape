@@ -5,6 +5,9 @@
 #include "SplineTrack.h"
 #include "Kismet/KismetMathLibrary.h"
 
+// Static Variable Declarations
+TStaticArray<UStaticMesh*, 4> ATrainEngine::StaticMeshRefs;
+
 // Sets default values
 ATrainEngine::ATrainEngine()
 {
@@ -25,6 +28,37 @@ ATrainEngine::ATrainEngine()
 	ArrowComp->SetArrowColor(FColor::Purple);
 	ArrowComp->SetHiddenInGame(false);
 	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+
+    for (int i = 0; i < 4; i++)
+    {
+	    if (!StaticMeshRefs[i])
+	    {
+	    	UStaticMesh* Mesh = nullptr;
+
+	        if (i == 0)
+	        {
+	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
+	        	Mesh = FirstCarMesh.Object;
+	        }
+	    	else if (i == 1)
+	        {
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
+	    		Mesh = SecondCarMesh.Object;
+	        }
+	    	else if (i == 2)
+	        {
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
+	    		Mesh = ThirdCarMesh.Object;
+	        }
+	    	else if (i == 3)
+	        {
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
+	    		Mesh = FourthCarMesh.Object;
+	        }
+
+	    	StaticMeshRefs[i] = Mesh;
+	    }
+    }
 }
 
 // Called when the game starts or when spawned
@@ -33,12 +67,9 @@ void ATrainEngine::BeginPlay()
 	Super::BeginPlay();
 
 	// Initialising variables
-	LerpTimer = 0;
 	TimeSinceStart = 0.0f;
 	bHasStartedMoving = false;
 	SplineLength = -5;
-	CompleteSplineLength = 0;
-	CurrentSplineIndex = 0;
 
 	// Checking for a spline reference and connecting if one is detected
 	if (!TrackActorRef) {}
@@ -59,11 +90,25 @@ void ATrainEngine::BeginPlay()
 	FTimerHandle TrainStartHandle;
 	GetWorld()->GetTimerManager().SetTimer(TrainStartHandle, [&]()
 	{
-		bHasStartedMoving = true;
-		isTrainMoving = true;
+		if (TrackSplineRef)
+		{
+			bHasStartedMoving = true;
+			isTrainMoving = true;
+		}
 	}, (StartDelayTime >= 1) ? StartDelayTime : 0.1f, false);
 
 	//GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
+
+	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
+	for (int i = 0; i < CarriageCount; i++)
+	{
+		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
+		TempRef->InitialiseFromEngine(i, StaticMeshRefs[i%4], TrackSplineRef);
+		
+		CarriageRefs.Push(TempRef);
+	}
+
+	EngineStart = ((CarriageCount >= 0) ? CarriageCount : 0) * 1500;
 }
 
 // Called every frame
@@ -85,16 +130,21 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
     	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
+
+        for (int i = 0; i < CarriageRefs.Num(); i++)
+        {
+	        CarriageRefs[i]->ProcessMovement(CurrentSplineProgress);
+        }
     	
     	if (!UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0.0, 1.0, false, true))
     	{
     		TimeSinceStart = 0;
     	}
     
-    	// // This code seems expensive. If we can move it to the carriages then it might be more effective.
-    	// // As it stands, it runs and keeps the train moving through the spline.
-    	// // However, it causes each train segment to hang on the point of track change.
-    	// // Might be an issue with resetting the train on the new spline but it seems weird that it happens with each carriage.
+    	// This code seems expensive. If we can move it to the carriages then it might be more effective.
+    	// As it stands, it runs and keeps the train moving through the spline.
+    	// However, it causes each train segment to hang on the point of track change.
+    	// Might be an issue with resetting the train on the new spline but it seems weird that it happens with each carriage.
     	// if (CarriageCount > 0)	
 	    // {
 		   //  for (int i = 0; i < CarriageRefs.Num(); i++)
@@ -157,48 +207,3 @@ void ATrainEngine::SetTrainSpeed(TrainSpeed NewSpeed)
 		break;
 	}
 }
-
-// bool ATrainEngine::ChangeTrack(AActor* NewTrack)
-// {
-// 	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(NewTrack->GetRootComponent()); TempSplineRef == nullptr || ShouldChangeTracks == false)
-// 	{
-// 		return false;
-// 	}
-// 	else
-// 	{
-// 		TrackSplineRef = TempSplineRef;
-// 	}
-//
-// 	//TimeSinceStart = 0;
-// 	//SplineLength = TrackSplineRef->GetSplineLength();
-//
-// 	return true;
-// }
-//
-// void ATrainEngine::GetSplineReferences(TArray<ASplineTrack*>& Array)
-// {
-// 	Array = CompleteTrackRefs;
-// }
-//
-// void ATrainEngine::BPOverrideTrack(AActor* TrackOverride)
-// {
-// 	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackOverride->GetRootComponent()); TempSplineRef != nullptr)
-// 	{
-// 		TrackSplineRef = TempSplineRef;
-// 	}
-//
-// 	if (TrackSplineRef)
-// 	{
-// 		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Red, TEXT("Train Spline Ref Overridden"));
-// 		SplineLength = TrackSplineRef->GetSplineLength();
-// 	}
-// 	
-// 	EngineStart = FMath::Lerp(0.0f, SplineLength, 0.0f);
-// 	SetActorTransform(TrackSplineRef->GetTransformAtSplinePoint(0, ESplineCoordinateSpace::World));
-// 	isTrackOverridden = true;
-// }
-//
-// bool ATrainEngine::GetTrackOverrideState()
-// {
-// 	return isTrackOverridden;
-// }

@@ -5,6 +5,9 @@
 
 #include "Components/SplineComponent.h"
 
+// Static Variable Declarations
+// TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
+
 // Sets default values
 ATrainCarriage::ATrainCarriage()
 {
@@ -27,24 +30,19 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
-ATrainCarriage::ATrainCarriage(int AssignedNumber)
+void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef)
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	RootComponent = SceneRoot;
-
-	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
-	Box->SetupAttachment(RootComponent);
+	CarriageNumber = CarriageNum;
 	
-	// Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
+	Box->SetStaticMesh(AssignedMesh);
+	Box->SetWorldScale3D(FVector(1.0f));
 
-	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	Arrow->SetupAttachment(RootComponent);
-	Arrow->SetArrowColor(FColor::Blue);
-	Arrow->SetHiddenInGame(false);
-	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	DistanceFromFront = 1500 * (CarriageNumber + 1);
+
+	if (!SplineRef)
+	{
+		SplineRef = NewSplineRef;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -61,46 +59,17 @@ void ATrainCarriage::Tick(float DeltaTime)
 
 }
 
-void ATrainCarriage::SetCarriageNumber(int AssignedNumber)
+void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 {
-	CarriageNumber = AssignedNumber;
+	float CarriageDist = EngineSplineDist - DistanceFromFront;
 
-	if 	(CarriageNumber == 0)	// Full Base Car
+	if (CarriageDist < 0)
 	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> FullBase(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
-		Box->SetStaticMesh(FullBase.Object);
+		float Temp = CarriageDist;
+		CarriageDist = SplineRef->GetSplineLength() + Temp;
 	}
-	else if (CarriageNumber == 1)	// FlatBed Car
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> FlatBed(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
-		Box->SetStaticMesh(FlatBed.Object);
-	}
-	else if (CarriageNumber == 2)	// Weapons Car
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> Weapons(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
-		Box->SetStaticMesh(Weapons.Object);
-	}
-	else if (CarriageNumber == 3)	// Windows Car 
-	{
-		ConstructorHelpers::FObjectFinder<UStaticMesh> Windows(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
-		Box->SetStaticMesh(Windows.Object);
-	}
-}
-
-bool ATrainCarriage::ChangeTrack(AActor* NewTrack)
-{
-	if (USplineComponent* TempSplineRef = Cast<USplineComponent>(NewTrack->GetRootComponent()); TempSplineRef == nullptr)
-	{
-		return false;
-	}
-	else
-	{
-		TrackSplineRef = TempSplineRef;
-	}
-
-	//TimeSinceStart = 0;
-	//SplineLength = TrackSplineRef->GetSplineLength();
-
-	return true;
+	
+	SetActorLocation(SplineRef->GetLocationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World));
+	SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World) + FRotator(0.0f, 90.0f, 0.0f));
 }
 
