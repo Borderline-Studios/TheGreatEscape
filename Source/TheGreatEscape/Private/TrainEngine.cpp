@@ -59,6 +59,60 @@ ATrainEngine::ATrainEngine()
 	    	StaticMeshRefs[i] = Mesh;
 	    }
     }
+
+	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
+}
+
+void ATrainEngine::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
+	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
+{
+	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser);
+}
+
+void ATrainEngine::HandleHealthChanged(float Deltavalue, const FGameplayTagContainer& EventTags)
+{
+	OnHealthChanged(Deltavalue, EventTags);
+}
+
+void ATrainEngine::AddStartupGameplayAbilities()
+{
+	check(AbilitySystemComponent);
+	if(GetLocalRole() == ROLE_Authority && !bAbilitiesInitalized)
+	{
+		//Grant Abilities, but only on Server
+		for(TSubclassOf<UQRGameplayAbility>& StartupAbility : GameplayAbilities)
+		{
+			if(StartupAbility)
+				AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
+					StartupAbility, 1,
+					static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		}
+	}
+
+	for (const TSubclassOf<UGameplayEffect>& GameplayEffect : PassiveGameplayEffects)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 1, EffectContext);
+
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGameplayEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+				*NewHandle.Data.Get(), AbilitySystemComponent);
+		}
+
+		bAbilitiesInitalized = true;
+	}
+}
+
+UAbilitySystemComponent* ATrainEngine::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 // Called when the game starts or when spawned
@@ -109,6 +163,12 @@ void ATrainEngine::BeginPlay()
 	}
 
 	EngineStart = ((CarriageCount >= 0) ? CarriageCount : 0) * 1500;
+
+	if (AbilitySystemComponent)
+	{
+		AddStartupGameplayAbilities();
+	}
+
 }
 
 // Called every frame
