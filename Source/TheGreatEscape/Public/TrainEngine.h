@@ -34,14 +34,16 @@ public:
 
     // Functions
     UFUNCTION(BlueprintCallable)
-    bool ChangeTrack(AActor* NewTrack);
-
-    UFUNCTION(BlueprintCallable)
-    void GetSplineReferences(TArray<class ASplineTrack*>& Array);
-
-    UFUNCTION(BlueprintCallable)
-    void BPOverrideTrack(AActor* TrackOverride);
-    bool GetTrackOverrideState();
+    void ToggleTrainStop();
+    // UFUNCTION(BlueprintCallable)
+    // bool ChangeTrack(AActor* NewTrack);
+    //
+    // UFUNCTION(BlueprintCallable)
+    // void GetSplineReferences(TArray<class ASplineTrack*>& Array);
+    //
+    // UFUNCTION(BlueprintCallable)
+    // void BPOverrideTrack(AActor* TrackOverride);
+    // bool GetTrackOverrideState();
 
 protected:
 
@@ -55,6 +57,14 @@ private:
         float TimeToSwap;
         float Ratio;
     };
+
+    // Enums
+    enum TrainSpeed
+    {
+        Slow = 0,
+        Standard,
+        Fast
+    };
     
     // Variables
     // Obtaining the spline for the train to follow
@@ -67,6 +77,8 @@ private:
     float TimeSinceStart;
     bool bHasStartedMoving;
     bool firstRun = false;
+    bool isTrainMoving = true;
+    
 
     // Creating the timer handle used to start the movement after a short delay
     FTimerHandle StartMoveTimerHandle;
