@@ -42,15 +42,6 @@ void UBTService_NPCInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, 
 
 		// Set bool based on if player is in melee range by finding distance between them
 		AIController->GetBlackboard()->SetValueAsBool(BbKeys::NPCInPlayerRange, NPC->GetDistanceTo(Player) <= PlayerRange);
-
-		if (NPC->GetDistanceTo(Player) <= PlayerRange)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("is in range"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("no"));
-		}
 		
 	}
 }
