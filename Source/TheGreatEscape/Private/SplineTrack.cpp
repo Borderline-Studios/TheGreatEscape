@@ -295,7 +295,7 @@ void ASplineTrack::OnFinalBeginOverlap(
 	return;
 	if (OtherActor == Cast<AActor>(TrainRef))
 	{
-		if (TrainRef->GetTrackOverrideState()) {return;}
+		//if (TrainRef->GetTrackOverrideState()) {return;}
 		// if (TrainRef->GetTrackOverrideState()) {return;}
 		//GEngine->AddOnScreenDebugMessage(100, 1.0f, FColor::Green, TEXT("Collision Starting With Train On Final Overlap"));
 
@@ -303,7 +303,7 @@ void ASplineTrack::OnFinalBeginOverlap(
 
 		if (NextSpline)
 		{
-			TrainRef->ChangeTrack(NextSpline);
+			//TrainRef->ChangeTrack(NextSpline);
 		}
 		
 		//GEngine->AddOnScreenDebugMessage(101, 1.0f, FColor::Green, TEXT("Collision Ending With Train On Final Overlap"));

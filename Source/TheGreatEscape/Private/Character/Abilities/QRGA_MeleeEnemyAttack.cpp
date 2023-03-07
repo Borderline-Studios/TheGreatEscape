@@ -24,16 +24,18 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
 
 	FHitResult HitResult;
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, GetEnemyRef()->GetActorLocation(), GetEnemyRef()->GetActorLocation() +
-		GetEnemyRef()->GetActorForwardVector() * 500, ECC_Visibility))
+		GetEnemyRef()->GetActorForwardVector() * 5000, ECC_Visibility))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("atac player boi"));
 		// attac
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Damage player boi %s"), *HitResult.GetActor()->GetName());
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 		}
