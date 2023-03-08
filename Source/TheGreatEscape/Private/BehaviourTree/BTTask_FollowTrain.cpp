@@ -12,11 +12,13 @@
 
 #include "BehaviourTree/BTTask_FollowTrain.h"
 #include "EnemyReworkController.h"
+#include "EnemyReworkDrone.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "TrainEngine.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 /**
  * @brief constructor, name the node
@@ -45,7 +47,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
 		// get enemy
-		APawn* const Enemy = AIController->GetPawn();
+		AEnemyReworkDrone* const Enemy = Cast<AEnemyReworkDrone>(AIController->GetPawn());
 
 		// if train not nullptr
 		if (Train)
@@ -62,6 +64,12 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 
 			// set velocity of enemy
 			Enemy->GetMovementComponent()->Velocity = direction;
+
+			// look at train
+			FRotator newRot = UKismetMathLibrary::FindLookAtRotation(EnemyLocation, TrainLocation);
+			//Enemy->SetActorRotation(newRot);
+			//Enemy->TurretBaseRef->SetRelativeRotation(newRot);
+			Enemy->TurretBaseRef->SetWorldRotation(newRot);
 	
 		}
 		else

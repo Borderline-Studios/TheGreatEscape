@@ -5,21 +5,22 @@
 // 
 // (c) 2022 Media Design School
 //
-// File Name   : QRGA_MeleeEnemyAttack.h
-// Description : Gameplay ability to have melee enemy attack
+// File Name   : QRGA_DroneEnemyAttack.h
+// Description : Gameplay ability to have drone enemy attack
 // Author      : Borderline Studios - Toni Natta
 // Mail        : toni.natta@mds.ac.nz
 
-
-#include "Character/Abilities/QRGA_MeleeEnemyAttack.h"
+#include "Character/Abilities/QRGA_DroneEnemyAttack.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "EnemyReworkDrone.h"
+#include "TrainEngine.h"
 
 /**
  * @brief Constructor
  */
-UQRGA_MeleeEnemyAttack::UQRGA_MeleeEnemyAttack()
+UQRGA_DroneEnemyAttack::UQRGA_DroneEnemyAttack()
 {
-	// Constructor
+	// constructor
 }
 
 /**
@@ -29,15 +30,14 @@ UQRGA_MeleeEnemyAttack::UQRGA_MeleeEnemyAttack()
  * @param ActivationInfo Information about the activation
  * @param TriggerEventData Gameplay event data
  */
-void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                             const FGameplayEventData* TriggerEventData)
+void UQRGA_DroneEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 
 	FVector start = GetEnemyRef()->GetActorLocation();
-	FVector end = start + GetEnemyRef()->GetActorForwardVector() * LineTraceMultiplier;
+	FVector end = start + GetEnemyRef()->TurretBaseRef->GetForwardVector() * LineTraceMultiplier;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetEnemyRef());
 	
@@ -49,13 +49,16 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Damage player boi %s"), *HitResult.GetActor()->GetName());
-			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			if (ATrainEngine* Train = Cast<ATrainEngine>(HitResult.GetActor()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Damage train boi %s"), *HitResult.GetActor()->GetName());
+				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			}
+			
 		}
 	}
-	//DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
-	
+	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
 }
 
 /**
@@ -66,25 +69,25 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
  * @param bReplicateEndAbility bool to replicated the end ability
  * @param bWasCancelled bool to check if it was cancelled
  */
-void UQRGA_MeleeEnemyAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
-                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                        bool bReplicateEndAbility, bool bWasCancelled)
+void UQRGA_DroneEnemyAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 /**
- * @brief checks if you can activate ability
+ * @brief  checks if it can activate ability
  * @param Handle gameplay ability spec handle
  * @param ActorInfo info about the actor
  * @param SourceTags gameplay tag counter
  * @param TargetTags target gameplay tag
  * @param OptionalRelevantTags gameplay tag
- * @return bool if it can activate
+ * @return bool if it can
  */
-bool UQRGA_MeleeEnemyAttack::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+bool UQRGA_DroneEnemyAttack::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
@@ -93,8 +96,8 @@ bool UQRGA_MeleeEnemyAttack::CanActivateAbility(const FGameplayAbilitySpecHandle
  * @brief get a ref to the enemy 
  * @return the enemy that had the ability
  */
-AEnemyRework* UQRGA_MeleeEnemyAttack::GetEnemyRef()
+AEnemyReworkDrone* UQRGA_DroneEnemyAttack::GetEnemyRef()
 {
-	AEnemyRework* Enemy = Cast<AEnemyRework>(GetAvatarActorFromActorInfo());
+	AEnemyReworkDrone* Enemy = Cast<AEnemyReworkDrone>(GetAvatarActorFromActorInfo());
 	return Enemy;
 }
