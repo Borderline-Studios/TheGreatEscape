@@ -11,14 +11,21 @@
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
-#include "TrainControlls.h"
-#include "Kismet/GameplayStatics.h"
 
 #include "TrainEngine.generated.h"
 
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
 class UQRAttributeSet;
+
+// Enums
+UENUM(BlueprintType)
+enum class ETrainSpeed : uint8
+{
+    Slow,
+    Standard,
+    Fast
+};
 
 UCLASS()
 class THEGREATESCAPE_API ATrainEngine : public AActor
@@ -84,7 +91,7 @@ public:
     void ToggleTrainStop();
 
     UFUNCTION(BlueprintCallable)
-    void SetTrainSpeed(ETrainControlSetting NewSpeed);
+    void SetTrainSpeed(ETrainSpeed NewSpeed);
 
 protected:
 

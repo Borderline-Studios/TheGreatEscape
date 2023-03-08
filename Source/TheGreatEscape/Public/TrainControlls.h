@@ -13,18 +13,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TrainEngine.h"
 #include "GameFramework/Actor.h"
 #include "TrainControlls.generated.h"
 
-UENUM(BlueprintType)
-enum class ETrainControlSetting : uint8
-{
-	Slow,
-	Normal,
-	Fast
-};
-
-class ATrainEngine;
 UCLASS()
 class THEGREATESCAPE_API ATrainControlls : public AActor
 {
@@ -42,19 +34,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Function to update the rotation of the train controls
-	void UpdateControls();
+	void UpdateEngineSpeed();
 
-	ETrainControlSetting ControlSetting = ETrainControlSetting::Slow;
+	ETrainSpeed ControlSetting = ETrainSpeed::Standard;
 
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* TrainControlMesh;
+	// UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* ControlHandle;
+	UStaticMeshComponent* ControlBase;
 
 
 private:
+	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
 
-	float RotateValue;
-
-	ATrainEngine* EngineRef;
+	// Function to update the rotation of the train controls
+	void UpdateControls();
 };

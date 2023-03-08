@@ -3,8 +3,8 @@
 
 #include "TrainEngine.h"
 #include "SplineTrack.h"
-#include "TrainControlls.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Static Variable Declarations
 TStaticArray<UStaticMesh*, 4> ATrainEngine::StaticMeshRefs;
@@ -209,17 +209,17 @@ void ATrainEngine::ToggleTrainStop()
 	isTrainMoving = !isTrainMoving;
 }
 
-void ATrainEngine::SetTrainSpeed(ETrainControlSetting NewSpeed)
+void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
 {
 	switch (NewSpeed)
 	{
-	case ETrainControlSetting::Slow:
+	case ETrainSpeed::Slow:
 		TrainSpeedModifier = 0.5f;
 		break;
-	case ETrainControlSetting::Normal:
+	case ETrainSpeed::Standard:
 		TrainSpeedModifier = 1.0f;
 		break;
-	case ETrainControlSetting::Fast:
+	case ETrainSpeed::Fast:
 		TrainSpeedModifier = 2.0f;
 		break;
 	default:
