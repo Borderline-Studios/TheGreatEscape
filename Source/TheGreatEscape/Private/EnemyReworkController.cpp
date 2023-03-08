@@ -12,6 +12,8 @@
 
 
 #include "EnemyReworkController.h"
+
+#include "EnemySpawner.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -80,6 +82,7 @@ void AEnemyReworkController::BeginPlay()
 	
 	RunBehaviorTree(BehaviorTree);
 	BehaviorTreeComponent->StartTree(*BehaviorTree);
+	
 }
 
 /**
