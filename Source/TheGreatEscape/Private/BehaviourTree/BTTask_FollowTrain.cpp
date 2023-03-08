@@ -66,7 +66,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			Enemy->GetMovementComponent()->Velocity = direction;
 
 			// look at train
-			FRotator newRot = UKismetMathLibrary::FindLookAtRotation(EnemyLocation, TrainLocation);
+			FRotator newRot = UKismetMathLibrary::FindLookAtRotation(Enemy->TurretBaseRef->GetComponentLocation(), TrainLocation);
 			//Enemy->SetActorRotation(newRot);
 			//Enemy->TurretBaseRef->SetRelativeRotation(newRot);
 			Enemy->TurretBaseRef->SetWorldRotation(newRot);
