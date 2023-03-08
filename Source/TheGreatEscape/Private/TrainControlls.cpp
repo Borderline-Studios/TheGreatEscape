@@ -12,6 +12,8 @@
 
 
 #include "TrainControlls.h"
+
+#include "TrainEngine.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -29,7 +31,12 @@ void ATrainControlls::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	if (!EngineRef)
+	{
+		EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+	}
+
+	// ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	
 }
 
@@ -44,25 +51,33 @@ void ATrainControlls::Tick(float DeltaTime)
 	 * @brief Update the train control rotation based on the setting
 	 * @param ControlSetting The Setting you wish to change to
 	 */
-void ATrainControlls::UpdateControls(ETrainControlSetting* controlSetting)
+void ATrainControlls::UpdateControls()
 {
 	CurrentRotation = TrainControlMesh->GetRelativeRotation();
+
+	if (EngineRef)
+	{
+		EngineRef->SetTrainSpeed(ControlSetting);
+	}
 
 	// Rotate the mesh based on the setting
 	switch (ControlSetting)
 	{
 	case ETrainControlSetting::Slow:
 		{
+			ControlSetting = ETrainControlSetting::Normal;
 			RotateValue = -50.0f;
 			TrainControlMesh->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}
 	case ETrainControlSetting::Normal:
 		{
+			ControlSetting = ETrainControlSetting::Fast;
 			RotateValue = 0.0f;
 			TrainControlMesh->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}
 	case ETrainControlSetting::Fast:
 		{
+			ControlSetting = ETrainControlSetting::Slow;
 			RotateValue = 50.0f;
 			TrainControlMesh->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}

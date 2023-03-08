@@ -16,6 +16,15 @@
 #include "GameFramework/Actor.h"
 #include "TrainControlls.generated.h"
 
+UENUM(BlueprintType)
+enum class ETrainControlSetting : uint8
+{
+	Slow,
+	Normal,
+	Fast
+};
+
+class ATrainEngine;
 UCLASS()
 class THEGREATESCAPE_API ATrainControlls : public AActor
 {
@@ -33,15 +42,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	enum class ETrainControlSetting
-	{
-		Slow,
-		Normal,
-		Fast
-	};
-
 	// Function to update the rotation of the train controls
-	void UpdateControls(ETrainControlSetting* controlSetting);
+	void UpdateControls();
 
 	ETrainControlSetting ControlSetting = ETrainControlSetting::Slow;
 
@@ -53,4 +55,6 @@ private:
 	FRotator CurrentRotation;
 
 	float RotateValue;
+
+	ATrainEngine* EngineRef;
 };
