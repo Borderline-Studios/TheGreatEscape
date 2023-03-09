@@ -68,6 +68,7 @@ ATrainEngine::ATrainEngine()
 	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
 }
 
+#pragma region GAS
 void ATrainEngine::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
 	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
 {
@@ -115,6 +116,7 @@ UAbilitySystemComponent* ATrainEngine::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+#pragma endregion
 
 // Called when the game starts or when spawned
 void ATrainEngine::BeginPlay()
@@ -170,6 +172,13 @@ void ATrainEngine::BeginPlay()
 		AddStartupGameplayAbilities();
 	}
 
+	if (!StopIndices.IsEmpty())
+	{
+		for (int i = 0; i < StopIndices.Num(); ++i)
+		{
+			StoppedAtIndex.Push(false);
+		}
+	}
 }
 
 // Called every frame
@@ -191,6 +200,27 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
     	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
+
+        if (!StopIndices.IsEmpty())
+        {
+	        for (int i = StopIndices.Num() - 1; i >= 0; --i)
+	        {
+		        if (StopIndices[i] < TrackSplineRef->GetNumberOfSplinePoints() && StopIndices[i] >= 0)
+		        {
+			        const float IndexDistance = TrackSplineRef->GetDistanceAlongSplineAtSplinePoint(StopIndices[i]);
+
+			        if (CurrentSplineProgress >= IndexDistance)
+			        {
+				        if (!StoppedAtIndex[i])
+				        {
+					        StoppedAtIndex[i] = true;
+
+					        ToggleTrainStop();
+				        }
+			        }
+		        }
+	        }
+        }
 
         for (int i = 0; i < CarriageRefs.Num(); i++)
         {

@@ -96,16 +96,7 @@ public:
 protected:
 
 
-private:
-    // Structs
-    struct FSplineTraversalParameters
-    {
-        float TimeToTraverse;
-        float LengthToTraverse;
-        float TimeToSwap;
-        float Ratio;
-    };
-    
+private:    
     // Variables
     // Obtaining the spline for the train to follow
     USplineComponent* TrackSplineRef;
@@ -140,6 +131,10 @@ private:
     int CarriageCount = 0;
 
     float EngineStart = 0;
+
+    UPROPERTY(EditInstanceOnly)
+    TArray<int> StopIndices;
+    TArray<bool> StoppedAtIndex;
 
     // Functions
 };

@@ -4,6 +4,7 @@
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "TrainControlls.h"
+#include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
@@ -48,6 +49,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			else if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 			{
 				ControlsRef->UpdateEngineSpeed();
+			}
+			else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
+			{
+				ButtonRef->ToggleTrainMovement();
 			}
 			else
 			{

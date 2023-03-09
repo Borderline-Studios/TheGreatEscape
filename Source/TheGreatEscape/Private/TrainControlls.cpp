@@ -31,12 +31,14 @@ ATrainControlls::ATrainControlls()
 	RootComponent = ControlBase;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("StaticMesh'/Game/Production/Train/Art/TrackSwitch/Lever_Lever_base.Lever_Lever_base'"));
 	ControlBase->SetStaticMesh(BaseMesh.Object);
+	ControlBase->SetWorldScale3D(FVector(3.0f));
 
 	ControlHandle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Handle Mesh"));
 	ControlHandle->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleMesh(TEXT("StaticMesh'/Game/Production/Train/Art/TrackSwitch/Lever_Lever.Lever_Lever'"));
 	ControlHandle->SetStaticMesh(HandleMesh.Object);
 	ControlHandle->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
+	Tags.Push("Interactable");
 }
 
 // Called when the game starts or when spawned

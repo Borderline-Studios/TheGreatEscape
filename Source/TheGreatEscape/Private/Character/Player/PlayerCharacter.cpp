@@ -13,7 +13,7 @@
 APlayerCharacter::APlayerCharacter()
 {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(40.f, 96.0f);
 
 	// set our turn rates for input
 	TurnRateGamepad = 45.f;
