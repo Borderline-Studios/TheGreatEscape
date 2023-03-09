@@ -14,7 +14,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlueprintEditor.h"
 #include "EnemyRework.h"
+#include "Engine/StaticMeshSocket.h"
 #include "EnemyReworkDrone.generated.h"
 
 /**
@@ -29,4 +31,9 @@ public:
 	// *** Functions *** ///
 	AEnemyReworkDrone(); // constructor
 	virtual void PossessedBy(AController* NewController) override; // possessed by
+	virtual void Tick(float DeltaTime) override; // tick, called every frame
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
+	UStaticMeshComponent* TurretBaseRef; // ref to turret base
+
 };
