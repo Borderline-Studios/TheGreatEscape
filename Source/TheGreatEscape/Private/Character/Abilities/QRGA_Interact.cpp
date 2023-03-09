@@ -3,6 +3,8 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "TrainControlls.h"
+#include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
@@ -33,13 +35,24 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		if(HitResult.GetActor()->ActorHasTag("Interactable"))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interactable!"));
-			HitResult.GetActor()->SetActorEnableCollision(false);
-			HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-			ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor());
-			if(HitResult.GetActor() == BatteryInteractableRef)
+			/**************************************************************************************************************************************************************************/
+			// cpp class specific behaviour goes here.
+			
+			if(ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor()))
 			{
+				HitResult.GetActor()->SetActorEnableCollision(false);
+				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Picked Up!"));
 				BatteryInteractableRef->SetPickedUp();
+			}
+			else if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
+			{
+				ControlsRef->UpdateEngineSpeed();
+			}
+			else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
+			{
+				ButtonRef->ToggleTrainMovement();
 			}
 			else
 			{

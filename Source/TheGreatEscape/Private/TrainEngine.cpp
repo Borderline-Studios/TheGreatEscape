@@ -4,6 +4,7 @@
 #include "TrainEngine.h"
 #include "SplineTrack.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Static Variable Declarations
 TStaticArray<UStaticMesh*, 4> ATrainEngine::StaticMeshRefs;
@@ -67,6 +68,7 @@ ATrainEngine::ATrainEngine()
 	Attributes = CreateDefaultSubobject<UQRAttributeSet>(TEXT("Attributes"));
 }
 
+#pragma region GAS
 void ATrainEngine::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
 	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
 {
@@ -114,6 +116,7 @@ UAbilitySystemComponent* ATrainEngine::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+#pragma endregion
 
 // Called when the game starts or when spawned
 void ATrainEngine::BeginPlay()
@@ -169,6 +172,13 @@ void ATrainEngine::BeginPlay()
 		AddStartupGameplayAbilities();
 	}
 
+	if (!StopIndices.IsEmpty())
+	{
+		for (int i = 0; i < StopIndices.Num(); ++i)
+		{
+			StoppedAtIndex.Push(false);
+		}
+	}
 }
 
 // Called every frame
@@ -191,6 +201,27 @@ void ATrainEngine::Tick(float DeltaTime)
     	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
     	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 
+        if (!StopIndices.IsEmpty())
+        {
+	        for (int i = StopIndices.Num() - 1; i >= 0; --i)
+	        {
+		        if (StopIndices[i] < TrackSplineRef->GetNumberOfSplinePoints() && StopIndices[i] >= 0)
+		        {
+			        const float IndexDistance = TrackSplineRef->GetDistanceAlongSplineAtSplinePoint(StopIndices[i]);
+
+			        if (CurrentSplineProgress >= IndexDistance)
+			        {
+				        if (!StoppedAtIndex[i])
+				        {
+					        StoppedAtIndex[i] = true;
+
+					        ToggleTrainStop();
+				        }
+			        }
+		        }
+	        }
+        }
+
         for (int i = 0; i < CarriageRefs.Num(); i++)
         {
 	        CarriageRefs[i]->ProcessMovement(CurrentSplineProgress);
@@ -208,17 +239,17 @@ void ATrainEngine::ToggleTrainStop()
 	isTrainMoving = !isTrainMoving;
 }
 
-void ATrainEngine::SetTrainSpeed(TrainSpeed NewSpeed)
+void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
 {
 	switch (NewSpeed)
 	{
-	case TrainSpeed::Slow:
+	case ETrainSpeed::Slow:
 		TrainSpeedModifier = 0.5f;
 		break;
-	case TrainSpeed::Standard:
+	case ETrainSpeed::Standard:
 		TrainSpeedModifier = 1.0f;
 		break;
-	case TrainSpeed::Fast:
+	case ETrainSpeed::Fast:
 		TrainSpeedModifier = 2.0f;
 		break;
 	default:

@@ -13,6 +13,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TrainEngine.h"
 #include "GameFramework/Actor.h"
 #include "TrainControlls.generated.h"
 
@@ -33,24 +34,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	enum class ETrainControlSetting
-	{
-		Slow,
-		Normal,
-		Fast
-	};
+	void UpdateEngineSpeed();
 
-	// Function to update the rotation of the train controls
-	void UpdateControls(ETrainControlSetting* controlSetting);
+	ETrainSpeed ControlSetting = ETrainSpeed::Standard;
 
-	ETrainControlSetting ControlSetting = ETrainControlSetting::Slow;
-
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* TrainControlMesh;
+	// UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* ControlHandle;
+	UStaticMeshComponent* ControlBase;
 
 
 private:
+	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
 
-	float RotateValue;
+	// Function to update the rotation of the train controls
+	void UpdateControls();
 };

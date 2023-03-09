@@ -11,7 +11,6 @@
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
-#include "Kismet/GameplayStatics.h"
 
 #include "TrainEngine.generated.h"
 
@@ -21,7 +20,7 @@ class UQRAttributeSet;
 
 // Enums
 UENUM(BlueprintType)
-enum class TrainSpeed : uint8
+enum class ETrainSpeed : uint8
 {
     Slow,
     Standard,
@@ -92,21 +91,12 @@ public:
     void ToggleTrainStop();
 
     UFUNCTION(BlueprintCallable)
-    void SetTrainSpeed(TrainSpeed NewSpeed);
+    void SetTrainSpeed(ETrainSpeed NewSpeed);
 
 protected:
 
 
-private:
-    // Structs
-    struct FSplineTraversalParameters
-    {
-        float TimeToTraverse;
-        float LengthToTraverse;
-        float TimeToSwap;
-        float Ratio;
-    };
-    
+private:    
     // Variables
     // Obtaining the spline for the train to follow
     USplineComponent* TrackSplineRef;
@@ -141,6 +131,10 @@ private:
     int CarriageCount = 0;
 
     float EngineStart = 0;
+
+    UPROPERTY(EditInstanceOnly)
+    TArray<int> StopIndices;
+    TArray<bool> StoppedAtIndex;
 
     // Functions
 };

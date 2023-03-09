@@ -19,6 +19,7 @@
 AEnemyReworkDrone::AEnemyReworkDrone()
 {
 	// Child
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 /**
@@ -45,3 +46,9 @@ void AEnemyReworkDrone::PossessedBy(AController* NewController)
 		UE_LOG(LogTemp, Warning, TEXT("EnemyController Drone Rework cast failed is: %s"), *NewController->GetName());
 	}
 }
+
+void AEnemyReworkDrone::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
