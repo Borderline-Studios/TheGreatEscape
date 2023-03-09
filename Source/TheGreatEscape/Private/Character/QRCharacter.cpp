@@ -33,6 +33,14 @@ AQRCharacter::AQRCharacter()
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 
+	SoundEmitter = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SoundEmitter"));
+	SoundEmitter->SetOnlyOwnerSee(true);
+	SoundEmitter->SetupAttachment(FirstPersonCameraComponent);
+	Mesh1P->bCastDynamicShadow = false;
+	Mesh1P->CastShadow = false;
+	Mesh1P->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	Mesh1P->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
 	
 	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
 	AbilitySystemComponent->SetIsReplicated(true);
