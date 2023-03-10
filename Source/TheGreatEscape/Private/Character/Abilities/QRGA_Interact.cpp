@@ -34,19 +34,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		
 		if(HitResult.GetActor()->ActorHasTag("Interactable"))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interactable!"));
 			/**************************************************************************************************************************************************************************/
 			// cpp class specific behaviour goes here.
 			
-			if(ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor()))
-			{
-				HitResult.GetActor()->SetActorEnableCollision(false);
-				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Picked Up!"));
-				BatteryInteractableRef->SetPickedUp();
-			}
-			else if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
+			if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 			{
 				ControlsRef->UpdateEngineSpeed();
 			}
@@ -56,7 +47,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Not Picked Up!"));
+				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 			}
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
