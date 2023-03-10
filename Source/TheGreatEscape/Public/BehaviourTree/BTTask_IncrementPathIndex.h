@@ -18,7 +18,7 @@
 #include "BTTask_IncrementPathIndex.generated.h"
 
 /**
- * 
+ *  task to increment the patrol path index
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_IncrementPathIndex : public UBTTask_BlackboardBase
@@ -26,15 +26,17 @@ class THEGREATESCAPE_API UBTTask_IncrementPathIndex : public UBTTask_BlackboardB
 	GENERATED_BODY()
 
 public:
-	UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer);
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer); // constructor 
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 
 private:
-	enum class EDirectionType
+	// *** Variables *** ///
+	enum class EDirectionType // enum for direction of NPC
 	{
 		Forward,
 		Backwards
 	};
 
-	EDirectionType Direction = EDirectionType::Forward;
+	EDirectionType Direction = EDirectionType::Forward; // set default as forwards
 };

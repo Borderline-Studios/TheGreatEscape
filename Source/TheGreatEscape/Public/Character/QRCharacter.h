@@ -1,4 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : 
+// Description : 
+// Author      :  Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
 
@@ -12,6 +22,8 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "QRCharacter.generated.h"
+
+
 
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -36,6 +48,10 @@ class THEGREATESCAPE_API AQRCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	/** First person camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = SoundEmmitter, meta = (AllowPrivateAccess = "true"))
+	UCapsuleComponent* SoundEmitter;
 
 	
 

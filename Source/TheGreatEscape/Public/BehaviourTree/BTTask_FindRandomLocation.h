@@ -14,14 +14,11 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "GameFramework/Pawn.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
-#include "UObject/UObjectGlobals.h"
 #include "BTTask_FindRandomLocation.generated.h"
 
 /**
- * 
+ * Task to Find a random location
  */
 UCLASS(Blueprintable)
 class THEGREATESCAPE_API UBTTask_FindRandomLocation : public UBTTask_BlackboardBase
@@ -29,10 +26,12 @@ class THEGREATESCAPE_API UBTTask_FindRandomLocation : public UBTTask_BlackboardB
 	GENERATED_BODY()
 
 public:
-	UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer);
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer); // constructor
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 
 private:
+	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
-	float SearchRadius = 1500.0f;
+	float SearchRadius = 1500.0f; // Radius to search
 };

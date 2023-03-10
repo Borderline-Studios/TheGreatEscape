@@ -16,29 +16,38 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "EnemyReworkController.h"
 
 
-// Sets default values
+/**
+ * @brief constructor, sets up stimulus
+ */
 AEnemyRework::AEnemyRework()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetUpStimulus();
+	SetUpStimulus(); // call function to set up stimulus
 	
 }
 
+/**
+ * @brief possessed by
+ * @param NewController controller enemy is possessed by
+ */
 void AEnemyRework::PossessedBy(AController* NewController)
 {
+	// call super
 	Super::PossessedBy(NewController);
 
+	// get controller
 	AEnemyReworkController* EnemyController = Cast<AEnemyReworkController>(NewController);
 
+	// if enemy
 	if (EnemyController)
 	{
-		//EnemyController->EEnemyType = Utilities::EnemyTypes::Melee;
+		// set tree and pass in melee enemy
 		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::Melee);
-		//UE_LOG(LogTemp, Warning, TEXT("enemy type set melee"));
 	}
 	else
 	{
@@ -46,25 +55,35 @@ void AEnemyRework::PossessedBy(AController* NewController)
 	}
 }
 
-// Called when the game starts or when spawned
+/**
+ * @brief Begin play, called when play started
+ */
 void AEnemyRework::BeginPlay()
 {
+	// call super
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
+/**
+ * @brief Tick, called every frame
+ * @param DeltaTime deltatime
+ */
 void AEnemyRework::Tick(float DeltaTime)
 {
+	// call super
 	Super::Tick(DeltaTime);
 
+	// get ability system component
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
 
+	// bool to check if it was found & the value the health equals
 	bool bFound;
 	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), bFound);
 
+	// if value found
 	if (bFound)
 	{
+		// if enemy dead
 		if (Value <= 0)
 		{
 			// die
@@ -72,10 +91,12 @@ void AEnemyRework::Tick(float DeltaTime)
 			Destroy();
 		}
 	}
-	
-
 }
 
+/**
+ * @brief Function to attack
+ * @note not sure if function still needed
+ */
 void AEnemyRework::Attack()
 {
 	
@@ -86,6 +107,9 @@ void AEnemyRework::Attack()
 	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
 }
 
+/**
+ * @brief Set up stimulus
+ */
 void AEnemyRework::SetUpStimulus()
 {
 	Stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulus"));

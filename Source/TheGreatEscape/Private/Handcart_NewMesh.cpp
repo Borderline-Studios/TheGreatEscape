@@ -1,11 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2023 Media Design School
+//
+// File Name   :	Handcard_NewMesh.cpp
+// Description :	Contains implementation of Handcart_NewMesh functionality. Should port this into a better named class.
+// Author      :	Borderline Studios - Jake Laird
+// Mail        :	jake.laird@mds.ac.nz
 
 #include "Handcart_NewMesh.h"
 #include "Kismet/GameplayStatics.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
-// Sets default values
+/**
+ * @brief
+ * Default constructor for this object. Sets default values.
+ */
 AHandcart_NewMesh::AHandcart_NewMesh()
 {
 // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -27,12 +39,7 @@ AHandcart_NewMesh::AHandcart_NewMesh()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MagliftObj(TEXT("StaticMesh'/Game/Production/Train/Art/Handcart/Handcart_Merged_Maglifts.Handcart_Merged_Maglifts'"));
 	Maglifts->SetStaticMesh(MagliftObj.Object);
 	Maglifts->SetRelativeLocation(FVector(0.0f, 368.0f, 0.0f));
-
-	// Middle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform Pole"));
-	// Middle->SetupAttachment(RootComponent);
-	// Middle->SetStaticMesh(MeshObj.Object);
-	// Middle->SetWorldScale3D(FVector(0.1f, 0.1f, 2.0f));
-
+	
 	Handle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform Handle"));
 	Handle->SetupAttachment(Base);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleObj(TEXT("StaticMesh'/Game/Production/Train/Art/Handcart/Handcart_Merged_Handles.Handcart_Merged_Handles'"));
@@ -41,39 +48,17 @@ AHandcart_NewMesh::AHandcart_NewMesh()
 	// Handle->SetWorldScale3D(FVector(1.5f, 0.05f, 0.05f));
 	Handle->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	// FGrip = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform LGrip"));
-	// FGrip->SetupAttachment(Handle);
-	// FGrip->SetStaticMesh(MeshObj.Object);
-	// FGrip->SetRelativeLocation(FVector(50.0f, 0.0f, 0.0f));
-	// FGrip->SetWorldScale3D(FVector(0.04f, 10.0f, 1.0f));
-	// FGrip->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	// BGrip = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Platform RGrip"));
-	// BGrip->SetupAttachment(Handle);
-	// BGrip->SetStaticMesh(MeshObj.Object);
-	// BGrip->SetRelativeLocation(FVector(-50.0f, 0.0f, 0.0f));
-	// BGrip->SetWorldScale3D(FVector(0.04f, 10.0f, 1.0f));
-	// BGrip->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	// Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	// Arrow->SetupAttachment(RootComponent);
-	// Arrow->SetArrowColor(FColor::Purple);
-	// Arrow->SetHiddenInGame(false);
-	// Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	
 	// End Mesh Setup
 	// Start Collision Setup
 	FrontCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("FrontCollider"));
 	FrontCollision->SetupAttachment(RootComponent);
 	FrontCollision->SetRelativeLocation(FVector(80.0f, 0.0f, 150.0f));
 	FrontCollision->SetWorldScale3D(FVector(1.25f, 3.0f, 2.0f));
-	// FrontCollision->SetHiddenInGame(false);
 	
 	BackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BackCollider"));
 	BackCollision->SetupAttachment(RootComponent);
 	BackCollision->SetRelativeLocation(FVector(-80.0f, 0.0f, 150.0f));
 	BackCollision->SetWorldScale3D(FVector(1.25f, 3.0f, 2.0f));
-	// BackCollision->SetHiddenInGame(false);
 	// End Collision Setup
 	// Start Collision Assignment
 	FrontCollision->OnComponentBeginOverlap.AddDynamic(this, &AHandcart_NewMesh::BeginFrontOverlap);
@@ -84,7 +69,10 @@ AHandcart_NewMesh::AHandcart_NewMesh()
 	// End Collision Assignment
 }
 
-// Called when the game starts or when spawned
+/**
+ * @brief
+ * Ensures that the HandCart has it's mesh populated. If not, prevent sit from calling or trying to work on anything that 
+ */
 void AHandcart_NewMesh::BeginPlay()
 {
 	Super::BeginPlay();	

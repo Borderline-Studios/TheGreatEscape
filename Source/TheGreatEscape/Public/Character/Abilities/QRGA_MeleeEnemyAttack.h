@@ -20,7 +20,7 @@
 #include "QRGA_MeleeEnemyAttack.generated.h"
 
 /**
- * 
+ *  gameplay ability to get the melee enemy to attack
  */
 UCLASS()
 class THEGREATESCAPE_API UQRGA_MeleeEnemyAttack : public UQRGameplayAbility
@@ -28,17 +28,20 @@ class THEGREATESCAPE_API UQRGA_MeleeEnemyAttack : public UQRGameplayAbility
 	GENERATED_BODY()
 
 public:
+	// *** Functions *** ///
 	UQRGA_MeleeEnemyAttack(); // constructor
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 
+	AEnemyRework* GetEnemyRef(); // Gets a reference to the enemy drone
+
+	// *** Variables *** ///
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+	TSubclassOf<UGameplayEffect> GameplayEffectClass; // What effect it is
 	
-	AEnemyRework* GetEnemyRef();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LineTrace")
-	float LineTraceMultiplier = 1000.0f;
+	float LineTraceMultiplier = 1000.0f; // How far the line trace will go
 };

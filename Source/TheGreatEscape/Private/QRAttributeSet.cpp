@@ -9,11 +9,16 @@
 #include "Character/BASE/GASBASECharacter.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
+//Empty Contructor - No nessesay for set up
 UQRAttributeSet::UQRAttributeSet()
 {
 	
 }
 
+/**
+ * @brief GAS built-in function for Replication
+ * @param OutLifetimeProps 
+ */
 void UQRAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -21,6 +26,11 @@ void UQRAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(UQRAttributeSet, Health);
 }
 
+/**
+ * @brief GAS built-in function for Attribute function
+ * @param Attribute -Gets the attribute the wants to be change
+ * @param NewValue - the value to change it to
+ */
 void UQRAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);

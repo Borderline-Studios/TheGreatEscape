@@ -17,7 +17,7 @@
 #include "BTTask_LookAtPlayer.generated.h"
 
 /**
- * 
+ * Task to look at the player
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_LookAtPlayer : public UBTTask_BlackboardBase
@@ -25,11 +25,13 @@ class THEGREATESCAPE_API UBTTask_LookAtPlayer : public UBTTask_BlackboardBase
 	GENERATED_BODY()
 
 public:
+	// *** Functions *** ///
 	UBTTask_LookAtPlayer(FObjectInitializer const& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
-	FRotator OriginalRotation;
-	bool bOriginalRotSet = false;
-	float RotationSpeed = 5.0f;
+	// *** Variables *** ///
+	FRotator OriginalRotation; // original rotation of npc
+	bool bOriginalRotSet = false; // Original rotation has been set
+	float RotationSpeed = 5.0f; // speed of rotation
 };

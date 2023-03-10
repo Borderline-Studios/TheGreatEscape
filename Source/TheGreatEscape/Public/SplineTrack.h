@@ -1,5 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2023 Media Design School
+//
+// File Name   :	SplineTrack.h
+// Description :	Contains the declarations for the SplineTrack object
+// Author      :	Borderline Studios - Jake Laird
+// Mail        :	jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -26,8 +35,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
-
+	// VARIABLES
+	
 	// FUNCTIONS
 	void PopulateTrainRef(ATrainEngine* NewTrainRef);
 	USplineComponent* GetSpline();
@@ -47,9 +56,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Final;
 
-	// UPROPERTY(EditAnywhere)
-	// AActor* OtherActor;
-
 	ATrainEngine* TrainRef;
 	ASplineTrack* NextSpline;
 
@@ -57,27 +63,6 @@ private:
 	UFUNCTION(BlueprintCallable)
 	USplineComponent* GetSplineComponent() const;
 	UBoxComponent* GetStartBoxCollider() const;
-	// void OnFinalEndOverlap();
-
-	UFUNCTION()
-	void OnFinalBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult &SweepResult
-		);
-
-	// UFUNCTION()
-	// void BeginOverlap(
-	// 	UPrimitiveComponent* OverlappedComponent,
-	// 	AActor* OtherActor,
-	// 	UPrimitiveComponent* OtherComp,
-	// 	int32 OtherBodyIndex,
-	// 	bool bFromSweep,
-	// 	const FHitResult &SweepResult
-	// );
 
 #if WITH_EDITOR
 	// Overrides for code that runs specifically when changes are made in the editor

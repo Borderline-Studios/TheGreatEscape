@@ -1,19 +1,29 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : PlayerCharacter.cpp
+// Description : Contains the functionality for the player character.
+// Author      :  Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 
-
+//UE includes
 #include "Character/Player/PlayerCharacter.h"
-
-#include "AbilitySystemBlueprintLibrary.h"
-#include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
+//GAS Includes
+#include "AbilitySystemBlueprintLibrary.h"
+
+
 
 APlayerCharacter::APlayerCharacter()
 {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(40.f, 96.0f);
 
 	// set our turn rates for input
 	TurnRateGamepad = 45.f;
@@ -38,6 +48,8 @@ void APlayerCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	//Check if the players health is less than or equal to 0 then kill
+	//todo(Jacob) Set up a better system for this
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
 		bool Found;
 		float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
@@ -50,16 +62,29 @@ void APlayerCharacter::Tick(float DeltaSeconds)
 	}
 }
 
+/**
+ * @brief called when the players health is depleted
+ */
 void APlayerCharacter::StartDeath()
 {
+	//Displables the player input
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
+/**
+ * @brief Returns the FPCC - used for access to line traces in other classes and functions
+ * @return FirstPersonCharacterComponenet
+ */
 UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 {
 	return FirstPersonCameraComponent;
 }
 
+
+/**
+ * @brief Casts and returns a player reference for other classes to use
+ * @return APlayerCharacter pointer Reference
+ */
 APlayerCharacter* APlayerCharacter::GetPlayerReference()
 {
 	APlayerCharacter* PlayerCharacter = this;

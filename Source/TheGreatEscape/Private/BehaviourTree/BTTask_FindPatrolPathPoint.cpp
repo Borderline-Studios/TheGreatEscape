@@ -17,16 +17,27 @@
 #include "NPC.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_FindPatrolPathPoint::UBTTask_FindPatrolPathPoint(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Find Patrol Path Point");
 }
 
+/**
+ * @brief When node is executed it finds the next patrol point 
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_FindPatrolPathPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// get Ai controller 
 	AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	
+
+	// If not nullptr
 	if (AIController)
 	{
 		// Get current index from blackboard

@@ -1,13 +1,24 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : QRAttributeSet.h
+// Description : The header file for the Characters attribute set for GAS
+// Author      :  Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 #pragma once
 
+//includes
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "EngineUtils.h"
 #include "QRAttributeSet.generated.h"
 
+//GAS Getters, Setter and Initers - GAS built-in defines
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
@@ -25,12 +36,11 @@ class THEGREATESCAPE_API UQRAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	//Constructor
 	UQRAttributeSet();
-	
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+
+	//UProperty for Health and Max Health
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepHealth, Category = "Attribs")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UQRAttributeSet, Health);
@@ -38,7 +48,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepHealth, Category = "Attribs")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UQRAttributeSet, MaxHealth);
-
+	
+	/*GAS built-in Functions to set up player stats*/
 	void AdjustAttributeForMaxChange(const FGameplayAttributeData& AffectedAttribute,
 									 const FGameplayAttributeData& MaxAttribute,
 									 float NewMaxValue,
@@ -49,7 +60,11 @@ public:
 
 	UFUNCTION()
 	virtual void OnRepMaxHealth(const FGameplayAttributeData& OldValue);
-
+	
+	/*GAS built-in Functions to set up player stats*/
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
 	
 	

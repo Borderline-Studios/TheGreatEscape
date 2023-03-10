@@ -3,6 +3,8 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "TrainControlls.h"
+#include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
@@ -19,25 +21,38 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetPlayerReferance());
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interact acti!"));	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 												   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
-													   ECC_Visibility))
+													   ECC_Visibility, Params))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Something Hit!"));
 		
 		if(HitResult.GetActor()->ActorHasTag("Interactable"))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interactable!"));
-			HitResult.GetActor()->SetActorEnableCollision(false);
-			HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::KeepRelativeTransform , NAME_None);
-			ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor());
-			if(HitResult.GetActor() == BatteryInteractableRef)
+			/**************************************************************************************************************************************************************************/
+			// cpp class specific behaviour goes here.
+			
+			if(ABatteryInteractable* BatteryInteractableRef = Cast<ABatteryInteractable>(HitResult.GetActor()))
 			{
+				HitResult.GetActor()->SetActorEnableCollision(false);
+				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Picked Up!"));
 				BatteryInteractableRef->SetPickedUp();
+			}
+			else if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
+			{
+				ControlsRef->UpdateEngineSpeed();
+			}
+			else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
+			{
+				ButtonRef->ToggleTrainMovement();
 			}
 			else
 			{
@@ -45,13 +60,13 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			}
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
-		
 		else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Not Interactable!"));
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
 	}
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

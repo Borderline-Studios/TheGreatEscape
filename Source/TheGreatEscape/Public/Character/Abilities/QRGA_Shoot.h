@@ -24,7 +24,7 @@ public:
 
 
 	void ToggleShooting();
-	APlayerCharacter* GetPlayerReferance();
+	APlayerCharacter* GetPlayerReference();
 	
 	FTimerHandle ShootHandle;
 
@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Animation)
 	UAnimMontage* AM_Fire;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
+	USoundBase* ShootSFX;
 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);

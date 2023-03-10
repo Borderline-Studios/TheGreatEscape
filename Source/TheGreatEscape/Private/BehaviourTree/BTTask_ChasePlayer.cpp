@@ -26,7 +26,7 @@ UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitial
 }
 
 /**
- * @brief When the helper node becomes relevant it checks if the player is within a specified range of the player 
+ * @brief When node is executed it chases the player 
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  * @return result of the node (successful or not)

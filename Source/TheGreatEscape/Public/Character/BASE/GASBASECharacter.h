@@ -1,12 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : GASBASECharacter.h
+// Description : HeaderFile for the GASBASECharacter - Child of UEs Character class jsut with added Gameplay Ability System Functionality
+// Author      :  Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
 
+//Base UE includes
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
+//GamplayAbilitySystem Includes
 #include "AbilitySystemInterface.h"
-
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
@@ -14,6 +25,8 @@
 
 #include "GASBASECharacter.generated.h"
 
+
+//Forawrd Declarations of Specific GAS classes made by me
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
 class UQRAttributeSet;
@@ -24,42 +37,46 @@ class THEGREATESCAPE_API AGASBASECharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+	//Constructor
 	AGASBASECharacter();
-	
+
+	//Default Passive and Activateable abilities/effects
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TArray<TSubclassOf<UQRGameplayAbility>> GameplayAbilities;
 
+	//GAS specific variables
 	UPROPERTY()
 	uint8 bAbilitiesInitalized:1;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<UQRAbilitySystemComponent> AbilitySystemComponent;
-
 	UPROPERTY()
 	TObjectPtr<UQRAttributeSet> Attributes;
 
-	//Functions
+	//GAS Functions
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDamaged(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
 				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
-
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
-
 	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
 				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
-
 	virtual void HandleHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
-	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	void AddStartupGameplayAbilities();
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+
+	//UE Movement Functions
+	virtual  void MoveForward(float Val);
+	void MoveRight(float Val);
+	void TurnAtRate(float Rate);
+	void LookUpAtRate(float Rate);
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,30 +89,4 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float TurnRateGamepad;
-
-public:	
-
-	/** Handles moving forward/backward */
-	virtual  void MoveForward(float Val);
-
-	/** Handles strafing movement, left and right */
-	void MoveRight(float Val);
-
-	/**
-	 * Called via input to turn at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate(float Rate);
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
-
 };

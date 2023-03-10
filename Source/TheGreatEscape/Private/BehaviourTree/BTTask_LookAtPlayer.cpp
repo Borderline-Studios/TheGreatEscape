@@ -15,16 +15,26 @@
 
 #include "EnemyReworkController.h"
 #include "NPC.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_LookAtPlayer::UBTTask_LookAtPlayer(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Look At Player");
 }
 
+/**
+ * @brief When node is executed it makes npc face the player
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-{	
+{
+	// Get controller
 	AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
 	// If ai controller not empty
@@ -69,6 +79,5 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 	// Log warning that cast failed and finish task
 	UE_LOG(LogTemp, Warning, TEXT("Cast to AEnemyReworkController failed, task failed"));
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
 	return EBTNodeResult::Failed;
 }

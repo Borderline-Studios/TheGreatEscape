@@ -12,14 +12,7 @@
 #pragma once
 
 #include <Character/BASE/GASBASECharacter.h>
-
 #include "CoreMinimal.h"
-
-#include "Character/Player/PlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
-#include "BehaviourTree/BlackboardKeys.h"
-#include "EnemyReworkController.h"
-
 #include "EnemyRework.generated.h"
 
 UCLASS()
@@ -28,32 +21,24 @@ class THEGREATESCAPE_API AEnemyRework : public AGASBASECharacter
 	GENERATED_BODY()
 
 public:
-	
-	// Sets default values for this character's properties
-	AEnemyRework();
-	
-	virtual void PossessedBy(AController* NewController) override;
-
-	
+	// *** Functions *** ///
+	AEnemyRework(); // constructor
+	virtual void PossessedBy(AController* NewController) override; // Possessed by
+	virtual void Tick(float DeltaTime) override; // tick, called every frame
+    void Attack(); // attack function
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void Attack();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayAbility> QRGAAttack;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//FGameplayAbilitySpecHandle* QRQAAttackSpecHandle;
-		
+	// *** Functions *** ///
+	virtual void BeginPlay() override; // begin play
 
 private:
-	class UAIPerceptionStimuliSourceComponent* Stimulus;
-	void SetUpStimulus();
+	// *** Functions *** ///
+	void SetUpStimulus(); // set up stimulus
+
+	// *** Variables *** ///
+	class UAIPerceptionStimuliSourceComponent* Stimulus; // stimulus component
+
 };

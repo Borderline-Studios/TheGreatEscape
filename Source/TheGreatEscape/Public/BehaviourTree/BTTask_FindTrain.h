@@ -16,15 +16,16 @@
 #include "BTTask_FindTrain.generated.h"
 
 /**
- * 
+ * Task to find train
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_FindTrain : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
-	UBTTask_FindTrain(FObjectInitializer const& ObjectInitializer);
-	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_FindTrain(FObjectInitializer const& ObjectInitializer); // constructor
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 	
 	
 };

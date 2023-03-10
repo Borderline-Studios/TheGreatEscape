@@ -8,6 +8,7 @@
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Character/QRCharacter.h"
 #include "Character/BASE/GASBASECharacter.h"
@@ -16,28 +17,36 @@
 UQRGA_Shoot::UQRGA_Shoot()
 {
 	AbilityInputID = EGASAbilityInputID::Shoot;
+
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Shoot")));
+
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Reload")));
 }
 
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	
 	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if(GetPlayerReferance()->PlayerAmmo <= 0)
+	if(GetPlayerReference()->PlayerAmmo <= 0)
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	else
 	{
-		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
-		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
-		GetPlayerReferance()->PlayerAmmo--;
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+		GetPlayerReference()->PlayerAmmo--;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX,
+											  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+											  FRotator(0,0,0), 0.3, 1);
 		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(GetPlayerReferance());
-		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
-														   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
+		Params.AddIgnoredActor(GetPlayerReference());
+		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+													   GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation() +
+														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
 														   ECC_Visibility, Params))
 		{
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
@@ -65,7 +74,7 @@ void UQRGA_Shoot::ToggleShooting()
 }
 
 
-APlayerCharacter* UQRGA_Shoot::GetPlayerReferance()
+APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
 {
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	return CharacterRef;

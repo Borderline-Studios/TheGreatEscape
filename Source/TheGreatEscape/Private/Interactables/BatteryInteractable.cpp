@@ -15,8 +15,7 @@ ABatteryInteractable::ABatteryInteractable()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(
 											 TEXT("CapsuleComponent"));
 	CapsuleComponent->InitCapsuleSize(44.f, 60.f);
-	CapsuleComponent->SetCollisionProfileName(
-						UCollisionProfile::BlockAllDynamic_ProfileName);
+	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::BlockAllDynamic_ProfileName);
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh1P"));

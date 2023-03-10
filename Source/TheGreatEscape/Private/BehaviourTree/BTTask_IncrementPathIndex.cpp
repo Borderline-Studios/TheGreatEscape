@@ -17,22 +17,34 @@
 #include "NPC.h"
 #include "BehaviourTree/BlackboardKeys.h"
 
+/**
+ * @brief constructor, name the node
+ * @param ObjectInitializer Finalise creation after c++ constructor is called 
+ */
 UBTTask_IncrementPathIndex::UBTTask_IncrementPathIndex(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Increment Path Index");
 }
 
+/**
+ * @brief When node is executed it increments the path index
+ * @param OwnerComp The owning behaviour tree component
+ * @param NodeMemory Node's memory
+ * @return result of the node (successful or not)
+ */
 EBTNodeResult::Type UBTTask_IncrementPathIndex::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	// get Ai controller 
 	AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-	
+
+	// if not nullptr
 	if (AIController)
 	{
+		// Get NPC controller
 		ANPC* const Npc = Cast<ANPC>(AIController->GetPawn());
 		int const NumOfPoints = Npc->GetPatrolPath()->Num(); // get number of points
-		int const MinIndex = 0;
-		int const MaxIndex = NumOfPoints - 1;
+		int const MinIndex = 0; // minimum index
+		int const MaxIndex = NumOfPoints - 1; // max index
 
 		// Get and set blackboard key
 		int index = AIController->GetBlackboard()->GetValueAsInt(BbKeys::patrolPathIndex);

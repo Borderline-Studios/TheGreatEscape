@@ -1,5 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2023 Media Design School
+//
+// File Name   :	TrainCarriage.h
+// Description :	Contains the declarations for the Train Carriage object. 
+// Author      :	Borderline Studios - Jake Laird
+// Mail        :	jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,6 +37,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// VARIABLES
+
 	
 	// FUNCTIONS
 	void ProcessMovement(float EngineSplineDist);
@@ -50,7 +60,7 @@ private:
 
 	USplineComponent* SplineRef;
 
+	TArray<AActor*> ActorRefs;
+
 	// FUNCTIONS
-	// // Sets default values for this actor's properties
-	// ATrainCarriage();
 };

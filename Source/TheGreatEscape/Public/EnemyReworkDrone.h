@@ -14,11 +14,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BlueprintEditor.h"
 #include "EnemyRework.h"
+#include "Engine/StaticMeshSocket.h"
 #include "EnemyReworkDrone.generated.h"
 
 /**
- * 
+ * Enemy Drone
  */
 UCLASS()
 class THEGREATESCAPE_API AEnemyReworkDrone : public AEnemyRework
@@ -26,7 +28,12 @@ class THEGREATESCAPE_API AEnemyReworkDrone : public AEnemyRework
 	GENERATED_BODY()
 
 public:
-	AEnemyReworkDrone();
+	// *** Functions *** ///
+	AEnemyReworkDrone(); // constructor
+	virtual void PossessedBy(AController* NewController) override; // possessed by
+	virtual void Tick(float DeltaTime) override; // tick, called every frame
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
+	UStaticMeshComponent* TurretBaseRef; // ref to turret base
 
-	virtual void PossessedBy(AController* NewController) override;
 };

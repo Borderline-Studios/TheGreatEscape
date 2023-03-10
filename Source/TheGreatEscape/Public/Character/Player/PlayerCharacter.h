@@ -1,12 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : PlayerCharacter.h
+// Description : The Header file for the player character using the GASBASECharacter class
+// Author      :  Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
 
+//Includes
 #include "CoreMinimal.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "PlayerCharacter.generated.h"
 
-
+//Forward Declaration
 class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
@@ -21,47 +32,30 @@ class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 {
 	GENERATED_BODY()
 public:
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
+	/** First person mesh */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
-
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
-
+	//Animation Montage variable at acces the animation montage in code
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ShootMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsShooting = false;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsAimDownSights = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsIdle = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsFanning = false;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsReloading = false;
-
+	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int PlayerAmmo = 6;
+	//Print ability player check
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	bool bIsSprinting = false;
 
+	//Constructor
 	APlayerCharacter();
 
-
+	//Functions
 	virtual void Tick(float DeltaSeconds) override;
-
 	void StartDeath();
-	
-
 	UCameraComponent* GetFirstPersonCameraComponent();
-
+	
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
-
-	APlayerCharacter* GetPlayerController();
 };

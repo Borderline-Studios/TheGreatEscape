@@ -18,7 +18,7 @@
 #include "BTTask_FindPatrolPathPoint.generated.h"
 
 /**
- * 
+ * Behaviour tree task to find next patrol point
  */
 UCLASS()
 class THEGREATESCAPE_API UBTTask_FindPatrolPathPoint : public UBTTask_BlackboardBase
@@ -26,6 +26,7 @@ class THEGREATESCAPE_API UBTTask_FindPatrolPathPoint : public UBTTask_Blackboard
 	GENERATED_BODY()
 
 public:
-	UBTTask_FindPatrolPathPoint(FObjectInitializer const& ObjectInitializer);
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// *** Functions *** ///
+	UBTTask_FindPatrolPathPoint(FObjectInitializer const& ObjectInitializer); // constructor
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 };
