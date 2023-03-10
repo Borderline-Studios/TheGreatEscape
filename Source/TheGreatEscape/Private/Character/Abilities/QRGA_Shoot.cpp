@@ -8,6 +8,7 @@
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Character/QRCharacter.h"
 #include "Character/BASE/GASBASECharacter.h"
@@ -36,6 +37,9 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		GetPlayerReference()->PlayerAmmo--;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX,
+											  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+											  FRotator(0,0,0), 0.3, 1);
 		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
