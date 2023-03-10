@@ -79,9 +79,8 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 void AEnemyReworkController::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
-	RunBehaviorTree(BehaviorTree);
-	BehaviorTreeComponent->StartTree(*BehaviorTree);
 	
 }
 
@@ -93,6 +92,16 @@ void AEnemyReworkController::OnPossess(APawn* const InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (BehaviorTree != nullptr)
+	{
+		RunBehaviorTree(BehaviorTree);
+		BehaviorTreeComponent->StartTree(*BehaviorTree);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("behaviour tree no run no start brrrr"));
+	}
+	
 	// if blackboard is not nullptr init it
 	if (Blackboard)
 	{
@@ -121,7 +130,7 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 	case Utilities::EnemyTypes::Melee: // MELEE
 		{
 			BehaviorTree = BehaviorTreeReferences[0];
-			//UE_LOG(LogTemp, Warning, TEXT("MELEE"));
+			UE_LOG(LogTemp, Warning, TEXT("MELEE %s"), *BehaviorTree->GetName());
 			break;
 		}
 	case Utilities::EnemyTypes::Drone: // DRONE
