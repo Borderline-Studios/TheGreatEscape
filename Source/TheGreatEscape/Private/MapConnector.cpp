@@ -4,7 +4,10 @@
 #include "MapConnector.h"
 
 //#include "Camera/CameraActor.h"
+#include "TrainEngine.h"
 #include "Character/QRCharacter.h"
+#include "Character/Player/PlayerCharacter.h"
+#include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
@@ -29,7 +32,12 @@ void AMapConnector::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerRef = UGameplayStatics::GetActorOfClass(GetWorld(), AQRCharacter::StaticClass());
+	PlayerRef = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerCharacter::StaticClass());
+	
+	if (!PlayerRef)
+	{
+		PlayerRef = UGameplayStatics::GetActorOfClass(GetWorld(), ATrainEngine::StaticClass());
+	}
 }
 
 // Called every frame

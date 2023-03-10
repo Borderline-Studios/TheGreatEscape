@@ -119,7 +119,8 @@ private:
     USceneComponent* SceneRoot;
 
     UPROPERTY(EditInstanceOnly)
-    UStaticMeshComponent* BoxComp;
+    UStaticMeshComponent* EngineMesh;
+    UStaticMeshComponent* Box;
 
     UPROPERTY(EditInstanceOnly)
     UArrowComponent* ArrowComp;

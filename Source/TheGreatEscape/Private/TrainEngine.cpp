@@ -18,12 +18,17 @@ ATrainEngine::ATrainEngine()
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	RootComponent = SceneRoot;
 
-	BoxComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
-	BoxComp->SetupAttachment(RootComponent);
+	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
+	EngineMesh->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Temporary-Meshes/Train/Engine/S_Train_Merged.S_Train_Merged'"));
-	BoxComp->SetStaticMesh(MeshObj.Object);
-	// BoxComp->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
+	EngineMesh->SetStaticMesh(MeshObj.Object);
 
+	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FUCK BOX"));
+	Box->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	Box->SetStaticMesh(Cube.Object);
+	Box->SetHiddenInGame(true);
+	
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	ArrowComp->SetupAttachment(RootComponent);
 	ArrowComp->SetArrowColor(FColor::Purple);
