@@ -12,7 +12,10 @@
 
 #include "TrainCarriage.h"
 
+#include "TrainControlls.h"
+#include "TrainStopButton.h"
 #include "Components/SplineComponent.h"
+#include "Engine/PointLight.h"
 
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
@@ -63,6 +66,30 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 	if (!SplineRef)
 	{
 		SplineRef = NewSplineRef;
+	}
+
+	if (CarriageNumber == 0)
+	{
+		ATrainControlls* SpeedControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
+		SpeedControls->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		SpeedControls->SetActorRelativeLocation(FVector(150.0f, -275.0f, 170.0f));
+
+		ATrainStopButton* StopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
+		StopButton->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		StopButton->SetActorRelativeLocation(FVector(-130.0f, -430.0, 330.0f));
+
+		ActorRefs.Push(SpeedControls);
+		ActorRefs.Push(StopButton);
+	}
+
+	if (CarriageNumber % 4 != 1)
+	{
+		APointLight* PointLight = Cast<APointLight>(GetWorld()->SpawnActor(APointLight::StaticClass()));
+		PointLight->SetMobility(EComponentMobility::Movable);
+		PointLight->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		PointLight->SetActorRelativeLocation(FVector(0.0f, 0.0f, 300.0f));
+
+		ActorRefs.Push(PointLight);
 	}
 }
 

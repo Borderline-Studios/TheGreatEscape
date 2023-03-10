@@ -38,7 +38,7 @@ public:
 
 	ETrainSpeed ControlSetting = ETrainSpeed::Standard;
 
-	// UPROPERTY(EditAnywhere)
+	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* ControlHandle;
 	UStaticMeshComponent* ControlBase;
 

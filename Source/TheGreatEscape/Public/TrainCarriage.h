@@ -60,5 +60,7 @@ private:
 
 	USplineComponent* SplineRef;
 
+	TArray<AActor*> ActorRefs;
+
 	// FUNCTIONS
 };

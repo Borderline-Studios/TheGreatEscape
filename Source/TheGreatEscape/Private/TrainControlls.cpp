@@ -94,25 +94,28 @@ void ATrainControlls::UpdateControls()
 	{
 	case ETrainSpeed::Slow:
 		{
-			ControlHandle->SetWorldRotation(FRotator(0.0f, 0.0f, -45.0f));
+			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, -45.0f));
 			
 			// RotateValue = -50.0f;
 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}
+		break;
 	case ETrainSpeed::Standard:
 		{
-			ControlHandle->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f));
+			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 
 			// RotateValue = 0.0f;
 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}
+		break;
 	case ETrainSpeed::Fast:
 		{
-			ControlHandle->SetWorldRotation(FRotator(0.0f, 0.0f, 45.0f));
+			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 45.0f));
 			
 			// RotateValue = 50.0f;
 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
 		}
+		break;
 	default: ;
 	}
 }
