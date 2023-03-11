@@ -15,6 +15,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
 #include "EnemyReworkController.h"
+#include "TrainEngine.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
@@ -26,7 +27,7 @@
  */
 UBTTask_FindPlayerLocation::UBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer)
 {
-	NodeName = TEXT("Find Player Location");
+	NodeName = TEXT("Find Actor Location");
 }
 
 /**
@@ -45,11 +46,22 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 	// Check AIController not null
 	if (AIController)
 	{
-		// Get player location
-		FVector const PlayerLocation = player->GetActorLocation();
+		if (bSearchForPlayer)
+		{
+			// Get player location
+			FVector const PlayerLocation = player->GetActorLocation();
 
-		// Update bb key
-		AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+			// Update bb key
+			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+		}
+		else
+		{
+			// Get Train
+			ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+			
+			// Update bb key
+			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Train->GetActorLocation());
+		}
 		
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

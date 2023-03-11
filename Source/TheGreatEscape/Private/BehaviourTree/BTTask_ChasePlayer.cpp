@@ -22,7 +22,7 @@
  */
 UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer)
 {
-	NodeName = TEXT("Chase Player");
+	NodeName = TEXT("Chase Target");
 }
 
 /**
@@ -39,11 +39,12 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 	// If ai controller not empty
 	if (AIController)
 	{
-		// Get players location
-		FVector const PlayerLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
+		
+		// Get targets location
+		FVector const TargetLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
 
 		// move to player location
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TargetLocation);
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

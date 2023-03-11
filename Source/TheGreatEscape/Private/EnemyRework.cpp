@@ -39,12 +39,9 @@ void AEnemyRework::PossessedBy(AController* NewController)
 {
 	// call super
 	Super::PossessedBy(NewController);
-
-	// get controller
-	AEnemyReworkController* EnemyController = Cast<AEnemyReworkController>(NewController);
-
-	// if enemy
-	if (EnemyController)
+	
+	// get controller & if not empty if enemy
+	if (AEnemyReworkController* EnemyController = Cast<AEnemyReworkController>(NewController))
 	{
 		// set tree and pass in melee enemy
 		EnemyController->SetBehaviourTree(Utilities::EnemyTypes::Melee);

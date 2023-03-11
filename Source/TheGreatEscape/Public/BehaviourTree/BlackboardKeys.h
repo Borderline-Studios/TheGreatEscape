@@ -25,6 +25,7 @@ namespace BbKeys
 	TCHAR const * const droneInAttackRange = TEXT("DroneInAttackRange");
 	TCHAR const * const NPCInPlayerRange = TEXT("NPCInPlayerRange");
 	TCHAR const * const NPCCanIncrement = TEXT("NPCCanIncrement");
+	TCHAR const * const isTrainClosest = TEXT("IsTrainClosest");
 }
 
 /**

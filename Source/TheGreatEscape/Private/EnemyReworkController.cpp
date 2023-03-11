@@ -55,6 +55,16 @@ AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectI
 		UE_LOG(LogTemp, Warning, TEXT("Drone bt set"));
 	}
 
+	// HYBRID ENEMY TREE SET UP
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objHybrid(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkHybrid.BT_EnemyReworkHybrid'"));
+
+	// If behaviour tree found, set it
+	if (objHybrid.Succeeded())
+	{
+		BehaviorTreeReferences.Push(objHybrid.Object);
+		UE_LOG(LogTemp, Warning, TEXT("Hybrid bt set"));
+	}
+
 	// NPC TREE SET UP
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objNPC(TEXT("BehaviorTree'/Game/Production/NPCs/BT_NPC.BT_NPC'"));
 
@@ -130,7 +140,7 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 	case Utilities::EnemyTypes::Melee: // MELEE
 		{
 			BehaviorTree = BehaviorTreeReferences[0];
-			UE_LOG(LogTemp, Warning, TEXT("MELEE %s"), *BehaviorTree->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("MELEE %s"), *BehaviorTree->GetName());
 			break;
 		}
 	case Utilities::EnemyTypes::Drone: // DRONE
@@ -139,9 +149,15 @@ void AEnemyReworkController::SetBehaviourTree(Utilities::EnemyTypes EEnemyType)
 			//UE_LOG(LogTemp, Warning, TEXT("DRONE"));
 			break;
 		}
-	case Utilities::EnemyTypes::NPC: // NPC
+	case Utilities::EnemyTypes::Hybrid: // Hybrid
 		{
 			BehaviorTree = BehaviorTreeReferences[2];
+			//UE_LOG(LogTemp, Warning, TEXT("Hybrid"));
+			break;
+		}
+	case Utilities::EnemyTypes::NPC: // NPC
+		{
+			BehaviorTree = BehaviorTreeReferences[3];
 			//UE_LOG(LogTemp, Warning, TEXT("NPC"));
 			break;
 		}

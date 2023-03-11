@@ -33,7 +33,7 @@ public:
 protected:
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowProtectedAccess = "true"))
-	bool bSearchRandom = false; // Is searching for random point
+	bool bSearchForPlayer = true; // Whether to search for train or player
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowProtectedAccess = "true"))
 	float SearchRadius = 150.0f; // Radius to search

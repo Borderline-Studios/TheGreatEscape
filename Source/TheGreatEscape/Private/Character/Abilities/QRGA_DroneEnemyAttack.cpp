@@ -58,7 +58,7 @@ void UQRGA_DroneEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			
 		}
 	}
-	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
+	//DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);
 }
 
 /**

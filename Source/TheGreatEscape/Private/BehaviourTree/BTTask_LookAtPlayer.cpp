@@ -16,6 +16,7 @@
 #include "EnemyReworkController.h"
 #include "NPC.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 /**
  * @brief constructor, name the node
@@ -31,14 +32,12 @@ UBTTask_LookAtPlayer::UBTTask_LookAtPlayer(FObjectInitializer const& ObjectIniti
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  * @return result of the node (successful or not)
+ * @bug Doesnt rotate properly, needs fix 
  */
 EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Get controller
-	AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-
-	// If ai controller not empty
-	if (AIController)
+	// Get controller & If ai controller not empty
+	if (AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get players location
 		FVector const PlayerLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
@@ -46,30 +45,10 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 		// get npc
 		ANPC* const NPC = Cast<ANPC>(AIController->GetPawn());
 
-		// set original rotation
-		if (!bOriginalRotSet)
-		{
-			OriginalRotation = NPC->GetActorRotation();
-			bOriginalRotSet = true;
-		}
-
-		// look at player
-		FVector LookDir = PlayerLocation - NPC->GetActorLocation();
-		LookDir.Normalize();
-
-		FRotator LookAt = FRotationMatrix::MakeFromX(LookDir).Rotator();
-		LookAt.Pitch = 0.0f;
-		LookAt.Roll = 0.0f;
-		
-		if (OriginalRotation != LookAt)
-		{
-			FRotator newRotation = FMath::RInterpTo(OriginalRotation, LookAt, GetWorld()->GetDeltaSeconds(), RotationSpeed);
-			NPC->SetActorRotation(newRotation);
-		}
-		else
-		{
-			bOriginalRotSet = false;
-		}
+		FVector Forward = PlayerLocation - NPC->GetActorLocation();
+		FRotator Rot = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector::UpVector);
+		NPC->SetActorRotation(Rot);
+		//NPC->SetActorRotation(newRot);
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
