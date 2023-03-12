@@ -7,9 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include <GameplayEffectTypes.h>
 
-#include "GASAttributeSet.h"
-#include "GASAbilitySystemComponent.h"
-#include "GASGameplayAbility.h"
+#include "GameplayEffect.h"
 #include "Kismet/GameplayStatics.h"
 #include "TheGreatEscapeCharacter.generated.h"
 
@@ -91,7 +89,7 @@ public:
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
-	TArray<TSubclassOf<UGASGameplayAbility>> DefaultAbilities;
+	TArray<TSubclassOf<UQRGameplayAbility>> DefaultAbilities;
 
 
 	//Functions

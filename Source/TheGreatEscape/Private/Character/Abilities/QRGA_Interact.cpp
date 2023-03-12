@@ -23,15 +23,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetPlayerReferance());
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interact acti!"));	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 												   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
 													   ECC_Visibility, Params))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Something Hit!"));
-		
 		if(HitResult.GetActor()->ActorHasTag("Interactable"))
 		{
 			/**************************************************************************************************************************************************************************/
@@ -53,11 +49,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Not Interactable!"));
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

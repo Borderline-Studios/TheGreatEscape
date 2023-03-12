@@ -48,6 +48,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsSprinting = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int NumScrap = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int Resource2 = 0;
+
 	//Constructor
 	APlayerCharacter();
 
