@@ -55,7 +55,7 @@ void UQRGA_ResourceGather::ResourceLogic(FName NotifyName, const FBranchingPoint
 				if(HitResult.GetActor()->ActorHasTag("Resource"))
 				{
 					if(HitResult.GetActor()->ActorHasTag("Scraps"))
-						GetPlayerReference()->NumScrap += GetPlayerReference()->NumScrap + 3;
+						GetPlayerReference()->NumScrap = GetPlayerReference()->NumScrap + 3;
 					HitResult.GetActor()->Destroy();
 				}
 			}
