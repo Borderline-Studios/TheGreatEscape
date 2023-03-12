@@ -39,14 +39,20 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 	// Get controller & If ai controller not empty
 	if (AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
+		// Get player character
+    	ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+    	
 		// Get players location
-		FVector const PlayerLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
+		FVector const PlayerLocation = Player->GetActorLocation();
 
 		// get npc
 		ANPC* const NPC = Cast<ANPC>(AIController->GetPawn());
 
 		FVector Forward = PlayerLocation - NPC->GetActorLocation();
-		FRotator Rot = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector::UpVector);
+		FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
+
+		//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
+		
 		NPC->SetActorRotation(Rot);
 		//NPC->SetActorRotation(newRot);
 
