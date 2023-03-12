@@ -7,7 +7,7 @@
 //
 // File Name   : PlayerCharacter.h
 // Description : The Header file for the player character using the GASBASECharacter class
-// Author      :  Borderline Studios - Jacob MacLean
+// Author      : Borderline Studios - Jacob MacLean
 // Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
@@ -64,4 +64,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetResources(int ValueToChange, int NewValue);
 };

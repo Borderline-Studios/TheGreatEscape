@@ -17,7 +17,7 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
-
+#include "Animation/BlendSpaceBase.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -89,4 +89,11 @@ APlayerCharacter* APlayerCharacter::GetPlayerReference()
 {
 	APlayerCharacter* PlayerCharacter = this;
 	return PlayerCharacter;
+}
+
+void APlayerCharacter::SetResources(int ValueToChange, int NewValue)
+{
+	ValueToChange = NewValue;
+	NumScrap = ValueToChange;
+	
 }

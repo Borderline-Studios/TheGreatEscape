@@ -29,7 +29,8 @@ void UQRGA_ResourceGather::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		if(HitResult.GetActor()->ActorHasTag("Resource"))
 		{
 			if(HitResult.GetActor()->ActorHasTag("Scraps"))
-			GetPlayerReference()->NumScrap++;
+			GetPlayerReference()->NumScrap += GetPlayerReference()->NumScrap + 3;
+			HitResult.GetActor()->Destroy();
 		}
 	}
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
