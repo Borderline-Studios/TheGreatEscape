@@ -33,7 +33,7 @@ class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 	GENERATED_BODY()
 public:
 	/** First person mesh */
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -53,7 +53,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int Resource2 = 0;
-
+	
 	//Constructor
 	APlayerCharacter();
 
