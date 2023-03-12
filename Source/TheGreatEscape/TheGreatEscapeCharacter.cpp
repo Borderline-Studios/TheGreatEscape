@@ -13,10 +13,6 @@
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "Kismet/GameplayStatics.h"
 
-//GAS INCLUDES
-#include "GASAbilitySystemComponent.h"
-#include "GASAttributeSet.h"
-#include "GASGameplayAbility.h"
 #include <GameplayEffectTypes.h>
 
 #include "QRAbilitySystemComponent.h"
@@ -136,7 +132,7 @@ void ATheGreatEscapeCharacter::GiveAbilities()
 			bAbilitiesAdded = true;
 			if (HasAuthority() && AbilitySystemComponent)
 			{
-				for (TSubclassOf<UGASGameplayAbility>& StartUpAbility : DefaultAbilities)
+				for (TSubclassOf<UQRGameplayAbility>& StartUpAbility : DefaultAbilities)
 				{
 					AbilitySystemComponent->GiveAbility(
 						FGameplayAbilitySpec(StartUpAbility, 1 , static_cast<int32>(StartUpAbility.GetDefaultObject()->AbilityInputID), this));
