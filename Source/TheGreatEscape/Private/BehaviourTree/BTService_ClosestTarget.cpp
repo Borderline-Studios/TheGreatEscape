@@ -24,7 +24,7 @@
 UBTService_ClosestTarget::UBTService_ClosestTarget()
 {
 	bNotifyBecomeRelevant = true;
-	NodeName = TEXT("Cloest Target");
+	NodeName = TEXT("Closest Target");
 }
 
 /**

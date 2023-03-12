@@ -30,4 +30,9 @@ public:
 	UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer); // constructor
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 
+protected:
+	// *** Variables *** ///
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
+	float StoppingDistance = 300.0f;
+
 };

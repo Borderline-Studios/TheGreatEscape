@@ -32,7 +32,6 @@ UBTTask_LookAtPlayer::UBTTask_LookAtPlayer(FObjectInitializer const& ObjectIniti
  * @param OwnerComp The owning behaviour tree component
  * @param NodeMemory Node's memory
  * @return result of the node (successful or not)
- * @bug Doesnt rotate properly, needs fix 
  */
 EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

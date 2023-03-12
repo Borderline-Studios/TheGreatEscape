@@ -56,20 +56,39 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			FVector TrainLocation = Train->GetActorLocation();
 			FVector EnemyLocation = Enemy->GetActorLocation();
 
+			FVector TrainLocWithElevation = FVector(TrainLocation.X, TrainLocation.Y, TrainLocation.Z + EvelvationHeight);
+
 			// find direction
-			FVector direction = FVector(TrainLocation.X, TrainLocation.Y, TrainLocation.Z + EvelvationHeight) - EnemyLocation;
-
-			// multiple direction by speed
-			direction *= Speed;
-
+			FVector direction = TrainLocWithElevation - EnemyLocation;
+			
+			direction.Normalize();
+			
+			// if direction < slowing dist set vel to slower move dist (train speed)
+			// otherwise have 2 radius 1 to slow 1 to stop
+			if (direction.Dist(TrainLocWithElevation, EnemyLocation) <= SlowingDist)
+			{
+				direction.Z *= 1.25;
+				direction *= Speed / 1.7;
+			}
+			else
+			{
+				// multiple direction by speed
+				direction.Z *= 2;
+				direction *= Speed;
+			}
+			
 			// set velocity of enemy
 			Enemy->GetMovementComponent()->Velocity = direction;
 
 			// look at train
-			FRotator newRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), TrainLocation);
-			Enemy->TurretBaseRef->SetRelativeRotation(newRot);
-			//Enemy->TurretBaseRef->SetWorldRotation(newRot);
-	
+			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), TrainLocation);
+			Enemy->TurretBaseRef->SetRelativeRotation(newTurretBaseRot); // rotate the turret base mesh
+			
+
+			//FVector Forward = TrainLocation - EnemyLocation;
+			FRotator newDroneRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), (Enemy->GetActorLocation() + Enemy->GetVelocity()));
+			Enemy->SetActorRotation(newDroneRot);
+			
 		}
 		else
 		{

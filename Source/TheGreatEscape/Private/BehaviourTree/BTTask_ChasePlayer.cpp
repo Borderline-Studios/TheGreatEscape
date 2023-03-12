@@ -43,8 +43,21 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 		// Get targets location
 		FVector const TargetLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
 
-		// move to player location
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TargetLocation);
+		// Get Enemy
+		APawn* const Enemy = AIController->GetPawn();
+
+		FVector distance = TargetLocation - Enemy->GetActorLocation();
+
+		if (distance.Dist(TargetLocation, Enemy->GetActorLocation()) >= StoppingDistance)
+		{
+			// move to player location
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TargetLocation);
+		}
+		else
+		{
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, Enemy->GetActorLocation());
+		}
+		
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
