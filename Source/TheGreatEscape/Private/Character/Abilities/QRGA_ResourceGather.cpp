@@ -16,24 +16,10 @@ void UQRGA_ResourceGather::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
 
-	Params.AddIgnoredActor(GetPlayerReference());
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::ResourceLogic);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-													   GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation() +
-														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
-														   ECC_Visibility, Params))
-	{
-		if(HitResult.GetActor()->ActorHasTag("Resource"))
-		{
-			if(HitResult.GetActor()->ActorHasTag("Scraps"))
-			GetPlayerReference()->NumScrap += GetPlayerReference()->NumScrap + 3;
-			HitResult.GetActor()->Destroy();
-		}
-	}
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_ResourceGather::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -48,6 +34,47 @@ bool UQRGA_ResourceGather::CanActivateAbility(const FGameplayAbilitySpecHandle H
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+void UQRGA_ResourceGather::ResourceLogic(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if(NotifyName == FName("Gather"))
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+
+		Params.AddIgnoredActor(GetPlayerReference());
+
+		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation() +
+															   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
+															   ECC_Visibility, Params))
+		{
+			if (HitResult.GetActor())
+			{
+				if(HitResult.GetActor()->ActorHasTag("Resource"))
+				{
+					if(HitResult.GetActor()->ActorHasTag("Scraps"))
+						GetPlayerReference()->NumScrap += GetPlayerReference()->NumScrap + 3;
+					HitResult.GetActor()->Destroy();
+				}
+			}
+			else
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			
+		}
+
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::CallEndAbilitity);
+	}
+}
+
+void UQRGA_ResourceGather::CallEndAbilitity(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if(NotifyName == FName("FinishedGather"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }
 
 APlayerCharacter* UQRGA_ResourceGather::GetPlayerReference()
