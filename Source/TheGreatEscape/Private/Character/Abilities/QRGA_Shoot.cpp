@@ -30,10 +30,6 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 	else
 	{
-		if(GetPlayerReference()->PlayerAmmo == 6)
-		{
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-		}
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		GetPlayerReference()->PlayerAmmo--;
