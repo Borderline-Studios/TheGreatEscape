@@ -116,6 +116,12 @@ void AEnemyRework::CalcRandomAttackPos()
 	int randIndex = FMath::RandRange(0, Utilities::XPointsLength - 1);
 	float newXVal = Utilities::RandTrainXPoints[randIndex];
 
+	// Random to make some on other side of train
+	if (FMath::RandRange(0,2) == 0)
+	{
+		yOffsetFromTrain *= -1.0;
+	}
+
 	// set new vector
 	TrainTargetPointOffset = FVector(newXVal, yOffsetFromTrain, ElevationHeight);
 	UE_LOG(LogTemp, Warning, TEXT("Target location for train: %s"), *TrainTargetPointOffset.ToString());

@@ -34,11 +34,8 @@ UBTTask_DroneAttack::UBTTask_DroneAttack(FObjectInitializer const& ObjectInitial
  */
 EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// get Ai controller
-	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-
-	// check AI controller is not nullptr
-	if (AIController)
+	// get Ai controller & check AI controller is not nullptr
+	if (const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get enemy
 		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
