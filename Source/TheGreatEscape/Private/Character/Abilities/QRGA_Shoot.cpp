@@ -17,10 +17,6 @@
 UQRGA_Shoot::UQRGA_Shoot()
 {
 	AbilityInputID = EGASAbilityInputID::Shoot;
-
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Shoot")));
-
-	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Reload")));
 }
 
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -34,6 +30,10 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 	else
 	{
+		if(GetPlayerReference()->PlayerAmmo == 6)
+		{
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		GetPlayerReference()->PlayerAmmo--;
