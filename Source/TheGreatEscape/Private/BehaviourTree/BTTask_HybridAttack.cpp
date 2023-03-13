@@ -56,7 +56,7 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
      {
       // set the projectiles init trajectory
       UE_LOG(LogTemp, Warning, TEXT("Projectile spawn"));
-      FVector LaunchDir = Enemy->LeftTurretRef->GetSocketRotation("ShootLocationL").Vector();
+      FVector LaunchDir = Enemy->LeftTurretRef->GetForwardVector();
       Projectile->FireDirection(LaunchDir);
      }
     }
