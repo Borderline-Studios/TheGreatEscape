@@ -12,8 +12,6 @@
 
 
 #include "BehaviourTree/BTTask_FindTrain.h"
-
-#include "EnemyRework.h"
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
@@ -48,16 +46,12 @@ EBTNodeResult::Type UBTTask_FindTrain::ExecuteTask(UBehaviorTreeComponent& Owner
 		// Get train
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
-		// Get Enemy
-		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
-
 		// if train not nullptr
 		if (Train)
 		{
 			FVector const TrainLocation = Train->GetActorLocation();
 
-			// Set location of train + enemy's offset
-			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, TrainLocation + Enemy->TrainTargetPointOffset);
+			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, TrainLocation);
 		}
 		else
 		{

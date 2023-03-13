@@ -82,6 +82,7 @@ void AMapConnector::BeginFrontOverlap(
 		//
 		
 		// Load the next level
+		FTimerHandle LoadLevelHandle;
 		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, [&]()
 		{
 			if (UseWorldRef)
@@ -92,6 +93,7 @@ void AMapConnector::BeginFrontOverlap(
 			{
 				UGameplayStatics::OpenLevel(this, NextMapName);
 			}
+			
 		}, BlendTime + 1, false);
 	}
 }
