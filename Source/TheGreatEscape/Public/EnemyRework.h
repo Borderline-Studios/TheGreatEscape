@@ -26,13 +26,25 @@ public:
 	virtual void PossessedBy(AController* NewController) override; // Possessed by
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
     void Attack(); // attack function
-    
+	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
+
+	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector TrainTargetPointOffset;
 
 protected:
 	// *** Functions *** ///
 	virtual void BeginPlay() override; // begin play
+
+	// *** Variables *** ///
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
+	float yOffsetFromTrain = 225.0f; // Y axis offset from train
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	float ElevationHeight = 550.0f; // height above train the enemy will float
 
 private:
 	// *** Functions *** ///

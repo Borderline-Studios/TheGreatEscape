@@ -40,4 +40,8 @@ namespace Utilities
 		Hybrid,
 		NPC
 	};
+
+	// const array of
+	float const RandTrainXPoints[] = {150.0f,100.0f,50.0f,0.0f,-50.0f,-100.0f,-150.0f};
+	int const XPointsLength = 7;
 }
