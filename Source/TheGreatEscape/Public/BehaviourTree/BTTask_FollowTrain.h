@@ -30,9 +30,7 @@ public:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; // When the task is called this function is called
 
 private:
-	// *** Variables *** ///
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
-	float EvelvationHeight = 200.0f; // height above train the enemy will float
+	// *** Variables *** //
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
 	float Speed = 1.0f; // speed of drone

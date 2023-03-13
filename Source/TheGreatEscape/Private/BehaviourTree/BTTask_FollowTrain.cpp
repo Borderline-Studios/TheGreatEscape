@@ -56,16 +56,16 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			FVector TrainLocation = Train->GetActorLocation();
 			FVector EnemyLocation = Enemy->GetActorLocation();
 
-			FVector TrainLocWithElevation = FVector(TrainLocation.X, TrainLocation.Y, TrainLocation.Z + EvelvationHeight);
+			FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
 
 			// find direction
-			FVector direction = TrainLocWithElevation - EnemyLocation;
+			FVector direction = TrainLocWithOffset - EnemyLocation;
 			
 			direction.Normalize();
 			
 			// if direction < slowing dist set vel to slower move dist (train speed)
 			// otherwise have 2 radius 1 to slow 1 to stop
-			if (direction.Dist(TrainLocWithElevation, EnemyLocation) <= SlowingDist)
+			if (direction.Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
 			{
 				direction.Z *= 1.25;
 				direction *= Speed / 1.7;

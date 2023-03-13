@@ -17,6 +17,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "EnemyReworkController.h"
+#include "Math/UnrealMathUtility.h"
 
 
 /**
@@ -28,6 +29,8 @@ AEnemyRework::AEnemyRework()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetUpStimulus(); // call function to set up stimulus
+
+	CalcRandomAttackPos(); // Find new target point
 	
 }
 
@@ -102,6 +105,20 @@ void AEnemyRework::Attack()
 	
 	// Attack code
 	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
+}
+
+/**
+ * @brief Calculates an offset vector from train for the enemy to target 
+ */
+void AEnemyRework::CalcRandomAttackPos()
+{
+	// Get random X point from array
+	int randIndex = FMath::RandRange(0, Utilities::XPointsLength - 1);
+	float newXVal = Utilities::RandTrainXPoints[randIndex];
+
+	// set new vector
+	TrainTargetPointOffset = FVector(newXVal, yOffsetFromTrain, ElevationHeight);
+	UE_LOG(LogTemp, Warning, TEXT("Target location for train: %s"), *TrainTargetPointOffset.ToString());
 }
 
 /**
