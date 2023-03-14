@@ -20,16 +20,20 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	GetPlayerReference()->PlayerAmmo = 0;
-	GetPlayerReference()->PlayerAmmo = 6;
+	else
+	{
+		GetPlayerReference()->PlayerAmmo = 0;
+		GetPlayerReference()->PlayerAmmo = 6;
 
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
-										  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-										  FRotator(0,0,0), 0.3, 1);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
+											  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+											  FRotator(0,0,0), 0.3, 1);
 		
+	}
+
 	
 	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
@@ -37,7 +41,12 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 void UQRGA_Reload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.Clear();
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	
+	
+	
 }
 
 bool UQRGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

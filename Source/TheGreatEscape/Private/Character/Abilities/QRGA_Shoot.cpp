@@ -34,8 +34,9 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		GetPlayerReference()->PlayerAmmo--;
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX,
-											  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-											  FRotator(0,0,0), 0.3, 1);
+									  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+									  FRotator(0,0,0), 0.3, 1);
+
 		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -45,23 +46,34 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
 														   ECC_Visibility, Params))
 		{
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayWorldCameraShake(GetWorld(), GetPlayerReference()->CameraShake,
+																			  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(), 1.0f, 2.0f, 1.0f, true);
+			GetPlayerReference()->GetController()->SetControlRotation(FRotator(GetPlayerReference()->GetController()->GetControlRotation().Pitch + 1.5,
+																		             GetPlayerReference()->GetController()->GetControlRotation().Yaw,
+																		             GetPlayerReference()->GetController()->GetControlRotation().Roll));
+
+	
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT(" %f = Rotation.Pitch"), GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentRotation().Pitch));
+			
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 			if(ASC)
 			{
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->bActiHitMarker = true;
 			}
 		}
 	}
-	
 	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.Clear();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
+	GetPlayerReference()->bActiHitMarker = false;
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
 
