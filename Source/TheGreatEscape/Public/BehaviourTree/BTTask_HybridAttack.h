@@ -38,7 +38,9 @@ public:
 	// *** Variables *** ///
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AHybridEnemyProjectile> ProjectileClass = AHybridEnemyProjectile::StaticClass(); // Projectile
+	TSoftClassPtr<AHybridEnemyProjectile> ProjectileClass; // weak pointer to class type we want
+
+	UClass* LoadedBpProjectile; // Class to spawn
 	
 	FTimerHandle AttackDelayHandle; // Timer handle to handle the attack delay
 	bool bCanAttack = true; // bool to check if drone can attack
