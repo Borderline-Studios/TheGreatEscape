@@ -17,10 +17,6 @@
 UQRGA_Shoot::UQRGA_Shoot()
 {
 	AbilityInputID = EGASAbilityInputID::Shoot;
-
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Shoot")));
-
-	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Gun.Reload")));
 }
 
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
