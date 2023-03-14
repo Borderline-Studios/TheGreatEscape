@@ -36,7 +36,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
 	/** First person camera */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 	//Animation Montage variable at acces the animation montage in code
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
@@ -53,12 +53,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int Resource2 = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI, meta = (AllowPrivateAccess = "true"))
-	bool bActiHitMarker = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UCameraShakeBase> CameraShake;
 	
 	//Constructor
 	APlayerCharacter();

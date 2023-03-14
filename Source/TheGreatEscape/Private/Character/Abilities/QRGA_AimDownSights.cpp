@@ -21,6 +21,10 @@ void UQRGA_AimDownSights::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ADS acti"));
 	}
+	
+	GetPlayerReferance()->Mesh1P->SetRelativeLocationAndRotation(FVector(-31.0, -13.8,-135.5),
+		                                               FRotator(0.05, -85.0, 0.0),false
+		,nullptr, ETeleportType::None);
 
 
 

@@ -45,7 +45,6 @@ private:
 	UCameraComponent* PlayerCamRef;
 
 	bool IsEndingMap = false;
-	FTimerHandle LoadLevelHandle;
 
 	UFUNCTION()
 	void BeginFrontOverlap(
