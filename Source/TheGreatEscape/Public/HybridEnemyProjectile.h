@@ -16,6 +16,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "QRGameplayAbility.h"
 #include "HybridEnemyProjectile.generated.h"
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 	
 	void FireDirection(const FVector& ShootDirection); //  initializes the projectiles velocity in the direction it was shot
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit); // On hit
+
 	// *** Variables *** //
 	UPROPERTY(VisibleDefaultsOnly, Category = "Projectile")
 	USphereComponent* CollisionComponent; // Sphere collision component
@@ -39,6 +43,12 @@ public:
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Projectile")
 	UStaticMeshComponent* ProjectileMeshComponent; // Projectile mesh
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass; // What effect it is
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//TSubclassOf<UQRGameplayAbility> GameplayAbility; // set in bp
 	
 protected:
 	// *** Functions *** //
@@ -46,7 +56,7 @@ protected:
 
 	// *** Variables *** //
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile", meta = (AllowPrivateAccess = "true"))
-	float ProjectileRadius = 5.0f; 
+	float ProjectileRadius = 4.0f; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile", meta = (AllowPrivateAccess = "true"))
 	float InitSpeed = 2000.0f;

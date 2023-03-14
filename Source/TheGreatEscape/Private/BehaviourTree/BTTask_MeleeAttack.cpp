@@ -56,7 +56,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				// if it is the player
 				if (PlayerChar)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("atac"));
+					//UE_LOG(LogTemp, Warning, TEXT("atac"));
 					
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
