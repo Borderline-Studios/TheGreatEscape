@@ -26,6 +26,8 @@ void UQRGA_ResourceGather::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.Clear();
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 

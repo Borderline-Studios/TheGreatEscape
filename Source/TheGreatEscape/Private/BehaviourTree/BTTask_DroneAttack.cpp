@@ -34,11 +34,8 @@ UBTTask_DroneAttack::UBTTask_DroneAttack(FObjectInitializer const& ObjectInitial
  */
 EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// get Ai controller
-	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-
-	// check AI controller is not nullptr
-	if (AIController)
+	// get Ai controller & check AI controller is not nullptr
+	if (const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get enemy
 		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
@@ -56,7 +53,7 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				if (Train)
 				{
 					// attack the train, set can attack to false and start timer
-					UE_LOG(LogTemp, Warning, TEXT("drone attack"));
+					//UE_LOG(LogTemp, Warning, TEXT("drone attack"));
 
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
