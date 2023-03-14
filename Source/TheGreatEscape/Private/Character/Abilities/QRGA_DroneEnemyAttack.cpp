@@ -51,7 +51,7 @@ void UQRGA_DroneEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		{
 			if (ATrainEngine* Train = Cast<ATrainEngine>(HitResult.GetActor()))
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("Damage train boi %s"), *HitResult.GetActor()->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("Damage train boi %s"), *HitResult.GetActor()->GetName());
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}

@@ -31,7 +31,7 @@ AQRCharacter::AQRCharacter()
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
-	Mesh1P->SetRelativeLocation(FVector(12.7f, 8.94f, -145.98f));
+	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 
 	SoundEmitter = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SoundEmitter"));
 	SoundEmitter->SetOnlyOwnerSee(true);

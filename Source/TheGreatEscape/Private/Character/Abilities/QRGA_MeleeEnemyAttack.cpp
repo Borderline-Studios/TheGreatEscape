@@ -49,7 +49,7 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Damage player boi %s"), *HitResult.GetActor()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("Damage player boi %s"), *HitResult.GetActor()->GetName());
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 		}

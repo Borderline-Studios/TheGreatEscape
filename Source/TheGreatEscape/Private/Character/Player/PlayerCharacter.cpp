@@ -17,6 +17,7 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Animation/BlendSpaceBase.h"
 
 
 APlayerCharacter::APlayerCharacter()
