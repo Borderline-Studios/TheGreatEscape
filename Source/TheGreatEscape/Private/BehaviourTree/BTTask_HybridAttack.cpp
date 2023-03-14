@@ -22,6 +22,14 @@
 UBTTask_HybridAttack::UBTTask_HybridAttack(FObjectInitializer const& ObjectInitializer)
 {
   NodeName = TEXT("Hybrid Attack");
+
+ // Find class we want
+ ProjectileClass = TSoftClassPtr<AHybridEnemyProjectile>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_HybridProjectile.BP_HybridProjectile_C'")));
+
+ // Load the class we want onto class pointer
+ LoadedBpProjectile = ProjectileClass.LoadSynchronous();
+ 
+ // Blueprint'/Game/Production/Enemies/Rework/BP_HybridProjectile.BP_HybridProjectile'
 }
 
 /**
@@ -41,29 +49,23 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
    if (bCanAttack)
    {
     // attack the train, set can attack to false and start timer
-    UE_LOG(LogTemp, Warning, TEXT("Hybrid attack"));
+    //UE_LOG(LogTemp, Warning, TEXT("Hybrid attack"));
 
     // Spawn Parameters
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = Enemy;
-
+    
     if (ProjectileClass)
     {
      // SPawn projectile
-     AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(ProjectileClass, Enemy->GetActorLocation(), Enemy->LeftTurretRef->GetSocketRotation("ShootLocationL"), SpawnParams);
+     AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, Enemy->LeftTurretRef->GetSocketLocation("ShootLocationL"), Enemy->LeftTurretRef->GetSocketRotation("ShootLocationL"), SpawnParams);
 
-     if (Projectile)
+     if (!Projectile)
      {
-      // set the projectiles init trajectory
-      UE_LOG(LogTemp, Warning, TEXT("Projectile spawn"));
-      FVector LaunchDir = Enemy->LeftTurretRef->GetForwardVector();
-      Projectile->FireDirection(LaunchDir);
+      UE_LOG(LogTemp, Warning, TEXT("Projectile class not found"));
      }
     }
-    else
-    {
-     UE_LOG(LogTemp, Warning, TEXT("Projectile class not found"));
-    }
+   
      bCanAttack = false;
      GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_HybridAttack::SetCanAttack, AttackDelay, false);
    }

@@ -53,7 +53,7 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				if (Train)
 				{
 					// attack the train, set can attack to false and start timer
-					UE_LOG(LogTemp, Warning, TEXT("drone attack"));
+					//UE_LOG(LogTemp, Warning, TEXT("drone attack"));
 
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
