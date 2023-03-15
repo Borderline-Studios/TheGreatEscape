@@ -45,6 +45,13 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
 														   ECC_Visibility, Params))
 		{
+			GetPlayerReference()->GetController()->SetControlRotation(FRotator(GetPlayerReference()->GetController()->GetControlRotation().Pitch + 2.1,
+																					 GetPlayerReference()->GetController()->GetControlRotation().Yaw,
+																					 GetPlayerReference()->GetController()->GetControlRotation().Roll));
+
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
+			
+			
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 			if(ASC)
 			{
