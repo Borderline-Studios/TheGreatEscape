@@ -13,7 +13,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyRework.h"
+#include "EnemyReworkDrone.h"
+#include "EnemyReworkHybrid.h"
 #include "GameFramework/Actor.h"
 #include "BehaviourTree/BlackboardKeys.h"
 #include "EnemySpawner.generated.h"
@@ -45,8 +46,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	int NumOfEnemiesToSpawn = 1; // number of enemies to spawn
 	
-	static TArray<AEnemyRework*> EnemyReferences; // Array of enemy references
+	TSoftClassPtr<AEnemyRework> MeleeEnemyRef; // weak pointer to melee class
+	TSoftClassPtr<AEnemyReworkDrone> DroneEnemyRef; // weak pointer to drone class
+	TSoftClassPtr<AEnemyReworkHybrid> HybridEnemyRef; // weak pointer to hybrid class
 
+	static TStaticArray<UClass*, 3> EnemyReferences; // Array of enemy references
+	
 	FNavLocation Location;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))

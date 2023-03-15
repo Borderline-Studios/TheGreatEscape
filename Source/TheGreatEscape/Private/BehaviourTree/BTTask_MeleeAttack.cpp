@@ -50,6 +50,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 			// if can attack
 			if (bCanAttack)
 			{
+				Enemy->bAttacking = true;
 				// Get player character
 				APlayerCharacter* PlayerChar = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 

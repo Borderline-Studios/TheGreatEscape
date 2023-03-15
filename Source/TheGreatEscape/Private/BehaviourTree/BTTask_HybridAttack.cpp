@@ -49,6 +49,9 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     // attack the train, set can attack to false and start timer
     //UE_LOG(LogTemp, Warning, TEXT("Hybrid attack"));
 
+    // set attacking bool for animation
+    Enemy->bAttacking = true;
+
     // Spawn Parameters
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = Enemy;
@@ -69,6 +72,7 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     }
    
      bCanAttack = false;
+     Enemy->bAttacking = false; 
      GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_HybridAttack::SetCanAttack, AttackDelay, false);
    }
   // Finish task

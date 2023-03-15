@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector TrainTargetPointOffset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool bAttacking = false;
+
 protected:
 	// *** Functions *** ///
 	virtual void BeginPlay() override; // begin play

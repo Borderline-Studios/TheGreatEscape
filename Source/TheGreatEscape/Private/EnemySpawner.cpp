@@ -14,8 +14,8 @@
 #include "EnemyReworkDrone.h"
 #include "NavigationSystem.h"
 
-//AEnemySpawner* spawner = Cast<AEnemySpawner>(UGameplayStatics::GetActorOfClass(this, AEnemySpawner::StaticClass()));
-//spawner->SpawnEnemy(Utilities::EnemyTypes::Melee, 2);
+// Set up static array
+TStaticArray<UClass*, 3> AEnemySpawner::EnemyReferences;
 
 /**
  * @brief Constructor - sets default values
@@ -24,6 +24,34 @@ AEnemySpawner::AEnemySpawner()
 {
   // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
   PrimaryActorTick.bCanEverTick = true;
+
+ // set static array with tree references
+ for (int i = 0; i < 3; i++)
+ {
+   if (!EnemyReferences[i])
+   {
+      UClass* uClassTemp = nullptr;
+
+      if (i == 0) // MELEE
+      { 
+      	 MeleeEnemyRef = TSoftClassPtr<AEnemyRework>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_EnemyRework.BP_EnemyRework_C'")));
+         uClassTemp = MeleeEnemyRef.LoadSynchronous();
+      }
+      else if (i == 1) // DRONE
+      {
+      	 DroneEnemyRef = TSoftClassPtr<AEnemyReworkDrone>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_EnemyReworkDrone.BP_EnemyReworkDrone_C'")));
+      	 uClassTemp = DroneEnemyRef.LoadSynchronous();
+      }
+      else if (i == 2) // HYBRID
+      {
+         HybridEnemyRef = TSoftClassPtr<AEnemyReworkHybrid>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_EnemyRewordHybrid.BP_EnemyRewordHybrid_C")));
+         uClassTemp = HybridEnemyRef.LoadSynchronous();
+      }
+
+      EnemyReferences[i] = uClassTemp;
+			
+  }
+ }
 }
 
 /**
@@ -58,35 +86,32 @@ void AEnemySpawner::SpawnEnemy(Utilities::EnemyTypes TypeToSpawn, int numOfEnemi
    {
      case Utilities::EnemyTypes::Melee:
       {
-         for (int i = 0; i <= numOfEnemiesToSpawn; i++)
+         for (int i = 0; i < numOfEnemiesToSpawn; i++)
          {
             FVector temp = GetRandomLocationInRange(SearchRadius);
-            AEnemyRework* newEnemy = Cast<AEnemyRework>(GetWorld()->SpawnActor(AEnemyRework::StaticClass(), &temp));
+            AEnemyRework* newEnemy = Cast<AEnemyRework>(GetWorld()->SpawnActor(EnemyReferences[0], &temp));
 
-          if (newEnemy)
-          {
-           //newEnemy->SetActorLocation(GetRandomLocationInRange(SearchRadius));
-           UE_LOG(LogTemp, Warning, TEXT("Melee enemie spawned :3"));
-          }
-          else
-          {
-           UE_LOG(LogTemp, Warning, TEXT("womp womp"));
-          }
          }
          break;
       }
      case Utilities::EnemyTypes::Drone:
      {
-         for (int i = 0; i <= numOfEnemiesToSpawn; i++)
+         for (int i = 0; i < numOfEnemiesToSpawn; i++)
          {
-           AEnemyReworkDrone* newDrone = Cast<AEnemyReworkDrone>(GetWorld()->SpawnActor(AEnemyReworkDrone::StaticClass()));
-           newDrone->SetActorLocation(GetRandomLocationInRange(SearchRadius));
-           UE_LOG(LogTemp, Warning, TEXT("drone boi spawned goofy ahh"));
+         	FVector temp = GetRandomLocationInRange(SearchRadius);
+         	AEnemyReworkDrone* newDrone = Cast<AEnemyReworkDrone>(GetWorld()->SpawnActor(EnemyReferences[1], &temp));
+         	
          }
          break;
      }
      case Utilities::EnemyTypes::Hybrid:
      {
+     		for (int i = 0; i < numOfEnemiesToSpawn; i++)
+     		{
+     			FVector temp = GetRandomLocationInRange(SearchRadius);
+     			AEnemyReworkHybrid* newHybrid = Cast<AEnemyReworkHybrid>(GetWorld()->SpawnActor(EnemyReferences[2], &temp));
+     			
+     		}
          break;
      }
      default:
