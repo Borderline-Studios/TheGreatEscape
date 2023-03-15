@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	class UBehaviorTree* BehaviorTree; // Behaviour tree ref
 
-	static TArray<UBehaviorTree*> BehaviorTreeReferences; // Array of different tree references
+	static TStaticArray<UBehaviorTree*, 4> BehaviorTreeReferences; // Array of different tree references
 
 private:
 	// *** Functions *** ///

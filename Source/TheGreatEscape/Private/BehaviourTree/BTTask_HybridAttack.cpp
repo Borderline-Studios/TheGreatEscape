@@ -28,8 +28,6 @@ UBTTask_HybridAttack::UBTTask_HybridAttack(FObjectInitializer const& ObjectIniti
 
  // Load the class we want onto class pointer
  LoadedBpProjectile = ProjectileClass.LoadSynchronous();
- 
- // Blueprint'/Game/Production/Enemies/Rework/BP_HybridProjectile.BP_HybridProjectile'
 }
 
 /**

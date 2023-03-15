@@ -28,7 +28,6 @@ public:
 	// *** Functions *** //
 	AHybridEnemyProjectile(); // Sets default values for this actor's properties
 	virtual void Tick(float DeltaTime) override; // Called every frame
-	
 	void FireDirection(const FVector& ShootDirection); //  initializes the projectiles velocity in the direction it was shot
 
 	UFUNCTION()
