@@ -43,22 +43,22 @@ ATrainEngine::ATrainEngine()
 
 	        if (i == 0)
 	        {
-	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Base_Full_Train_Car_Base_Full.Train_Car_Base_Full_Train_Car_Base_Full'"));
+	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Passenger_Car.Train_Passenger_Car'"));
 	        	Mesh = FirstCarMesh.Object;
 	        }
 	    	else if (i == 1)
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_FlatBed_Full_Train_Car_FlatBed_Full.Train_Car_FlatBed_Full_Train_Car_FlatBed_Full'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Flatbed_Car.Train_Flatbed_Car'"));
 	    		Mesh = SecondCarMesh.Object;
 	        }
 	    	else if (i == 2)
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Weapons_Full_Train_Car_Weapon_Full.Train_Car_Weapons_Full_Train_Car_Weapon_Full'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Weapon_Car.Train_Weapon_Car'"));
 	    		Mesh = ThirdCarMesh.Object;
 	        }
 	    	else if (i == 3)
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_Cars_Full/Train_Car_Windows_Full.Train_Car_Windows_Full'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Living_Quarter_Car.Train_Living_Quarter_Car'"));
 	    		Mesh = FourthCarMesh.Object;
 	        }
 
@@ -155,7 +155,7 @@ void ATrainEngine::BeginPlay()
 		if (TrackSplineRef)
 		{
 			bHasStartedMoving = true;
-			isTrainMoving = true;
+			bTrainMoving = true;
 		}
 	}, (StartDelayTime >= 1) ? StartDelayTime : 0.1f, false);
 
@@ -194,7 +194,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	// Standard Tick Operation
     if (bHasStartedMoving)
     {
-    	if (isTrainMoving)
+    	if (bTrainMoving)
     	{
     		TimeSinceStart += (DeltaTime * TrainSpeedModifier);
     	}
@@ -239,11 +239,19 @@ void ATrainEngine::Tick(float DeltaTime)
     }
 }
 
+/**
+ * @brief This function does nothing
+ */
 void ATrainEngine::ToggleTrainStop()
 {
-	isTrainMoving = !isTrainMoving;
+	bTrainMoving = !bTrainMoving;
 }
 
+/**
+ * @brief
+ * This function does nothing
+ * @param NewSpeed 
+ */
 void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
 {
 	switch (NewSpeed)

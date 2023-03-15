@@ -82,7 +82,7 @@ public:
     
     // Track Changing
     UPROPERTY(BlueprintReadWrite)
-    bool ShouldChangeTracks = true;
+    bool bShouldChangeTracks = true;
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
     AActor* TrackActorRef;
 
@@ -108,8 +108,7 @@ private:
     
     float TimeSinceStart;
     bool bHasStartedMoving = false;
-    bool firstRun = false;
-    bool isTrainMoving = true;
+    bool bTrainMoving = true;
     float TrainSpeedModifier = 1.0f;
     
     // Keeping track of the entire track (pun intended)
