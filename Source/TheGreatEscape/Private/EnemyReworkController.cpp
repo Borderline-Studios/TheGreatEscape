@@ -21,13 +21,11 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "BehaviourTree/BlackboardKeys.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "GameFramework/Character.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 
 // Set up static array
-TArray<UBehaviorTree*> AEnemyReworkController::BehaviorTreeReferences;
+TStaticArray<UBehaviorTree*, 4> AEnemyReworkController::BehaviorTreeReferences;
 
 /**
  * @brief constructor, set up references
@@ -35,46 +33,40 @@ TArray<UBehaviorTree*> AEnemyReworkController::BehaviorTreeReferences;
  */
 AEnemyReworkController::AEnemyReworkController(FObjectInitializer const& ObjectInitializer)
 {
-	// MELEE ENEMY TREE SET UP
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objMelee(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
-
-	// If behaviour tree found, set it
-	if (objMelee.Succeeded())
+	// set static array with tree references
+	for (int i = 0; i < 4; i++)
 	{
-		BehaviorTreeReferences.Push(objMelee.Object);
-		UE_LOG(LogTemp, Warning, TEXT("BT set"));
+		if (!BehaviorTreeReferences[i])
+		{
+			//UStaticMesh* Mesh = nullptr;
+			UBehaviorTree* behaviorTreeTemp = nullptr;
+
+			if (i == 0) // MELEE
+			{
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>objMelee(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyRework.BT_EnemyRework'"));
+				behaviorTreeTemp = objMelee.Object;
+			}
+			else if (i == 1) // DRONE
+			{
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>objDrone(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
+				behaviorTreeTemp = objDrone.Object;
+			}
+			else if (i == 2) // HYBRID
+			{
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>objHybrid(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkHybrid.BT_EnemyReworkHybrid'"));
+				behaviorTreeTemp = objHybrid.Object;
+			}
+			else if (i == 3) // NPC
+			{
+				static ConstructorHelpers::FObjectFinder<UBehaviorTree>objNPC(TEXT("BehaviorTree'/Game/Production/NPCs/BT_NPC.BT_NPC'"));
+				behaviorTreeTemp = objNPC.Object;
+			}
+
+			BehaviorTreeReferences[i] = behaviorTreeTemp;
+			
+		}
 	}
-
-	// DRONE ENEMY TREE SET UP
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objDrone(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkDrone.BT_EnemyReworkDrone'"));
-
-	// If behaviour tree found, set it
-	if (objDrone.Succeeded())
-	{
-		BehaviorTreeReferences.Push(objDrone.Object);
-		UE_LOG(LogTemp, Warning, TEXT("Drone bt set"));
-	}
-
-	// HYBRID ENEMY TREE SET UP
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objHybrid(TEXT("BehaviorTree'/Game/Production/Enemies/Rework/BT_EnemyReworkHybrid.BT_EnemyReworkHybrid'"));
-
-	// If behaviour tree found, set it
-	if (objHybrid.Succeeded())
-	{
-		BehaviorTreeReferences.Push(objHybrid.Object);
-		UE_LOG(LogTemp, Warning, TEXT("Hybrid bt set"));
-	}
-
-	// NPC TREE SET UP
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree>objNPC(TEXT("BehaviorTree'/Game/Production/NPCs/BT_NPC.BT_NPC'"));
-
-	// If behaviour tree found, set it
-	if (objNPC.Succeeded())
-	{
-		BehaviorTreeReferences.Push(objNPC.Object);
-		UE_LOG(LogTemp, Warning, TEXT("NPC bt set"));
-	}
-
+	
 	// initalise the behaviour tree comp and blackboard
 	BehaviorTreeComponent = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviourComp"));
 	Blackboard = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
