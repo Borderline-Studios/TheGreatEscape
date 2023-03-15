@@ -140,4 +140,3 @@ void AHybridEnemyProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Ot
 	
 	Destroy();
 }
-

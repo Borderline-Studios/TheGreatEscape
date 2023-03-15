@@ -30,10 +30,10 @@ public:
 	virtual void PossessedBy(AController* NewController) override; // possessed by
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
 
+	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
 	UStaticMeshComponent* LeftTurretRef; // ref to turret
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
 	UStaticMeshComponent* RightTurretRef; // ref to turret 
-	
 };
