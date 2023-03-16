@@ -7,6 +7,8 @@
 #include "Character/Abilities/Data.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+//TODO Clean Up print screens
+//TODO Try and make the sprint hold instead of toggle
 
 //Constructor
 UQRGA_Sprint::UQRGA_Sprint()
@@ -21,19 +23,26 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	//TODO Add FOV Lerp to show sprint
+	//Checks if player is wanting to sprint
 	if (GetPlayerReference()->bIsSprinting)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"), GetPlayerReference()->bIsSprinting ?  "True" : "False"));
+		//Setting the Sprint to false
 		GetPlayerReference()->bIsSprinting = false;
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 150.0f;
+		//Decreasing max movement speed
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 250.0f;
 	}
 	else if(!GetPlayerReference()->bIsSprinting)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"),  GetPlayerReference()->bIsSprinting ?  "TrueF" : "FalseF"));
+		//Setting the Sprint to true
 		GetPlayerReference()->bIsSprinting = true;
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  150.0f;
+		//Increasing max movement speed
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  250.0f;
 	}
-	
+
+	//Ends ability
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
@@ -56,6 +65,8 @@ bool UQRGA_Sprint::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
  */
 APlayerCharacter* UQRGA_Sprint::GetPlayerReference()
 {
+	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	//Returns Character Ref
 	return CharacterRef;
 }

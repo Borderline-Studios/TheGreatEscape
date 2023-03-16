@@ -1,14 +1,25 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : QRGA_Sprint.h
+// Description : The header file for the Sprint ability
+// Author      : Borderline Studios - Jacob MacLean
+// Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
 
 
 
-
+//Includes
 #include "CoreMinimal.h"
 #include "QRGameplayAbility.h"
 #include "QRGA_Sprint.generated.h"
 
+//Forward Declarations
 class APlayerCharacter;
 /**
  * 
