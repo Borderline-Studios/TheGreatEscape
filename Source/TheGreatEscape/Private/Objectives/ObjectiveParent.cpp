@@ -15,7 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Static Variable Declarations
-USplineComponent* AObjectiveParent::SplineReference;
+USplineComponent* AObjectiveParent::SplineRef;
 
 // Sets default values
 AObjectiveParent::AObjectiveParent()
@@ -23,7 +23,7 @@ AObjectiveParent::AObjectiveParent()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	if (!SplineReference)
+	if (!SplineRef)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Missing a Spline Reference"));
 	}
@@ -63,9 +63,9 @@ void AObjectiveParent::Tick(float DeltaTime)
  */
 void AObjectiveParent::PopulateSplineRef(USplineComponent* NewRef)
 {
-	if (!SplineReference)
+	if (!SplineRef)
 	{
-		SplineReference = NewRef;
+		SplineRef = NewRef;
 	}
 	else
 	{

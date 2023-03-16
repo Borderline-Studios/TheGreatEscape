@@ -23,7 +23,7 @@ ATrainEngine::ATrainEngine()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Temporary-Meshes/Train/Engine/S_Train_Merged.S_Train_Merged'"));
 	EngineMesh->SetStaticMesh(MeshObj.Object);
 
-	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FUCK BOX"));
+	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Detection Box"));
 	Box->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	Box->SetStaticMesh(Cube.Object);

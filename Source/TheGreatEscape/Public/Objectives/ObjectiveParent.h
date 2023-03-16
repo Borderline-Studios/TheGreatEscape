@@ -37,11 +37,21 @@ public:
 
 
 	// FUNCTIONS
-	void PopulateSplineRef(USplineComponent* NewRef);
+	static void PopulateSplineRef(USplineComponent* NewRef);
+
+	static bool SplineRefPopulated()
+	{
+		if (SplineRef)
+		{
+			return true;
+		}
+		
+		return false;
+	}
 
 protected:
 	// VARIABLES
-	static USplineComponent* SplineReference;
+	static USplineComponent* SplineRef;
 	UBoxComponent* Detector;
 	AActor* PlayerRef;
 	bool bPlayerSucceeded = false;
