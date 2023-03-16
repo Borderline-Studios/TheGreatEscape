@@ -71,13 +71,13 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 				}
 			else if (direction.Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
 			{
-				direction.Z *= 1.25;
-				direction *= Speed / 1.7;
+				direction.Z *= 2.0f;
+				direction *= Speed / 1.7f;
 			}
 			else
 			{
 				// multiple direction by speed
-				direction.Z *= 2;
+				direction.Z *= 4.0f;
 				direction *= Speed;
 			}
 			

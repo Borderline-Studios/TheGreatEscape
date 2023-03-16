@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "QRGameplayAbility.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "QRGA_Shoot.generated.h"
 
 class APlayerCharacter;
@@ -36,6 +38,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
 	USoundBase* ShootSFX;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* HitVFX;
 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
