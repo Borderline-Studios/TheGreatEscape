@@ -1,4 +1,12 @@
-// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// (c) 2022 Media Design School
+// File Name   :
+// Description :
+// Author      :  Borderline Studios - (person(s) working on file)
+// Mail        : 
 
 #pragma once
 
@@ -33,9 +41,8 @@ private:
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 	
-	UFUNCTION(CallInEditor)
+	UFUNCTION(CallInEditor, Category = "Gate Functions")
 	void SnapRotation() const;
-
 #endif
 
 	UFUNCTION()
@@ -51,13 +58,14 @@ private:
 	// VARIABLES
 	UStaticMeshComponent* GateMesh;
 
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditInstanceOnly, Category = "Gate References")
 	ASplineTrack* SplineRef;
 
-	// UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(EditInstanceOnly, Category = "Gate Variables")
+	bool bSnapToTrack = true;
+	
 	USphereComponent* TrainDetector;
 
-	// UPROPERTY(VisibleInstanceOnly)
 	ATrainEngine* EngineRef;
 
 	UPROPERTY(VisibleInstanceOnly)
