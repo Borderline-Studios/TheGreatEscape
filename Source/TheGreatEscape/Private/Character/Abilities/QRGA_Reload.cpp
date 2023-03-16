@@ -8,6 +8,7 @@
 
 UQRGA_Reload::UQRGA_Reload()
 {
+	//Setting the input key via the enum
 	AbilityInputID = EGASAbilityInputID::Reload;
 }
 
@@ -15,18 +16,25 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	//Checks if ammo is full
 	if (GetPlayerReference()->PlayerAmmo == 6)
 	{
+		//End ability if ammo is full (Reload no needed)
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	else
 	{
+			//Sets ammo to zero to avoid any issues (Probably not nessessary)
 			GetPlayerReference()->PlayerAmmo = 0;
+			//Sets ammo to full
         	GetPlayerReference()->PlayerAmmo = 6;
-        
+
+			//Jumps animontage ot the reload section to player reload animation
         	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+			//Checks for an Animnotify then triggers function
         	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
-        
+
+			//Plays reload sound at location
         	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
         										  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
         										  FRotator(0,0,0), 0.3, 1);
@@ -52,14 +60,18 @@ bool UQRGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 APlayerCharacter* UQRGA_Reload::GetPlayerReference()
 {
+	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	//Returns Character Ref
 	return CharacterRef;
 }
 
 void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
+	//Checks the Nofity name
 	if (NotifyName == FName("FinishedReload"))
 	{
+		//Ends ability when animation is finished
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	
