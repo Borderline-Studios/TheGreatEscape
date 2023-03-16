@@ -64,6 +64,7 @@ private:
 	}
 
 #if WITH_EDITOR
+	virtual void PostTransacted(const FTransactionObjectEvent& TransactionEvent) override;
 	// virtual void PostEditUndo() override;
 #endif
 };

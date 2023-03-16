@@ -4,6 +4,7 @@
 #include "Objectives/ObjectivePickup.h"
 
 #include "Components/BoxComponent.h"
+#include "Components/SplineComponent.h"
 
 void AObjectivePickup::BeginAreaOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -24,15 +25,19 @@ AObjectivePickup::AObjectivePickup()
 	// Setting up the Collision Functions to work with CollectionZone
 	CollectionZone->OnComponentBeginOverlap.AddDynamic(this, &AObjectivePickup::BeginAreaOverlap);
 
-	// PICKUP OBJECT -> Doesn't Work! 
-	ObjectToPickup = CreateDefaultSubobject<AActor>(TEXT("TEST"));
-	ObjectToPickup->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	// ObjectToPickup->SetActorLocation(GetActorLocation() + FVector(0.0f, -100.0f, 0.0f));
-	UStaticMeshComponent* ObjStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Object Mesh"));
-	ObjStaticMeshComp->AttachToComponent(ObjectToPickup->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Interactables/Placeables/Pickups/Battery/Battery.Battery'"));
-	ObjStaticMeshComp->SetStaticMesh(MeshObj.Object);
-	ObjectToPickup->Tags.Push("Interactable");
+	// PICKUP OBJECT -> Doesn't Work!
+	// if (SplineRef)
+	// {
+	// 	ObjectToPickup = SplineRef->GetWorld()->SpawnActor(AActor::StaticClass());
+	// 	// ObjectToPickup->Rename(FName("NewName"));
+	// 	ObjectToPickup->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	// 	ObjectToPickup->SetActorLocation(GetActorLocation() + FVector(0.0f, -100.0f, 0.0f));
+	// 	UStaticMeshComponent* ObjStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Object Mesh"));
+	// 	ObjStaticMeshComp->AttachToComponent(ObjectToPickup->GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+	// 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Interactables/Placeables/Pickups/Battery/Battery.Battery'"));
+	// 	ObjStaticMeshComp->SetStaticMesh(MeshObj.Object);
+	// 	ObjectToPickup->Tags.Push("Interactable");
+	// }
 }
 
 void AObjectivePickup::Tick(float DeltaSeconds)

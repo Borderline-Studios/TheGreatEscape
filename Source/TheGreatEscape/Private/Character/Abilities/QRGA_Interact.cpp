@@ -47,6 +47,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			}
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
+		else if (HitResult.GetComponent()->ComponentHasTag("Interactable"))
+		{
+			HitResult.GetComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+			HitResult.GetComponent()->AttachToComponent(GetPlayerReferance()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+		}
 		else
 		{
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);

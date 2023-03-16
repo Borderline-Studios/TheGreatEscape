@@ -21,6 +21,7 @@ AObjectiveManager::AObjectiveManager()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 	StaticMesh->SetStaticMesh(MeshObj.Object);
 
+	
 }
 
 // Called when the game starts or when spawned
@@ -58,7 +59,7 @@ void AObjectiveManager::AddDefenseObjective()
 void AObjectiveManager::AddSecureObjective()
 {
 	if (!ReachedCap() && SplineRef)
-	{
+	{		
 		ObjectiveRefs.Push(Cast<AObjectiveSecure>(GetWorld()->SpawnActor(AObjectiveSecure::StaticClass())));
 		UpdateArray();
 	}
@@ -91,6 +92,11 @@ void AObjectiveManager::UpdateArray()
 		
 		for (int i = 0; i < ObjectiveRefs.Num(); i++)
 		{
+			if (!ObjectiveRefs[i]->SplineRefPopulated())
+			{
+				ObjectiveRefs[i]->PopulateSplineRef(SplineRef->GetSpline());
+			}
+			
 			ObjectiveRefs[i]->SetActorLocation(SplineRef->GetSpline()->GetLocationAtDistanceAlongSpline(SplineSegment * (i + 1), ESplineCoordinateSpace::World));
 			ObjectiveRefs[i]->SetActorRotation(SplineRef->GetSpline()->GetRotationAtDistanceAlongSpline(SplineSegment * (i + 1), ESplineCoordinateSpace::World));
 
@@ -101,3 +107,16 @@ void AObjectiveManager::UpdateArray()
 		}
 	}
 }
+
+#if WITH_EDITOR
+  void AObjectiveManager::PostTransacted(const FTransactionObjectEvent& TransactionEvent)
+{
+	Super::PostTransacted(TransactionEvent);
+
+	if (TransactionEvent.GetEventType() == ETransactionObjectEventType::Finalized && SplineRef && !AObjectiveParent::SplineRefPopulated())
+	{
+		AObjectiveParent::PopulateSplineRef(SplineRef->GetSpline());
+	}
+}
+#endif
+
