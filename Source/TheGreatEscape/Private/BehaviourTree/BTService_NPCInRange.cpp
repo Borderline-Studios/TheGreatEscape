@@ -16,7 +16,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 
 /**

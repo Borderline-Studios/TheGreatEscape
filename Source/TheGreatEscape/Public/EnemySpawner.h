@@ -16,7 +16,7 @@
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
 #include "GameFramework/Actor.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 #include "EnemySpawner.generated.h"
 
 UCLASS()

@@ -15,7 +15,7 @@
 #include "EnemyReworkController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NPC.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 
 /**
  * @brief constructor, name the node

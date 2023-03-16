@@ -18,7 +18,7 @@
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 
 /**
  * @brief Constructor, defines the node's name

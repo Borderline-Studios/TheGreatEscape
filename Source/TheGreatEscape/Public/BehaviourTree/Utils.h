@@ -5,8 +5,8 @@
 // 
 // (c) 2022 Media Design School
 //
-// File Name   : BlackboardKeys.h
-// Description : Lists blackboard keys so retyping is not necesarry
+// File Name   : Utils.h
+// Description : Lists blackboard keys so retyping is not necessary, also some other Util stuff for other classes
 // Author      : Borderline Studios - Toni Natta
 // Mail        : toni.natta@mds.ac.nz
 
@@ -41,7 +41,7 @@ namespace Utilities
 		NPC
 	};
 
-	// const array of
+	// const array of random points for enemies that attack the train
 	float const RandTrainXPoints[] = {300.0f,200.0f,100.0f,0.0f,-100.0f,-200.0f,-300.0f};
 	int const XPointsLength = 7;
 }

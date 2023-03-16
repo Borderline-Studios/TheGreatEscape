@@ -19,7 +19,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "TheGreatEscape/TheGreatEscapeCharacter.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 
 /**
  * @brief constructor, name the node

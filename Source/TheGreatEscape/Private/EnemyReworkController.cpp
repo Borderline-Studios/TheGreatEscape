@@ -20,7 +20,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 

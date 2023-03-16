@@ -15,7 +15,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyReworkController.h"
 #include "Runtime/NavigationSystem/Public/NavigationSystem.h"
-#include "BehaviourTree/BlackboardKeys.h"
+#include "BehaviourTree/Utils.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
