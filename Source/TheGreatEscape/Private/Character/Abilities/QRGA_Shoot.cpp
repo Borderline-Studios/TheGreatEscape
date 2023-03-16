@@ -16,6 +16,7 @@
 
 UQRGA_Shoot::UQRGA_Shoot()
 {
+	//sets the input key via the Enum
 	AbilityInputID = EGASAbilityInputID::Shoot;
 }
 
@@ -24,45 +25,58 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 {
 	
 	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	//Checks is ammo is depleated
 	if(GetPlayerReference()->PlayerAmmo <= 0)
 	{
+		//If ammo is 0 end ability
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	else
 	{
+		//Jumps the animontage to the fire section
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+		//Added dynamic notify and triggers function if notify is received
 		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+		//Decrements the Ammo
 		GetPlayerReference()->PlayerAmmo--;
+
+		//Plays the sound at the player
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX,
 											  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 											  FRotator(0,0,0), 0.3, 1);
-		
+
+		//Varaibles for Hitscan check
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
+		//Ignore self
 		Params.AddIgnoredActor(GetPlayerReference());
+		//Line trace from crosshair/middle of player screen straight line infront of player
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													   GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 														   GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector() * 20000,
 														   ECC_Visibility, Params))
 		{
+			//Add crosshair recoil (aim punch)
 			GetPlayerReference()->GetController()->SetControlRotation(FRotator(GetPlayerReference()->GetController()->GetControlRotation().Pitch + 2.1,
 																					 GetPlayerReference()->GetController()->GetControlRotation().Yaw,
 																					 GetPlayerReference()->GetController()->GetControlRotation().Roll));
-
+			//Cam Shake
 			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
 			
-			
+			//Getting the ability system component from the hit actor
 			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+			//Check if ASC is vaild
 			if(ASC)
 			{
+				//Creates damage effect outgoing handle
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+				//Actiavte hit VFX on hit object/actor
 				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
+				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}
 		}
 	}
-	
-	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -75,19 +89,24 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 void UQRGA_Shoot::ToggleShooting()
 {
+	//TODO Remove this function
 }
 
 
 APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
 {
+	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	//Returns Character Ref
 	return CharacterRef;
 }
 
 void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
+	//Checks if the Nofity name
 	if (NotifyName == FName("FinishedFire"))
 	{
+		//Ends ability is the animation is done
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }

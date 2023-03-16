@@ -8,9 +8,11 @@
 
 UQRGA_AimDownSights::UQRGA_AimDownSights()
 {
+	//Settings the input via the enum
 	AbilityInputID = EGASAbilityInputID::AimDownSights;
 }
 
+//TODO Make this better (New animations)
 void UQRGA_AimDownSights::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
@@ -52,6 +54,10 @@ bool UQRGA_AimDownSights::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
+/**
+ * @brief Returns a reference variable of the player for access persistant variables
+ * @return APlayerCharacter reference
+ */
 APlayerCharacter* UQRGA_AimDownSights::GetPlayerReferance()
 {
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());

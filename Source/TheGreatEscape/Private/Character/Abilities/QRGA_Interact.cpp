@@ -11,6 +11,7 @@
 
 UQRGA_Interact::UQRGA_Interact()
 {
+	//Setting the input key via enum
 	AbilityInputID = EGASAbilityInputID::Interact;
 }
 
@@ -20,42 +21,56 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	//Creating variables for the Line Trace
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetPlayerReferance());
+	//Performs line trace from the middle of players view and checks if anything was hit
 	if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 												   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation() +
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
 													   ECC_Visibility, Params))
 	{
+		//Checks if the hit actor was an interactable object (uses unreals tag system)
 		if(HitResult.GetActor()->ActorHasTag("Interactable"))
 		{
-			/**************************************************************************************************************************************************************************/
+			/**********************************************************************************************************/
 			// cpp class specific behaviour goes here.
-			
+
+			//Checks if its the Train controls
 			if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 			{
 				ControlsRef->UpdateEngineSpeed();
 			}
+			//Check if its the train stop button
 			else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
 			{
 				ButtonRef->ToggleTrainMovement();
 			}
+			//Checks if its a pick upable
+			//TODO Make this better (Pick up and drop)
 			else
 			{
 				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 			}
+			//ends the ability
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
+		//TODO test if this actually does anything.
+		//Checks if the component is Interactable
 		else if (HitResult.GetComponent()->ComponentHasTag("Interactable"))
 		{
+			//Disables collisions
 			HitResult.GetComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+			//Attaches to player
 			HitResult.GetComponent()->AttachToComponent(GetPlayerReferance()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 		}
 		else
 		{
+			//Ends ability if not true
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
+		//Ends ability no matter what (avoid lock up)
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }
@@ -75,6 +90,8 @@ bool UQRGA_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 APlayerCharacter* UQRGA_Interact::GetPlayerReferance()
 {
+	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	//Returns Character Ref
 	return CharacterRef;
 }
