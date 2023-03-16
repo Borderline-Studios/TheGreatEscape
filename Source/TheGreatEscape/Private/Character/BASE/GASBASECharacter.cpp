@@ -65,9 +65,8 @@ void AGASBASECharacter::HandleHealthChanged(float Deltavalue, const FGameplayTag
  */
 void AGASBASECharacter::PossessedBy(AController* NewController)
 {
-	Super::PossessedBy(NewController);
 
-//Checks if the abilitySystemComponent Exists
+	//Checks if the abilitySystemComponent Exists
 	if(AbilitySystemComponent)
 	{
 		//Initializing the actors/characters ability info
@@ -75,6 +74,8 @@ void AGASBASECharacter::PossessedBy(AController* NewController)
 	}
 	//Adds the default/startup abilities to the player
 	AddStartupGameplayAbilities();
+	Super::PossessedBy(NewController);
+
 }
 
 /**
