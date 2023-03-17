@@ -33,10 +33,22 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 	else
 	{
-		//Jumps the animontage to the fire section
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
-		//Added dynamic notify and triggers function if notify is received
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+		if (GetPlayerReference()->bIsADS)
+		{
+			//Jumps the animontage to the fire section
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
+			//Added dynamic notify and triggers function if notify is received
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+		}
+		else
+		{
+			
+			//Jumps the animontage to the fire section
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+			//Added dynamic notify and triggers function if notify is received
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+		}
+		
 		//Decrements the Ammo
 		GetPlayerReference()->PlayerAmmo--;
 
@@ -110,7 +122,11 @@ void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPa
 	{
 		//Ends ability is the animation is done
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	} 
+	}
+	if (NotifyName == FName("ADSFireFinish"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }
 
 bool UQRGA_Shoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

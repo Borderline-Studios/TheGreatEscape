@@ -21,7 +21,6 @@ void UQRGA_AimDownSights::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	if (!GetPlayerReferance()->bIsADS)
 	{
-		GetPlayerReferance()->bIsADS = true;
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("ActiADS");
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_AimDownSights::NotifyFunction);
 	}
@@ -69,6 +68,7 @@ void UQRGA_AimDownSights::NotifyFunction(FName NotifyName,
 {
 	if (NotifyName == FName("ADSFinish"))
 	{
+	    GetPlayerReferance()->bIsADS = true;
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("HoldADS");
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
