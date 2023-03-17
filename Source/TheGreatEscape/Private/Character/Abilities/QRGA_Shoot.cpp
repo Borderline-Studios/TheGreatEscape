@@ -50,6 +50,8 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		FCollisionQueryParams Params;
 		//Ignore self
 		Params.AddIgnoredActor(GetPlayerReference());
+
+		//TODO Simplfy the Compent location and no magic numbers
 		//Line trace from crosshair/middle of player screen straight line infront of player
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													   GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation() +
@@ -108,7 +110,7 @@ void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPa
 	{
 		//Ends ability is the animation is done
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
+	} 
 }
 
 bool UQRGA_Shoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
