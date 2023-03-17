@@ -95,6 +95,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<AActor*> PickupItems;
 	int PickupItemPlacedCount = 0;
+	int PickupItemsNum = 0;
 	
 protected:
 	// FUNCTIONS

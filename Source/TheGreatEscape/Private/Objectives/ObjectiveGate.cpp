@@ -56,6 +56,9 @@ void AObjectiveGate::BeginPlay()
 	{
 		EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 	}
+
+	PickupItemPlacedCount = 0;
+	PickupItemsNum = PickupItems.Num();
 }
 
 /**
@@ -131,6 +134,9 @@ void AObjectiveGate::SnapRotation() const
 	}
 }
 
+/**
+ * @brief 
+ */
 void AObjectiveGate::SpawnPickup()
 {
 	AActor* NewPickup = GetWorld()->SpawnActor(PickupItemClassRef);
@@ -138,6 +144,9 @@ void AObjectiveGate::SpawnPickup()
 	PickupItems.Push(NewPickup);
 }
 
+/**
+ * @brief 
+ */
 void AObjectiveGate::RemovePickup()
 {
 	if (!PickupItems.IsEmpty())
@@ -147,6 +156,9 @@ void AObjectiveGate::RemovePickup()
 	}
 }
 
+/**
+ * @brief 
+ */
 void AObjectiveGate::ClearPickups()
 {
 	for (AActor* Item : PickupItems)
@@ -187,26 +199,45 @@ void AObjectiveGate::BeginSphereOverlap(
 		EngineRef->ToggleTrainStop();
 	}
 
-	// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
-	for (int i = 0; i < PickupItems.Num(); ++i)
+	// Check to see if the train is stopped
+	if (bTrainStopped)
 	{
-		if (OtherActor == PickupItems[i])
+		// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
+		for (int i = 0; i < PickupItems.Num(); i++)
 		{
-			PickupItemPlacedCount++;
-			UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
-			UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
+			if (OtherActor == PickupItems[i])
+			{
+				PickupItemPlacedCount++;
+				
+				UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
+				UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
+
+				PickupItems[i]->Destroy();
+				PickupItems.RemoveAt(i);
+			}
 		}
 	}
 
 	// If the train has stopped and the other component has the tag "interactable" then
 	// Start the train and update the tracking variable.
-	if (bTrainStopped && PickupItemPlacedCount == PickupItems.Num())
+	if (PickupItemPlacedCount == PickupItemsNum)
 	{
 		bTrainStopped = false;
-		EngineRef->ToggleTrainStop();
+
+		// EngineRef->ToggleTrainStop();
+
+		GateMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GateMesh->SetVisibility(false);
 	}
 }
 
+/**
+ * @brief 
+ * @param OverlappedComponent 
+ * @param OtherActor 
+ * @param OtherComp 
+ * @param OtherBodyIndex 
+ */
 void AObjectiveGate::EndSphereOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,

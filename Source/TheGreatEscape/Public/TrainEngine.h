@@ -43,7 +43,7 @@ class THEGREATESCAPE_API ATrainEngine : public AActor
 public:    
     // Sets default values for this actor's properties
     ATrainEngine();
-
+    
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
     TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
