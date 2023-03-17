@@ -33,6 +33,7 @@ AObjectiveGate::AObjectiveGate()
 
 	// Populating and setting up the Sphere Collision Component. Also sets the radius of the sphere.
 	TrainDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Train Detector"));
+	// TrainDetector->SetupAttachment(RootComponent);
 	TrainDetector->SetSphereRadius(1000.0f);
 	TrainDetector->SetWorldLocation(GetActorLocation());
 	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
@@ -149,7 +150,7 @@ void AObjectiveGate::SpawnPickup()
  */
 void AObjectiveGate::RemovePickup()
 {
-	if (!PickupItems.IsEmpty())
+	if (!PickupItems.IsEmpty() && IsValid(PickupItems.Last()))
 	{
 		PickupItems.Last()->Destroy();
 		PickupItems.Pop();
@@ -161,10 +162,14 @@ void AObjectiveGate::RemovePickup()
  */
 void AObjectiveGate::ClearPickups()
 {
-	for (AActor* Item : PickupItems)
+	for (int i = 0; i < PickupItems.Num(); i++)
 	{
-		Item->Destroy();
+		if (PickupItems[i])
+		{
+			PickupItems[i]->Destroy();
+		}
 	}
+	
 	PickupItems.Empty();
 }
 #endif
