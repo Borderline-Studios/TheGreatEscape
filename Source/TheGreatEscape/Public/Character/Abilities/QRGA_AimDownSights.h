@@ -37,5 +37,12 @@ public:
 
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReferance();
+
+	//Notify Functions
+
+	//Function that animation nofity will call 
+	UFUNCTION()
+	void NotifyFunction(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+	
 };
 

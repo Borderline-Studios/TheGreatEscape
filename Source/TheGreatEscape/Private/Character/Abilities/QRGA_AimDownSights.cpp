@@ -19,18 +19,18 @@ void UQRGA_AimDownSights::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if(GEngine)
+	if (!GetPlayerReferance()->bIsADS)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("ADS acti"));
+		GetPlayerReferance()->bIsADS = true;
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("ActiADS");
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_AimDownSights::NotifyFunction);
 	}
-	
-	GetPlayerReferance()->Mesh1P->SetRelativeLocationAndRotation(FVector(-31.0, -13.8,-135.5),
-		                                               FRotator(0.05, -85.0, 0.0),false
-		,nullptr, ETeleportType::None);
-
-
-
-	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	else if (GetPlayerReferance()->bIsADS)
+	{
+		GetPlayerReferance()->bIsADS = false;
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("DeActiADS");
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_AimDownSights::NotifyFunction);
+	}
 }
 
 
@@ -62,4 +62,20 @@ APlayerCharacter* UQRGA_AimDownSights::GetPlayerReferance()
 {
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	return CharacterRef;
+}
+
+void UQRGA_AimDownSights::NotifyFunction(FName NotifyName,
+	const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if (NotifyName == FName("ADSFinish"))
+	{
+		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("HoldADS");
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	if (NotifyName == FName("DeAdsFinish"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+
+	
 }

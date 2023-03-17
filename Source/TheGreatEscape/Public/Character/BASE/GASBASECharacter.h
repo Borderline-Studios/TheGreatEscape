@@ -6,11 +6,13 @@
 // (c) 2022 Media Design School
 //
 // File Name   : GASBASECharacter.h
-// Description : HeaderFile for the GASBASECharacter - Child of UEs Character class jsut with added Gameplay Ability System Functionality
+// Description : HeaderFile for the GASBASECharacter - Child of UEs Character class just with added Gameplay Ability System Functionality
 // Author      :  Borderline Studios - Jacob MacLean
 // Mail        : Jacob.MacLean@mds.ac.nz
 
 #pragma once
+
+//TODO Use private and protected more often
 
 //Base UE includes
 #include "CoreMinimal.h"
@@ -58,12 +60,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDamaged(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
-				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+				   AGASBASECharacter* InstigatorCharacter, AActor* DamagerCauser);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo,
 				   const struct FGameplayTagContainer& DamageTags,
-				   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+				   AGASBASECharacter* InstigatorCharacter, AActor* DamagerCauser);
 	virtual void HandleHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;

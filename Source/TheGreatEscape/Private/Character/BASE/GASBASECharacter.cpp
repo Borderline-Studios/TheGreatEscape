@@ -19,6 +19,7 @@ AGASBASECharacter::AGASBASECharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//TODO Null check
 	// Creating the AbilitySystemCompoenent and setting its replication (Require for GAS back end even though our game isn't Multiplayer)
 	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -38,7 +39,7 @@ AGASBASECharacter::AGASBASECharacter()
  * @param DamagerCauser - Get the Character/actor doing the damage
  */
 void AGASBASECharacter::HandleDamage(float DamageAmount, const FHitResult& HitInfo,
-                                     const FGameplayTagContainer& DamageTags, ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
+                                     const FGameplayTagContainer& DamageTags, AGASBASECharacter* InstigatorCharacter, AActor* DamagerCauser)
 {
 	//Calls UE built-in function OnDamaged()
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser); 
