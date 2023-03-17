@@ -1,4 +1,12 @@
-// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// (c) 2022 Media Design School
+// File Name   :
+// Description :
+// Author      :  Borderline Studios - (person(s) working on file)
+// Mail        : 
 
 #pragma once
 
@@ -10,6 +18,10 @@ class USphereComponent;
 class ATrainEngine;
 class ASplineTrack;
 class USplineComponent;
+
+/*
+ * 
+ */
 UCLASS()
 class THEGREATESCAPE_API AObjectiveGate : public AActor
 {
@@ -33,9 +45,17 @@ private:
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 	
-	UFUNCTION(CallInEditor)
+	UFUNCTION(CallInEditor, Category = "Functions: Gate")
 	void SnapRotation() const;
 
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void SpawnPickup();
+
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void RemovePickup();
+
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void ClearPickups();
 #endif
 
 	UFUNCTION()
@@ -47,24 +67,35 @@ private:
 		bool bFromSweep,
 		const FHitResult &SweepResult
 	);
+	UFUNCTION()
+	void EndSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
 
 	// VARIABLES
 	UStaticMeshComponent* GateMesh;
 
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditInstanceOnly, Category = "Gate References")
 	ASplineTrack* SplineRef;
 
-	// UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(EditInstanceOnly, Category = "Gate Variables")
+	bool bSnapToTrack = true;
+	
 	USphereComponent* TrainDetector;
 
-	// UPROPERTY(VisibleInstanceOnly)
 	ATrainEngine* EngineRef;
 
-	UPROPERTY(VisibleInstanceOnly)
-	UStaticMeshComponent* PickupItem;
-
 	int DistanceAlongSpline = 0;
-	bool TrainStopped = false;
+	bool bTrainStopped = false;
+
+	UClass* PickupItemClassRef;
+	UPROPERTY(VisibleInstanceOnly)
+	TArray<AActor*> PickupItems;
+	int PickupItemPlacedCount = 0;
+	int PickupItemsNum = 0;
 	
 protected:
 	// FUNCTIONS
