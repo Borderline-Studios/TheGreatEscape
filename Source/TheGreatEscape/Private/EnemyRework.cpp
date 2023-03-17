@@ -117,7 +117,7 @@ void AEnemyRework::CalcRandomAttackPos()
 	float newXVal = Utilities::RandTrainXPoints[randIndex];
 
 	// Random to make some on other side of train
-	if (FMath::RandRange(0,2) == 0)
+	if (FMath::RandRange(0,1) == 0)
 	{
 		yOffsetFromTrain *= -1.0;
 	}

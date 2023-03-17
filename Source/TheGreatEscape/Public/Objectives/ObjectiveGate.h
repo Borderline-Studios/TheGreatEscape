@@ -18,6 +18,10 @@ class USphereComponent;
 class ATrainEngine;
 class ASplineTrack;
 class USplineComponent;
+
+/*
+ * 
+ */
 UCLASS()
 class THEGREATESCAPE_API AObjectiveGate : public AActor
 {
@@ -41,8 +45,17 @@ private:
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 	
-	UFUNCTION(CallInEditor, Category = "Gate Functions")
+	UFUNCTION(CallInEditor, Category = "Functions: Gate")
 	void SnapRotation() const;
+
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void SpawnPickup();
+
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void RemovePickup();
+
+	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	void ClearPickups();
 #endif
 
 	UFUNCTION()
@@ -53,6 +66,13 @@ private:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult &SweepResult
+	);
+	UFUNCTION()
+	void EndSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
 	);
 
 	// VARIABLES
@@ -68,11 +88,13 @@ private:
 
 	ATrainEngine* EngineRef;
 
-	UPROPERTY(VisibleInstanceOnly)
-	UStaticMeshComponent* PickupItem;
-
 	int DistanceAlongSpline = 0;
-	bool TrainStopped = false;
+	bool bTrainStopped = false;
+
+	UClass* PickupItemClassRef;
+	UPROPERTY(VisibleInstanceOnly)
+	TArray<AActor*> PickupItems;
+	int PickupItemPlacedCount = 0;
 	
 protected:
 	// FUNCTIONS
