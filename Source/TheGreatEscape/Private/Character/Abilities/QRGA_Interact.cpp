@@ -31,46 +31,49 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 													   GetPlayerReferance()->GetFirstPersonCameraComponent()->GetForwardVector() * 1000,
 													   ECC_Visibility, Params))
 	{
-		//Checks if the hit actor was an interactable object (uses unreals tag system)
-		if(HitResult.GetActor()->ActorHasTag("Interactable"))
+		if (IsValid(HitResult.GetActor()) && IsValid(HitResult.GetComponent()))
 		{
-			/**********************************************************************************************************/
-			// cpp class specific behaviour goes here.
+			//Checks if the hit actor was an interactable object (uses unreals tag system)
+			if(HitResult.GetActor()->ActorHasTag("Interactable"))
+			{
+				/**********************************************************************************************************/
+				// cpp class specific behaviour goes here.
 
-			//Checks if its the Train controls
-			if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
-			{
-				ControlsRef->UpdateEngineSpeed();
+				//Checks if its the Train controls
+				if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
+				{
+					ControlsRef->UpdateEngineSpeed();
+				}
+				//Check if its the train stop button
+				else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
+				{
+					ButtonRef->ToggleTrainMovement();
+				}
+				//Checks if its a pick upable
+				//TODO Make this better (Pick up and drop)
+				else
+				{
+					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+				}
+				//ends the ability
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 			}
-			//Check if its the train stop button
-			else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
+			//TODO test if this actually does anything.
+			//Checks if the component is Interactable
+			else if (HitResult.GetComponent()->ComponentHasTag("Interactable"))
 			{
-				ButtonRef->ToggleTrainMovement();
+				//Disables collisions
+				HitResult.GetComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+				//Attaches to player
+				HitResult.GetComponent()->AttachToComponent(GetPlayerReferance()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 			}
-			//Checks if its a pick upable
-			//TODO Make this better (Pick up and drop)
 			else
 			{
-				HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+				//Ends ability if not true
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 			}
-			//ends the ability
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			//Ends ability no matter what (avoid lock up)
 		}
-		//TODO test if this actually does anything.
-		//Checks if the component is Interactable
-		else if (HitResult.GetComponent()->ComponentHasTag("Interactable"))
-		{
-			//Disables collisions
-			HitResult.GetComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-			//Attaches to player
-			HitResult.GetComponent()->AttachToComponent(GetPlayerReferance()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-		}
-		else
-		{
-			//Ends ability if not true
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-		}
-		//Ends ability no matter what (avoid lock up)
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }
