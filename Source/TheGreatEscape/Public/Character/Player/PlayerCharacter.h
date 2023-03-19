@@ -31,6 +31,7 @@ UCLASS(Config=Game)
 class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 {
 	GENERATED_BODY()
+	
 public:
 	/** First person mesh */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
@@ -62,7 +63,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> CamShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int MaxShotRange = 20000;
 	
+public:
 	//Constructor
 	APlayerCharacter();
 
