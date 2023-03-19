@@ -3,9 +3,11 @@
 
 #include "Character/Abilities/QRGA_Sprint.h"
 
+#include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Character/Abilities/Data.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //TODO Clean Up print screens
 //TODO Try and make the sprint hold instead of toggle
@@ -31,7 +33,16 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		//Setting the Sprint to false
 		GetPlayerReference()->bIsSprinting = false;
 		//Decreasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 250.0f;
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 350.0f;
+		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
+		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != RunFOV)
+		{
+			while(FOV != RunFOV)
+			{
+				GetPlayerReference()->GetFirstPersonCameraComponent()->SetFieldOfView(FOV - 1);
+				FOV--;
+			}
+		}
 	}
 	else if(!GetPlayerReference()->bIsSprinting)
 	{
@@ -39,7 +50,17 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		//Setting the Sprint to true
 		GetPlayerReference()->bIsSprinting = true;
 		//Increasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  250.0f;
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  350.0f;
+		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
+		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != SprintFOV)
+		{
+			while(FOV != SprintFOV)
+			{
+				GetPlayerReference()->GetFirstPersonCameraComponent()->SetFieldOfView(FOV + 1);
+				FOV++;
+			}
+		}
+
 	}
 
 	//Ends ability
