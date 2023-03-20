@@ -30,7 +30,6 @@ class THEGREATESCAPE_API AObjectiveGate : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AObjectiveGate();
-	virtual void Destroyed() override;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -43,6 +42,8 @@ public:
 private:
 	// FUNCTIONS
 #if WITH_EDITOR
+	virtual void Destroyed() override;
+
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 	

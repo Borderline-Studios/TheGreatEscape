@@ -61,7 +61,7 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 	Box->SetStaticMesh(AssignedMesh);
 	Box->SetWorldScale3D(FVector(1.0f));
 
-	DistanceFromFront = 1800 + (1500 * CarriageNumber);
+	DistanceFromFront = 1650 + (1500 * CarriageNumber);
 
 	if (!SplineRef)
 	{
@@ -89,7 +89,7 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 		// Create and add two RectLights into the LightRefs TStaticArray<>()
 		LightRefs[0] = (Cast<ARectLight>(GetWorld()->SpawnActor(ARectLight::StaticClass())));
 		LightRefs[1] = (Cast<ARectLight>(GetWorld()->SpawnActor(ARectLight::StaticClass())));
-
+		
 		// Set default settings for the RectLights in the array. It's inside a foreach given they both need the behaviour and it saves Lines of Code (LOC)
 		for (ALight* Light : LightRefs)
 		{

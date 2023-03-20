@@ -50,16 +50,6 @@ AObjectiveGate::AObjectiveGate()
 }
 
 /**
- * @brief 
- */
-void AObjectiveGate::Destroyed()
-{
-	Super::Destroyed();
-
-	ClearPickups();
-}
-
-/**
  * @brief Called when the game starts or when spawned
  */
 void AObjectiveGate::BeginPlay()
@@ -86,6 +76,16 @@ void AObjectiveGate::Tick(float DeltaTime)
 }
 
 #if WITH_EDITOR	// This means that these functions only exist and apply while in the editor. These do not apply to packages
+/**
+ * @brief 
+ */
+void AObjectiveGate::Destroyed()
+{
+	Super::Destroyed();
+
+	ClearPickups();
+}
+
 /**
  * @brief This Unreal function is called while an asset is being moved in editor.
  *		  The purpose of this one is to keep all of the separate components moving together as the SphereComponent isn't attached to the rootcomponent
