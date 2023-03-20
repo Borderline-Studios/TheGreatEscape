@@ -260,9 +260,8 @@ void AObjectiveGate::BeginSphereOverlap(
 	if (PickupItemPlacedCount == PickupItemsNum)
 	{
 		bTrainStopped = false;
-		
-		GateMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GateMesh->SetVisibility(false);
+
+		Destroy();
 	}
 }
 
