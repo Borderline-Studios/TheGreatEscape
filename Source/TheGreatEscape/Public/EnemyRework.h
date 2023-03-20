@@ -30,6 +30,8 @@ public:
 	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
 	void PostDeathProcess();
 
+	float CheckHealth();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	UNiagaraSystem* DeathEffect;
 
