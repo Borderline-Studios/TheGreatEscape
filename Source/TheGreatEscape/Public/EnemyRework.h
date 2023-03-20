@@ -30,8 +30,11 @@ public:
 	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
 	void PostDeathProcess();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	UNiagaraSystem* DeathEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	USoundBase* DeathSFX;
 
 	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -42,6 +45,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bAttacking = false;
+
+
 
 protected:
 	// *** Functions *** ///
