@@ -17,6 +17,7 @@
 #include "TrainCarriage.generated.h"
 
 class USplineComponent;
+class ALight;
 UCLASS()
 class THEGREATESCAPE_API ATrainCarriage : public AActor
 {
@@ -61,6 +62,7 @@ private:
 	USplineComponent* SplineRef;
 
 	TArray<AActor*> ActorRefs;
+	TStaticArray<ALight*, 2> LightRefs;
 
 	// FUNCTIONS
 };
