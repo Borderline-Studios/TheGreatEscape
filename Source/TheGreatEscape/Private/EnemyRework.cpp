@@ -20,6 +20,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "NiagaraFunctionLibrary.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
+#include "DSP/MidiNoteQuantizer.h"
 
 
 /**
@@ -86,8 +87,9 @@ void AEnemyRework::Tick(float DeltaTime)
 	if (bFound)
 	{
 		// if enemy dead
-		if (Value <= 0)
+		if (Value <= 0 && FirstDeath)
 		{
+			FirstDeath = false;
 			PostDeathProcess();
 			Destroy();
 		}
@@ -130,7 +132,7 @@ void AEnemyRework::CalcRandomAttackPos()
 
 void AEnemyRework::PostDeathProcess()
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(1,1,1), true);
 }
 
 /**
