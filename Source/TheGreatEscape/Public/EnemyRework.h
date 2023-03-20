@@ -61,4 +61,6 @@ private:
 	// *** Variables *** ///
 	class UAIPerceptionStimuliSourceComponent* Stimulus; // stimulus component
 
+	bool FirstDeath = true;
+
 };
