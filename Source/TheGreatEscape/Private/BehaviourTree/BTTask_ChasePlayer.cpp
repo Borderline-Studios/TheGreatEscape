@@ -12,9 +12,12 @@
 
 #include "BehaviourTree/BTTask_ChasePlayer.h"
 #include "EnemyReworkController.h"
+#include "TrainEngine.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviourTree/Utils.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 /**
  * @brief constructor, name the node
@@ -48,10 +51,29 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 
 		FVector distance = TargetLocation - Enemy->GetActorLocation();
 
+		// Get player character
+		ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+            	
+		// Get players location
+		FVector const PlayerLocation = Player->GetActorLocation();
+
+
+		// get train engine
+		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+		
 		if (distance.Dist(TargetLocation, Enemy->GetActorLocation()) >= StoppingDistance)
 		{
-			// move to player location
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, TargetLocation);
+			if (bChasePlayer)
+			{
+				// move to player location
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
+			}
+			else
+			{
+				// move to player location
+				UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, Train->GetActorLocation());
+			}
+			
 		}
 		else
 		{
