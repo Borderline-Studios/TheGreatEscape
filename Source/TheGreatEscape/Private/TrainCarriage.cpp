@@ -15,7 +15,7 @@
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Components/SplineComponent.h"
-#include "Engine/PointLight.h"
+#include "Engine/Rectlight.h"
 
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
@@ -61,13 +61,14 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 	Box->SetStaticMesh(AssignedMesh);
 	Box->SetWorldScale3D(FVector(1.0f));
 
-	DistanceFromFront = 1500 * (CarriageNumber + 1);
+	DistanceFromFront = 1800 + (1500 * CarriageNumber);
 
 	if (!SplineRef)
 	{
 		SplineRef = NewSplineRef;
 	}
 
+	// The carriage number system should be done using an ENUM
 	if (CarriageNumber == 0)
 	{
 		ATrainControlls* SpeedControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
@@ -82,14 +83,30 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 		ActorRefs.Push(StopButton);
 	}
 
+	// If the carriage is not a flatbed... (we're about to do lighting stuff and the flatbed is open so it doesn't need lighting)
 	if (CarriageNumber % 4 != 1)
 	{
-		APointLight* PointLight = Cast<APointLight>(GetWorld()->SpawnActor(APointLight::StaticClass()));
-		PointLight->SetMobility(EComponentMobility::Movable);
-		PointLight->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-		PointLight->SetActorRelativeLocation(FVector(0.0f, 0.0f, 300.0f));
+		// Create and add two RectLights into the LightRefs TStaticArray<>()
+		LightRefs[0] = (Cast<ARectLight>(GetWorld()->SpawnActor(ARectLight::StaticClass())));
+		LightRefs[1] = (Cast<ARectLight>(GetWorld()->SpawnActor(ARectLight::StaticClass())));
 
-		ActorRefs.Push(PointLight);
+		// Set default settings for the RectLights in the array. It's inside a foreach given they both need the behaviour and it saves Lines of Code (LOC)
+		for (ALight* Light : LightRefs)
+		{
+			Light->SetMobility(EComponentMobility::Movable);
+			Light->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			// Given they are all rect lights and need to be rotated
+			Light->SetActorRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		}
+
+		// Setting up some const ish variables for use in positioning
+		constexpr int YPosition = 250;
+		const int ZPosition = CarriageNumber != 2 ? 550 : 500;
+
+		// Setting the location of each light using the const-ish variables from before
+		LightRefs[0]->SetActorRelativeLocation(FVector(0.0f, YPosition, ZPosition));
+		LightRefs[1]->SetActorRelativeLocation(FVector(0.0f, -YPosition, ZPosition));
 	}
 }
 
