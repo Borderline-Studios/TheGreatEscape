@@ -34,11 +34,8 @@ UBTTask_FindPatrolPathPoint::UBTTask_FindPatrolPathPoint(FObjectInitializer cons
  */
 EBTNodeResult::Type UBTTask_FindPatrolPathPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// get Ai controller 
-	AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-
-	// If not nullptr
-	if (AIController)
+	// get Ai controller  & if not nullptr
+	if (AEnemyReworkController* const AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get current index from blackboard
 		int const Index = AIController->GetBlackboard()->GetValueAsInt(BbKeys::patrolPathIndex);

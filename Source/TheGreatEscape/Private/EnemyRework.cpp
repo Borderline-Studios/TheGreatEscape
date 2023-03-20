@@ -75,25 +75,15 @@ void AEnemyRework::Tick(float DeltaTime)
 {
 	// call super
 	Super::Tick(DeltaTime);
-
-	// get ability system component
-	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
-
-	// bool to check if it was found & the value the health equals
-	bool bFound;
-	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), bFound);
-
-	// if value found
-	if (bFound)
+	
+	// if enemy dead
+	if (CheckHealth() <= 0 && FirstDeath)
 	{
-		// if enemy dead
-		if (Value <= 0 && FirstDeath)
-		{
-			FirstDeath = false;
-			PostDeathProcess();
-			Destroy();
-		}
+		FirstDeath = false;
+		PostDeathProcess();
+		Destroy();
 	}
+	
 }
 
 /**
@@ -135,6 +125,24 @@ void AEnemyRework::PostDeathProcess()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSFX, this->GetActorLocation(), this->GetActorRotation(), 0.5);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(0.5,0.5,0.5), true);
 
+}
+
+float AEnemyRework::CheckHealth()
+{
+// get ability system component
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+
+	// bool to check if it was found & the value the health equals
+	bool bFound;
+	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), bFound);
+
+	// if value found
+	if (bFound)
+	{
+		return (Value);
+	}
+
+	return 0;
 }
 
 /**

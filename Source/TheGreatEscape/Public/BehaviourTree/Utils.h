@@ -26,6 +26,10 @@ namespace BbKeys
 	TCHAR const * const NPCInPlayerRange = TEXT("NPCInPlayerRange");
 	TCHAR const * const NPCCanIncrement = TEXT("NPCCanIncrement");
 	TCHAR const * const isTrainClosest = TEXT("IsTrainClosest");
+	TCHAR const * const bBatteryNearby = TEXT("BatteryNearby");
+	TCHAR const * const batteryLocation = TEXT("BatteryLocation");
+	TCHAR const * const enemyHealthLow = TEXT("EnemyHealthLow");
+	TCHAR const * const randChance = TEXT("RandChance");
 }
 
 /**
