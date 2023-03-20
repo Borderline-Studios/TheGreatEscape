@@ -71,6 +71,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
 	int NumOfEnemiesToSpawn = 1; // number of enemies to spawn
+
+	// whether spawner can be retriggered or not
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
+	bool bSpawnOnce = true; // whether spawner can be retriggered or not
 	
 	TSoftClassPtr<AEnemyRework> MeleeEnemyRef; // weak pointer to melee class
 	TSoftClassPtr<AEnemyReworkDrone> DroneEnemyRef; // weak pointer to drone class
@@ -79,6 +83,8 @@ private:
 	static TStaticArray<UClass*, 3> EnemyReferences; // Array of enemy references
 	
 	FNavLocation Location;
+
+	bool bSpawned = false;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	//Utilities::EnemyTypes TypeToSpawn = Utilities::EnemyTypes::Melee;

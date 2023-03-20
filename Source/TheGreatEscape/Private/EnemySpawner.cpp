@@ -79,8 +79,10 @@ AEnemySpawner::AEnemySpawner()
  */
 void AEnemySpawner::BeginPlay()
 {
-	  // call super
-	  Super::BeginPlay();
+	// call super
+	Super::BeginPlay();
+
+	SpawnerTrigger->InitSphereRadius(SpawnTriggerRadius);
 	
 	// Set Delegate function
 	SpawnerTrigger->OnComponentBeginOverlap.AddDynamic(this, &AEnemySpawner::OnActorOverlap);
@@ -90,14 +92,15 @@ void AEnemySpawner::BeginPlay()
 void AEnemySpawner::OnActorOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("spanwer collision = %s"), *OtherActor->GetName());
-	
-	// check if collided with player
-	if (APlayerCharacter* otherActor = Cast<APlayerCharacter>(OtherActor))
-	{
-		
 
-		switch (EnemyTypeToSpawn)
+	if (!bSpawned || !bSpawnOnce) // if enemies havent spawned
+	{
+		// check if collided with player
+		if (APlayerCharacter* otherActor = Cast<APlayerCharacter>(OtherActor))
 		{
+			
+			switch (EnemyTypeToSpawn)
+			{
 			case EEnemyTpeBP::Melee:
 				{
 					SpawnEnemy(Utilities::EnemyTypes::Melee, NumOfEnemiesToSpawn);
@@ -118,6 +121,9 @@ void AEnemySpawner::OnActorOverlap(UPrimitiveComponent* OverlappedComp, AActor* 
 					UE_LOG(LogTemp, Warning, TEXT("Spawner Enum Default value"));
 					break;
 				}
+			}
+
+			bSpawned = true;
 		}
 	}
 }
@@ -130,6 +136,8 @@ void AEnemySpawner::Tick(float DeltaTime)
 {
    // call super
   	Super::Tick(DeltaTime);
+
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), SpawnTriggerRadius, 32, FColor::Purple);
 }
 
 /**
