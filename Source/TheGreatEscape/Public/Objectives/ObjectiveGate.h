@@ -30,7 +30,8 @@ class THEGREATESCAPE_API AObjectiveGate : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AObjectiveGate();
-
+	virtual void Destroyed() override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,17 +46,19 @@ private:
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 	
-	UFUNCTION(CallInEditor, Category = "Functions: Gate")
+	UFUNCTION(CallInEditor, Category = "Functionality")
 	void SnapRotation() const;
 
-	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	UFUNCTION(CallInEditor, Category = "Functionality")
 	void SpawnPickup();
 
-	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	UFUNCTION(CallInEditor, Category = "Functionality")
 	void RemovePickup();
 
-	UFUNCTION(CallInEditor, Category = "Functions: Pickup")
+	UFUNCTION(CallInEditor, Category = "Functionality")
 	void ClearPickups();
+
+	bool CleanPickupsArray();
 #endif
 
 	UFUNCTION()
@@ -76,14 +79,16 @@ private:
 	);
 
 	// VARIABLES
+	USceneComponent* Root;
+	
 	UStaticMeshComponent* GateMesh;
 
-	UPROPERTY(EditInstanceOnly, Category = "Gate References")
+	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	ASplineTrack* SplineRef;
 
-	UPROPERTY(EditInstanceOnly, Category = "Gate Variables")
+	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	bool bSnapToTrack = true;
-	
+
 	USphereComponent* TrainDetector;
 
 	ATrainEngine* EngineRef;
@@ -92,7 +97,7 @@ private:
 	bool bTrainStopped = false;
 
 	UClass* PickupItemClassRef;
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category = "Functionality")
 	TArray<AActor*> PickupItems;
 	int PickupItemPlacedCount = 0;
 	int PickupItemsNum = 0;

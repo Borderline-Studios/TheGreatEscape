@@ -23,19 +23,22 @@ AObjectiveGate::AObjectiveGate()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+	
 	// Populating and setting up the Static mesh. This one gets set up as the root component,
 	// Also setting the scale and the static mesh used by the mesh component
 	GateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gate Mesh"));
-	RootComponent = GateMesh;
+	GateMesh->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	GateMesh->SetStaticMesh(MeshObj.Object);
 	GateMesh->SetWorldScale3D(FVector(10.0f, 0.5f, 5.0f));
 
 	// Populating and setting up the Sphere Collision Component. Also sets the radius of the sphere.
 	TrainDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Train Detector"));
-	// TrainDetector->SetupAttachment(RootComponent);
-	TrainDetector->SetSphereRadius(1000.0f);
-	TrainDetector->SetWorldLocation(GetActorLocation());
+	TrainDetector->SetupAttachment(GateMesh);
+	TrainDetector->SetSphereRadius(2000.0f);
+	// TrainDetector->SetWorldLocation(GetActorLocation());
 	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
 	TrainDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginSphereOverlap);
 	TrainDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndSphereOverlap);
@@ -44,6 +47,16 @@ AObjectiveGate::AObjectiveGate()
 	PickupItemClassRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Objectives/PickUp/BP_PickUpObjective.BP_PickUpObjective_C'"))).LoadSynchronous();
 
 	EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+}
+
+/**
+ * @brief 
+ */
+void AObjectiveGate::Destroyed()
+{
+	Super::Destroyed();
+
+	ClearPickups();
 }
 
 /**
@@ -96,11 +109,8 @@ void AObjectiveGate::PostEditMove(bool bFinished)
 	// If both are true (if the spline ref is populated and we want to snap to track) then the mesh will snap to the nearest point on the spline from where it's located in scene.
 	if (SplineRef && bSnapToTrack)
 	{
-		GateMesh->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
+		Root->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
 	}
-
-	// Keeps the Train Detector SphereComponent moving with the parent mesh no matter what.
-	TrainDetector->SetWorldLocation(GetActorLocation());
 }
 
 /**
@@ -111,12 +121,12 @@ void AObjectiveGate::PostEditUndo()
 {
 	Super::PostEditUndo();
 
+	CleanPickupsArray();
+
 	if (SplineRef && bSnapToTrack)
 	{
-		GateMesh->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
+		Root->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
 	}
-
-	TrainDetector->SetWorldLocation(GetActorLocation());
 }
 
 /**
@@ -128,10 +138,8 @@ void AObjectiveGate::SnapRotation() const
 {
 	if (SplineRef && bSnapToTrack)
 	{
-		GateMesh->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
-		GateMesh->SetWorldRotation(SplineRef->GetSpline()->FindRotationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World) + FRotator(0.0f, 90.0f, 0.0f));
-
-		TrainDetector->SetWorldLocation(GetActorLocation());
+		Root->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
+		Root->SetWorldRotation(SplineRef->GetSpline()->FindRotationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World) + FRotator(0.0f, -90.0f, 0.0f));
 	}
 }
 
@@ -140,8 +148,10 @@ void AObjectiveGate::SnapRotation() const
  */
 void AObjectiveGate::SpawnPickup()
 {
+	CleanPickupsArray();
+	
 	AActor* NewPickup = GetWorld()->SpawnActor(PickupItemClassRef);
-	NewPickup->SetActorLocation((GetActorLocation() + (GateMesh->GetForwardVector() * 1000.00)) + FVector(0.0f, 0.0f, 100.0f));
+	NewPickup->SetActorLocation((GetActorLocation() + (GateMesh->GetRightVector() * (-250.00 - (50 * PickupItems.Num())))) + FVector(0.0f, 0.0f, 100.0f));
 	PickupItems.Push(NewPickup);
 }
 
@@ -150,6 +160,8 @@ void AObjectiveGate::SpawnPickup()
  */
 void AObjectiveGate::RemovePickup()
 {
+	if (CleanPickupsArray()) return;		
+
 	if (!PickupItems.IsEmpty() && IsValid(PickupItems.Last()))
 	{
 		PickupItems.Last()->Destroy();
@@ -171,6 +183,26 @@ void AObjectiveGate::ClearPickups()
 	}
 	
 	PickupItems.Empty();
+}
+
+bool AObjectiveGate::CleanPickupsArray()
+{
+	bool bCleanedUp = false;
+	
+	for (int i = PickupItems.Num() - 1; i >= 0; i--)
+	{
+		if (!IsValid(PickupItems[i]))
+		{
+			PickupItems.RemoveAt(i);
+
+			if (!bCleanedUp)
+			{
+				bCleanedUp = true;
+			}
+		}
+	}
+
+	return bCleanedUp;
 }
 #endif
 
@@ -228,9 +260,7 @@ void AObjectiveGate::BeginSphereOverlap(
 	if (PickupItemPlacedCount == PickupItemsNum)
 	{
 		bTrainStopped = false;
-
-		// EngineRef->ToggleTrainStop();
-
+		
 		GateMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GateMesh->SetVisibility(false);
 	}
