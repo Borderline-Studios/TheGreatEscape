@@ -19,6 +19,16 @@
 #include "BehaviourTree/Utils.h"
 #include "EnemySpawner.generated.h"
 
+
+// ENUM so enemy type can be set in BP
+UENUM(BlueprintType)
+enum class EEnemyTpeBP : uint8
+{
+	Melee		UMETA(DisplayName="Melee"),
+	Drone		UMETA(DisplayName="Drone"),
+	Hybrid		UMETA(DisplayName="Hybrid"),
+};
+
 UCLASS()
 class THEGREATESCAPE_API AEnemySpawner : public AActor
 {
@@ -35,15 +45,31 @@ protected:
 	// *** Functions *** ///
 	virtual void BeginPlay() override; // Called when the game starts or when spawned
 
+	UFUNCTION()
+	void OnActorOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// *** Variables *** ///
+	
+	// Type of enemy that will spawn
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowProtectedAccess = "true"))
+	EEnemyTpeBP EnemyTypeToSpawn;
+
+	// Radius Enemies will randomly spawn in
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowProtectedAccess = "true"))
+	float SpawnTriggerRadius = 1000.0f;
+
+	// Spawner sphere component
+	class USphereComponent* SpawnerTrigger; 
+
 private:
 	// *** Functions *** ///
 	FVector GetRandomLocationInRange(float searchRadius);
 	
 	// *** Variables *** ///
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
-	float SearchRadius = 1500.0f; // Radius to search
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
+	float SpawnRadius = 1000.0f; // Radius to search
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = "true"))
 	int NumOfEnemiesToSpawn = 1; // number of enemies to spawn
 	
 	TSoftClassPtr<AEnemyRework> MeleeEnemyRef; // weak pointer to melee class
@@ -57,3 +83,4 @@ private:
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	//Utilities::EnemyTypes TypeToSpawn = Utilities::EnemyTypes::Melee;
 };
+

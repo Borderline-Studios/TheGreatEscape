@@ -105,8 +105,7 @@ void AHybridEnemyProjectile::FireDirection(const FVector& ShootDirection)
 // On collision with another thing
 void AHybridEnemyProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("proj uwu other actor = %s"), *OtherActor->GetName());
-	
+
 	// check if collided with player
 	if (APlayerCharacter* otherActor = Cast<APlayerCharacter>(OtherActor))
 	{

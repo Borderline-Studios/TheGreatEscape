@@ -13,6 +13,8 @@
 #include "EnemySpawner.h"
 #include "EnemyReworkDrone.h"
 #include "NavigationSystem.h"
+#include "Character/Player/PlayerCharacter.h"
+#include "Components/SphereComponent.h"
 
 // Set up static array
 TStaticArray<UClass*, 3> AEnemySpawner::EnemyReferences;
@@ -52,6 +54,24 @@ AEnemySpawner::AEnemySpawner()
 			
   }
  }
+
+	// Set up the sphere collision
+	// If it is not the root component, make it
+	if(!RootComponent)
+	{
+		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile"));
+	}
+	if(!SpawnerTrigger)
+	{
+		// Create sphere component
+		SpawnerTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+		// Rename the collision profile
+		SpawnerTrigger->BodyInstance.SetCollisionProfileName(TEXT("SpawnerTrigger"));
+		// Set the spheres  radius.
+		SpawnerTrigger->InitSphereRadius(SpawnTriggerRadius);
+		// Set root component 
+		RootComponent = SpawnerTrigger;
+	}
 }
 
 /**
@@ -62,6 +82,44 @@ void AEnemySpawner::BeginPlay()
 	  // call super
 	  Super::BeginPlay();
 	
+	// Set Delegate function
+	SpawnerTrigger->OnComponentBeginOverlap.AddDynamic(this, &AEnemySpawner::OnActorOverlap);
+	
+}
+
+void AEnemySpawner::OnActorOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("spanwer collision = %s"), *OtherActor->GetName());
+	
+	// check if collided with player
+	if (APlayerCharacter* otherActor = Cast<APlayerCharacter>(OtherActor))
+	{
+		
+
+		switch (EnemyTypeToSpawn)
+		{
+			case EEnemyTpeBP::Melee:
+				{
+					SpawnEnemy(Utilities::EnemyTypes::Melee, NumOfEnemiesToSpawn);
+					break;
+				}
+			case EEnemyTpeBP::Drone:
+				{
+					SpawnEnemy(Utilities::EnemyTypes::Drone, NumOfEnemiesToSpawn);
+					break;
+				}
+			case EEnemyTpeBP::Hybrid:
+				{
+					SpawnEnemy(Utilities::EnemyTypes::Hybrid, NumOfEnemiesToSpawn);
+					break;
+				}
+			default:
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Spawner Enum Default value"));
+					break;
+				}
+		}
+	}
 }
 
 /**
@@ -88,7 +146,7 @@ void AEnemySpawner::SpawnEnemy(Utilities::EnemyTypes TypeToSpawn, int numOfEnemi
       {
          for (int i = 0; i < numOfEnemiesToSpawn; i++)
          {
-            FVector temp = GetRandomLocationInRange(SearchRadius);
+            FVector temp = GetRandomLocationInRange(SpawnRadius);
             AEnemyRework* newEnemy = Cast<AEnemyRework>(GetWorld()->SpawnActor(EnemyReferences[0], &temp));
 
          }
@@ -98,7 +156,7 @@ void AEnemySpawner::SpawnEnemy(Utilities::EnemyTypes TypeToSpawn, int numOfEnemi
      {
          for (int i = 0; i < numOfEnemiesToSpawn; i++)
          {
-         	FVector temp = GetRandomLocationInRange(SearchRadius);
+         	FVector temp = GetRandomLocationInRange(SpawnRadius);
          	AEnemyReworkDrone* newDrone = Cast<AEnemyReworkDrone>(GetWorld()->SpawnActor(EnemyReferences[1], &temp));
          	
          }
@@ -108,7 +166,7 @@ void AEnemySpawner::SpawnEnemy(Utilities::EnemyTypes TypeToSpawn, int numOfEnemi
      {
      		for (int i = 0; i < numOfEnemiesToSpawn; i++)
      		{
-     			FVector temp = GetRandomLocationInRange(SearchRadius);
+     			FVector temp = GetRandomLocationInRange(SpawnRadius);
      			AEnemyReworkHybrid* newHybrid = Cast<AEnemyReworkHybrid>(GetWorld()->SpawnActor(EnemyReferences[2], &temp));
      			
      		}
