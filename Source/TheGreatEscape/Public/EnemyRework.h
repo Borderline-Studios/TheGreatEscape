@@ -13,6 +13,7 @@
 
 #include <Character/BASE/GASBASECharacter.h>
 #include "CoreMinimal.h"
+#include "NiagaraEmitter.h"
 #include "EnemyRework.generated.h"
 
 UCLASS()
@@ -27,6 +28,10 @@ public:
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
     void Attack(); // attack function
 	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
+	void PostDeathProcess();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	UNiagaraSystem* DeathEffect;
 
 	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -18,6 +18,8 @@
 #include "Perception/AISense_Sight.h"
 #include "EnemyReworkController.h"
 #include "Math/UnrealMathUtility.h"
+#include "NiagaraFunctionLibrary.h"
+#include "BehaviorTree/BehaviorTreeTypes.h"
 
 
 /**
@@ -86,8 +88,7 @@ void AEnemyRework::Tick(float DeltaTime)
 		// if enemy dead
 		if (Value <= 0)
 		{
-			// die
-			UE_LOG(LogTemp, Warning, TEXT("die"));
+			PostDeathProcess();
 			Destroy();
 		}
 	}
@@ -125,6 +126,11 @@ void AEnemyRework::CalcRandomAttackPos()
 	// set new vector
 	TrainTargetPointOffset = FVector(newXVal, yOffsetFromTrain, ElevationHeight);
 	UE_LOG(LogTemp, Warning, TEXT("Target location for train: %s"), *TrainTargetPointOffset.ToString());
+}
+
+void AEnemyRework::PostDeathProcess()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation());
 }
 
 /**

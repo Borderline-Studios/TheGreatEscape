@@ -44,4 +44,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LineTrace")
 	float LineTraceMultiplier = 1000.0f; // How far the line trace will go
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<TSubclassOf<USoundBase>> PlayerHitEffects;
 };

@@ -14,6 +14,7 @@
 #include "Character/Abilities/QRGA_MeleeEnemyAttack.h"
 #include "AbilitySystemBlueprintLibrary.h"
 
+
 /**
  * @brief Constructor
  */
@@ -52,6 +53,15 @@ void UQRGA_MeleeEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			//UE_LOG(LogTemp, Warning, TEXT("Damage player boi %s"), *HitResult.GetActor()->GetName());
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			APlayerCharacter* PlayerRef = Cast<APlayerCharacter>(HitResult.GetActor());
+			if(PlayerRef)
+			{
+				if(HitResult.GetActor() == Cast<APlayerCharacter>(HitResult.GetActor()))
+				{
+					PlayerRef->PostHitProcess();
+				}
+			}
+
 		}
 	}
 	//DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 5.0f, 0, 5.0f);

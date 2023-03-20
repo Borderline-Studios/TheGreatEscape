@@ -71,6 +71,9 @@ public:
 	//Constructor
 	APlayerCharacter();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PostHitProcess();
+	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
 	void StartDeath();
