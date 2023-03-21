@@ -16,32 +16,38 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//Checks if ammo is full
-	if (GetPlayerReference()->PlayerAmmo == 6)
+
+	if (!GetPlayerReference()->bIsADS)
 	{
-		//End ability if ammo is full (Reload no needed)
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-	else
-	{
+		//Checks if ammo is full
+		if (GetPlayerReference()->PlayerAmmo == 6)
+		{
+			//End ability if ammo is full (Reload no needed)
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
+		else
+		{
 			//Sets ammo to zero to avoid any issues (Probably not nessessary)
 			GetPlayerReference()->PlayerAmmo = 0;
 			//Sets ammo to full
-        	GetPlayerReference()->PlayerAmmo = 6;
+			GetPlayerReference()->PlayerAmmo = 6;
 
 			//Jumps animontage ot the reload section to player reload animation
-        	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
 			//Checks for an Animnotify then triggers function
-        	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
 
 			//Plays reload sound at location
-        	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
-        										  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-        										  FRotator(0,0,0), 0.3, 1);
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
+												  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+												  FRotator(0,0,0), 0.3, 1);
+		}
 	}
 
-		
-	
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
