@@ -54,6 +54,11 @@ void APlayerCharacter::Tick(float DeltaSeconds)
 		float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
 	if(Found)
 	{
+		if (Value < 30.0f)
+		{
+			CallVignette();
+		}
+		
 		if (Value <= 0.0f)
 		{
 			StartDeath();

@@ -15,6 +15,7 @@
 //Includes
 #include "CoreMinimal.h"
 #include "Character/BASE/GASBASECharacter.h"
+#include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
 
 //Forward Declaration
@@ -71,6 +72,11 @@ public:
 	int MaxShotRange = 20000;
 
 	FRandomStream Stream;
+
+	int VoiceLineTiggerNum = 0;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CallVignette();
 	
 public:
 	//Constructor

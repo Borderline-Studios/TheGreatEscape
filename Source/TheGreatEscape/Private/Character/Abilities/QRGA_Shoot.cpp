@@ -7,8 +7,6 @@
 #include "ShaderCompiler.h"
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "EnemyRework.h"
-#include "EnemyReworkDrone.h"
-#include "EnemyReworkHybrid.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
@@ -64,7 +62,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReference()->PlayerAmmo--;
 
 		//Plays the sound at the player
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX, CamCompLocation,FRotator(0,0,0), 0.3, 1);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX, CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,1.3));
 
 		//Varaibles for Hitscan check
 		FHitResult HitResult;
@@ -101,24 +99,18 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					//play animation
 					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
 					{
-						if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
+						Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+
+						if(UKismetMathLibrary::RandomBoolWithWeight(0.7) && GetPlayerReference()->VoiceLineTiggerNum == 0)
 						{
-							// drone thing
-						}
-						else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
-						{
-							// hybrid tins
+							GetPlayerReference()->VoiceLineTiggerNum = 6;
+							int RandomSFX = FMath::RandRange(0,4 );
+							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 0.7);
 						}
 						else
 						{
-							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
-						}
-
-						if(UKismetMathLibrary::RandomBoolWithWeight(0.2))
-						{
-							int RandomSFX = FMath::RandRange(0,4 );
-							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 0.3);
+							GetPlayerReference()->VoiceLineTiggerNum--;
 						}
 					}
 					
