@@ -28,8 +28,9 @@ ATrainEngine::ATrainEngine()
 
 	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
 	EngineMesh->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Temporary-Meshes/Train/Engine/S_Train_Merged.S_Train_Merged'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/S_Train_Engine.S_Train_Engine'"));
 	EngineMesh->SetStaticMesh(MeshObj.Object);
+	EngineMesh->SetRelativeLocation(FVector(0.0f, 700.0f, -325.0f));
 
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Detection Box"));
 	Box->SetupAttachment(RootComponent);
