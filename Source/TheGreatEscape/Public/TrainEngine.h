@@ -22,6 +22,7 @@
 
 #include "TrainEngine.generated.h"
 
+class ATrainStopButton;
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
 class UQRAttributeSet;
@@ -129,7 +130,8 @@ private:
     UStaticMeshComponent* EngineMesh;
     UStaticMeshComponent* Box;
 
-    UPROPERTY(EditInstanceOnly)
+    UPROPERTY(VisibleInstanceOnly)
+    ATrainStopButton* EngineStopButton;
     UArrowComponent* ArrowComp;
 
     // CARRIAGE HANDLING SECTION

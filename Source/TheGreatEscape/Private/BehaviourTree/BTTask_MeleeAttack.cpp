@@ -58,6 +58,8 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				if (PlayerChar)
 				{
 					//UE_LOG(LogTemp, Warning, TEXT("atac"));
+
+					Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Attack");
 					
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);

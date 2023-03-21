@@ -6,6 +6,7 @@
 #include "BlueprintNodeHelpers.h"
 #include "ShaderCompiler.h"
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
+#include "EnemyRework.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
@@ -92,6 +93,12 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 					//Actiavte hit VFX on hit object/actor
 					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
+					//play animation
+					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
+					{
+						Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+					}
+					
 					//Uses the out going handle to deal damage
 					ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 				}
