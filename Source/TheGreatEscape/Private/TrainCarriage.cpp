@@ -14,11 +14,16 @@
 
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
+#include "Character/Player/PlayerCharacter.h"
+#include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "Engine/Rectlight.h"
+#include "Kismet/GameplayStatics.h"
 
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
+ATrainEngine* ATrainCarriage::EngineRef;
+APlayerCharacter* ATrainCarriage::PlayerRef;
 
 /**
  * @brief
@@ -43,6 +48,12 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetArrowColor(FColor::Blue);
 	Arrow->SetHiddenInGame(false);
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+
+	PlayerDetection = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
+	PlayerDetection->SetupAttachment(RootComponent);
+	PlayerDetection->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
+	PlayerDetection->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	PlayerDetection->SetHiddenInGame(false);
 }
 
 /**
@@ -51,17 +62,22 @@ ATrainCarriage::ATrainCarriage()
  * Populates the carriage's Number, Static Mesh, and Spline Reference.
  * Must be called when initialising each carriage
  * @param CarriageNum The number of carriage this is relative to the engine.
+ * @param InitDistanceFromFront The distance behind the engine that the carriage is set to be
  * @param AssignedMesh The train carriage mesh being assigned to this carriage.
  * @param NewSplineRef The reference to the spline that the engine is using to travel
  */
-void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef)
+void ATrainCarriage::InitialiseFromEngine(
+	int CarriageNum,
+	int InitDistanceFromFront,
+	UStaticMesh* AssignedMesh,
+	USplineComponent* NewSplineRef)
 {
 	CarriageNumber = CarriageNum;
 	
 	Box->SetStaticMesh(AssignedMesh);
 	Box->SetWorldScale3D(FVector(1.0f));
 
-	DistanceFromFront = 1650 + (1500 * CarriageNumber);
+	DistanceFromFront = InitDistanceFromFront;
 
 	if (!SplineRef)
 	{
@@ -107,6 +123,15 @@ void ATrainCarriage::InitialiseFromEngine(int CarriageNum, UStaticMesh* Assigned
 		// Setting the location of each light using the const-ish variables from before
 		LightRefs[0]->SetActorRelativeLocation(FVector(0.0f, YPosition, ZPosition));
 		LightRefs[1]->SetActorRelativeLocation(FVector(0.0f, -YPosition, ZPosition));
+
+		if (!EngineRef)
+		{
+			UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass());
+		}
+		if (!PlayerRef)
+		{
+			UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass());
+		}
 	}
 }
 
@@ -142,5 +167,31 @@ void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 	
 	SetActorLocation(SplineRef->GetLocationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World));
 	SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World) + FRotator(0.0f, 90.0f, 0.0f));
+}
+
+void ATrainCarriage::BeginCarriageOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (EngineRef && OtherActor == PlayerRef)
+	{
+		EngineRef->SetPlayerOnTrain(true);
+	}
+}
+
+void ATrainCarriage::EndCarriageOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if (EngineRef && OtherActor == PlayerRef)
+	{
+		EngineRef->SetPlayerOnTrain(false);
+	}
 }
 

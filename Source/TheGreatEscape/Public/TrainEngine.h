@@ -108,6 +108,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void UpdateObjectiveText(FString NewText = "");
 
+    void SetPlayerOnTrain(bool bNewPlayerOnTrain);
+    bool GetPlayerOnTrain();
+
 protected:
 
 
@@ -145,6 +148,8 @@ private:
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
     int CarriageCount = 0;
+    const int DistanceFromFront = 1600;
+    const int DistanceBetweenCarriages = 1400;
 
     float EngineStart = 0;
 
@@ -156,5 +161,25 @@ private:
     UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
     FString CurrentObjectiveMessage = TEXT("");
 
+    // Player Detection
+    UBoxComponent* PlayerDetection;
+    bool bPlayerOnTrain = false;
+
     // Functions
+    UFUNCTION()
+    void BeginCarriageOverlap(
+        UPrimitiveComponent* OverlappedComponent,
+        AActor* OtherActor,
+        UPrimitiveComponent* OtherComp,
+        int32 OtherBodyIndex,
+        bool bFromSweep,
+        const FHitResult &SweepResult
+    );
+    UFUNCTION()
+    void EndCarriageOverlap(
+        UPrimitiveComponent* OverlappedComponent,
+        AActor* OtherActor,
+        UPrimitiveComponent* OtherComp,
+        int32 OtherBodyIndex
+    );
 };

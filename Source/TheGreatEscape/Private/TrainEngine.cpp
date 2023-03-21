@@ -43,28 +43,34 @@ ATrainEngine::ATrainEngine()
 	ArrowComp->SetHiddenInGame(false);
 	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
+	PlayerDetection = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
+	PlayerDetection->SetupAttachment(RootComponent);
+	PlayerDetection->InitBoxExtent(FVector(150.0f, 900.0f, 350.0f));
+	PlayerDetection->SetRelativeLocation(FVector(0.0f, -100.0f, 350.0f));
+	PlayerDetection->SetHiddenInGame(false);
+
     for (int i = 0; i < 4; i++)
     {
 	    if (!StaticMeshRefs[i])
 	    {
 	    	UStaticMesh* Mesh = nullptr;
 
-	        if (i == 0)
+	        if (i == 0)				// Passenger
 	        {
 	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Passenger_Car.Train_Passenger_Car'"));
 	        	Mesh = FirstCarMesh.Object;
 	        }
-	    	else if (i == 1)
+	    	else if (i == 1)		// Flatbed
 	        {
 	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Flatbed_Car.Train_Flatbed_Car'"));
 	    		Mesh = SecondCarMesh.Object;
 	        }
-	    	else if (i == 2)
+	    	else if (i == 2)		// Weapons
 	        {
 	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Weapon_Car.Train_Weapon_Car'"));
 	    		Mesh = ThirdCarMesh.Object;
 	        }
-	    	else if (i == 3)
+	    	else if (i == 3)		// Living Quarters
 	        {
 	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Living_Quarter_Car.Train_Living_Quarter_Car'"));
 	    		Mesh = FourthCarMesh.Object;
@@ -173,12 +179,12 @@ void ATrainEngine::BeginPlay()
 	for (int i = 0; i < CarriageCount; i++)
 	{
 		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
-		TempRef->InitialiseFromEngine(i, StaticMeshRefs[i%4], TrackSplineRef);
+		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i%4], TrackSplineRef);
 		
 		CarriageRefs.Push(TempRef);
 	}
 
-	EngineStart = ((CarriageCount >= 0) ? CarriageCount : 0) * 1500;
+	// EngineStart = ((CarriageCount >= 0) ? CarriageCount : 0) * 1500;
 
 	if (AbilitySystemComponent)
 	{
@@ -204,7 +210,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Standard Tick Operation
-    if (bHasStartedMoving)
+    if (bHasStartedMoving /* && bPlayerOnTrain */)
     {
     	if (bTrainMoving)
     	{
@@ -220,7 +226,7 @@ void ATrainEngine::Tick(float DeltaTime)
 
         if (!StopIndices.IsEmpty())
         {
-	        for (int i = StopIndices.Num() - 1; i >= 0; --i)
+	        for (int i = StopIndices.Num() - 1; i >= 0; i--)
 	        {
 		        if (StopIndices[i] < TrackSplineRef->GetNumberOfSplinePoints() && StopIndices[i] >= 0)
 		        {
@@ -287,4 +293,22 @@ void ATrainEngine::UpdateObjectiveText(FString NewText)
 {
 	NewText.Append(" ");
 	CurrentObjectiveMessage = NewText;
+}
+
+void ATrainEngine::SetPlayerOnTrain(bool bNewPlayerOnTrain)
+{
+	if (bNewPlayerOnTrain != bPlayerOnTrain)
+	{
+		bPlayerOnTrain = bNewPlayerOnTrain;
+	}
+}
+
+void ATrainEngine::BeginCarriageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
+void ATrainEngine::EndCarriageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
 }

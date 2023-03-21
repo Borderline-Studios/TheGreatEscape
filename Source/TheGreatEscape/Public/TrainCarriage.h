@@ -16,6 +16,9 @@
 #include "GameFramework/Actor.h"
 #include "TrainCarriage.generated.h"
 
+class APlayerCharacter;
+class ATrainEngine;
+class UBoxComponent;
 class USplineComponent;
 class ALight;
 UCLASS()
@@ -27,7 +30,7 @@ public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
 
-	void InitialiseFromEngine(int CarriageNum, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef);
+	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef);
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,6 +56,8 @@ private:
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* Box;
 
+	UBoxComponent* PlayerDetection;
+
 	UPROPERTY(EditInstanceOnly)
 	UArrowComponent* Arrow;
 
@@ -64,5 +69,27 @@ private:
 	TArray<AActor*> ActorRefs;
 	TStaticArray<ALight*, 2> LightRefs;
 
+	static ATrainEngine* EngineRef;
+	static APlayerCharacter* PlayerRef;
+
 	// FUNCTIONS
+	
+
+	// Player Detection Code
+	UFUNCTION()
+	void BeginCarriageOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult &SweepResult
+	);
+	UFUNCTION()
+	void EndCarriageOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
 };
