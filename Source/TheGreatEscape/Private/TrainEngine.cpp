@@ -10,6 +10,7 @@
 
 #include "TrainEngine.h"
 #include "SplineTrack.h"
+#include "TrainStopButton.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -191,6 +192,10 @@ void ATrainEngine::BeginPlay()
 			StoppedAtIndex.Push(false);
 		}
 	}
+
+	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
+	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -635.0f, 280.0f));
 }
 
 // Called every frame
