@@ -53,37 +53,38 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 		AEnemyReworkDrone* const Enemy = Cast<AEnemyReworkDrone>(AIController->GetPawn());
 
 		// if train not nullptr
-		if (Player)
+		if (Train)
 		{
 			// locations
-			//FVector TrainLocation = Train->GetActorLocation();
+			FVector TrainLocation = Train->GetActorLocation();
 			FVector EnemyLocation = Enemy->GetActorLocation();
 			FVector PlayerLocation = Player->GetActorLocation(); // temp
 
 			//FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
-			FVector PlayerLocWithOffset = PlayerLocation + FVector(0.0f, 0.0f , EvelvationHeight);
+			FVector EnemyLocWithOffset = PlayerLocation + FVector(0, 0 , Enemy->ElevationHeight);
 
 			//FVector direction = TrainLocWithOffset - EnemyLocation;
-			FVector direction = PlayerLocWithOffset - EnemyLocation;
+			FVector direction = PlayerLocation - EnemyLocation;
 			
 			direction.Normalize();
 			
 			// if direction < slowing dist set vel to slower move dist (train speed)
 			// otherwise have 2 radius 1 to slow 1 to stop
-			if (FVector::Dist(PlayerLocWithOffset, EnemyLocation) <= StoppingDist) // FIX
-			{
-				//direction.Z *= 2.0f;
-				direction *= 0;
-			}
-			else if (FVector::Dist(PlayerLocWithOffset, EnemyLocation) <= SlowingDist)
-			{
+			if (direction.Dist(EnemyLocWithOffset, PlayerLocation) <= 20.0f) // FIX
+				{
 				direction.Z *= 2.0f;
+				direction *= 0;
+				UE_LOG(LogTemp, Warning, TEXT("im an issue"));
+				}
+			else if (direction.Dist(EnemyLocWithOffset, PlayerLocation) <= SlowingDist)
+			{
+				direction.Z *= 5.0f;
 				direction *= Speed / 1.7f;
 			}
 			else
 			{
 				// multiple direction by speed
-				direction.Z *= 5.0f;
+				direction.Z *= 50.0f;
 				direction *= Speed;
 			}
 			
