@@ -7,6 +7,8 @@
 #include "ShaderCompiler.h"
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "EnemyRework.h"
+#include "EnemyReworkDrone.h"
+#include "EnemyReworkHybrid.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
@@ -99,9 +101,20 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					//play animation
 					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
 					{
-						Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+						if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
+						{
+							// drone thing
+						}
+						else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+						{
+							// hybrid tins
+						}
+						else
+						{
+							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+						}
 
-						if(UKismetMathLibrary::RandomBoolWithWeight(1.0))
+						if(UKismetMathLibrary::RandomBoolWithWeight(0.2))
 						{
 							int RandomSFX = FMath::RandRange(0,4 );
 							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
