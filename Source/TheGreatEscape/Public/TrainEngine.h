@@ -44,7 +44,8 @@ class THEGREATESCAPE_API ATrainEngine : public AActor
 public:    
     // Sets default values for this actor's properties
     ATrainEngine();
-    
+
+#pragma region GAS DEFINITIONS
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
     TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
@@ -78,6 +79,7 @@ public:
     void AddStartupGameplayAbilities();
     
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+#pragma endregion
 
 protected:
     // Called when the game starts or when spawned
@@ -101,6 +103,10 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SetTrainSpeed(ETrainSpeed NewSpeed);
+
+    // Updating the Objective Message
+    UFUNCTION(BlueprintCallable)
+    void UpdateObjectiveText(FString NewText = "");
 
 protected:
 
@@ -145,6 +151,10 @@ private:
     UPROPERTY(EditInstanceOnly)
     TArray<int> StopIndices;
     TArray<bool> StoppedAtIndex;
+
+    // Objective Text Integration
+    UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+    FString CurrentObjectiveMessage = TEXT("");
 
     // Functions
 };
