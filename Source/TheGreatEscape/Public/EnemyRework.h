@@ -48,6 +48,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bAttacking = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	float ElevationHeight = 550.0f; // height above train the enemy will float
 
 
 protected:
@@ -58,8 +60,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
 	float yOffsetFromTrain = 225.0f; // Y axis offset from train
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float ElevationHeight = 550.0f; // height above train the enemy will float
+	
 
 private:
 	// *** Functions *** ///

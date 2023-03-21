@@ -6,6 +6,9 @@
 #include "BlueprintNodeHelpers.h"
 #include "ShaderCompiler.h"
 //#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
+#include "EnemyRework.h"
+#include "EnemyReworkDrone.h"
+#include "EnemyReworkHybrid.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,11 +17,14 @@
 #include "Character/BASE/GASBASECharacter.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/WorldInteractTrigger.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UQRGA_Shoot::UQRGA_Shoot()
 {
 	//sets the input key via the Enum
 	AbilityInputID = EGASAbilityInputID::Shoot;
+
+	FRandomStream(UGameplayStatics::GetWorldDeltaSeconds(GetWorld()));
 }
 
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -92,6 +98,30 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 					//Actiavte hit VFX on hit object/actor
 					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
+					//play animation
+					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
+					{
+						if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
+						{
+							// drone thing
+						}
+						else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+						{
+							// hybrid tins
+						}
+						else
+						{
+							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+						}
+
+						if(UKismetMathLibrary::RandomBoolWithWeight(0.2))
+						{
+							int RandomSFX = FMath::RandRange(0,4 );
+							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 0.3);
+						}
+					}
+					
 					//Uses the out going handle to deal damage
 					ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 				}
@@ -117,7 +147,7 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
+	
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
 

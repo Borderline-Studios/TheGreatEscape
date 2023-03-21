@@ -35,7 +35,7 @@ private:
 	float EvelvationHeight = 200.0f; // height above train the enemy will float
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
-	float Speed = 10.0f; // speed of drone
+	float Speed = 20.0f; // speed of drone
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
 	float SlowingDist = 50.0; // Distance to slow down

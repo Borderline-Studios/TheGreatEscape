@@ -3,6 +3,7 @@
 
 #include "Character/Abilities/QRGA_AimDownSights.h"
 
+#include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Evaluation/IMovieSceneEvaluationHook.h"
 
@@ -21,12 +22,14 @@ void UQRGA_AimDownSights::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	if (!GetPlayerReferance()->bIsADS)
 	{
+
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("ActiADS");
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_AimDownSights::NotifyFunction);
 	}
 	else if (GetPlayerReferance()->bIsADS)
 	{
 		GetPlayerReferance()->bIsADS = false;
+		GetPlayerReferance()->GetFirstPersonCameraComponent()->SetFieldOfView(90.0f);
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("DeActiADS");
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_AimDownSights::NotifyFunction);
 	}
@@ -69,6 +72,7 @@ void UQRGA_AimDownSights::NotifyFunction(FName NotifyName,
 	if (NotifyName == FName("ADSFinish"))
 	{
 	    GetPlayerReferance()->bIsADS = true;
+		GetPlayerReferance()->GetFirstPersonCameraComponent()->SetFieldOfView(50.0f);
 		GetPlayerReferance()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("HoldADS");
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}

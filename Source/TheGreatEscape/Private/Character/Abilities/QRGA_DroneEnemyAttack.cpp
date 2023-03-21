@@ -14,6 +14,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnemyReworkDrone.h"
 #include "TrainEngine.h"
+#include "Character/Player/PlayerCharacter.h"
 
 /**
  * @brief Constructor
@@ -49,7 +50,9 @@ void UQRGA_DroneEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
 		{
-			if (ATrainEngine* Train = Cast<ATrainEngine>(HitResult.GetActor()))
+			//ATrainEngine* Train = Cast<ATrainEngine>(HitResult.GetActor())
+			// APlayerCharacter* Player = Cast<APlayerCharacter>(HitResult.GetAc
+			if (APlayerCharacter* Player = Cast<APlayerCharacter>(HitResult.GetActor()))
 			{
 				//UE_LOG(LogTemp, Warning, TEXT("Damage train boi %s"), *HitResult.GetActor()->GetName());
 				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);

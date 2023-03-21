@@ -16,6 +16,8 @@
 #include "QRGameplayAbility.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include <iostream>
+#include <random>
 #include "QRGA_Shoot.generated.h"
 
 //Forward Declearations
@@ -45,6 +47,8 @@ public:
 
 	//TODO Remove this handle (Not nedded)
 	FTimerHandle ShootHandle;
+
+	FRandomStream Stream;
 
 	//Declearation of effect to apply when enemy is hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

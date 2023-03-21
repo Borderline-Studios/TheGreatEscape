@@ -63,9 +63,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> CamShake;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	TArray<USoundBase*> QuipSFX;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int MaxShotRange = 20000;
+
+	FRandomStream Stream;
 	
 public:
 	//Constructor
