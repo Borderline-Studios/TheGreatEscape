@@ -15,11 +15,14 @@
 #include "Character/BASE/GASBASECharacter.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/WorldInteractTrigger.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UQRGA_Shoot::UQRGA_Shoot()
 {
 	//sets the input key via the Enum
 	AbilityInputID = EGASAbilityInputID::Shoot;
+
+	FRandomStream(UGameplayStatics::GetWorldDeltaSeconds(GetWorld()));
 }
 
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -97,6 +100,13 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
 					{
 						Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+
+						if(UKismetMathLibrary::RandomBoolWithWeight(1.0))
+						{
+							int RandomSFX = FMath::RandRange(0,4 );
+							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 0.3);
+						}
 					}
 					
 					//Uses the out going handle to deal damage
@@ -124,7 +134,7 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
+	
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
 
