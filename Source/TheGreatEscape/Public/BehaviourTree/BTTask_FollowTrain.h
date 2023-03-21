@@ -32,11 +32,14 @@ public:
 private:
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
-	float EvelvationHeight = 200.0f; // height above train the enemy will float
+	float EvelvationHeight = 100.0f; // height above train the enemy will float
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
 	float Speed = 20.0f; // speed of drone
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
-	float SlowingDist = 50.0; // Distance to slow down
+	float SlowingDist = 100.0; // Distance to slow down
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
+	float StoppingDist = 25.0; // Distance to slow down
 }; 
