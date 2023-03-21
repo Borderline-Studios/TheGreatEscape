@@ -282,3 +282,9 @@ void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
 		break;
 	}
 }
+
+void ATrainEngine::UpdateObjectiveText(FString NewText)
+{
+	NewText.Append(" ");
+	CurrentObjectiveMessage = NewText;
+}

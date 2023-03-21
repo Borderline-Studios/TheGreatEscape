@@ -152,6 +152,7 @@ void AObjectiveGate::SpawnPickup()
 	
 	AActor* NewPickup = GetWorld()->SpawnActor(PickupItemClassRef);
 	NewPickup->SetActorLocation((GetActorLocation() + (GateMesh->GetRightVector() * (-250.00 - (50 * PickupItems.Num())))) + FVector(0.0f, 0.0f, 100.0f));
+	NewPickup->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 	PickupItems.Push(NewPickup);
 }
 
@@ -234,6 +235,11 @@ void AObjectiveGate::BeginSphereOverlap(
 	{
 		bTrainStopped = true;
 		EngineRef->ToggleTrainStop();
+		FString ObjText = "Collect ";
+		ObjText.AppendInt(PickupItemsNum);
+		ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
+		ObjText.Append(" Explore nearby!");
+		EngineRef->UpdateObjectiveText(ObjText);
 	}
 
 	// Check to see if the train is stopped
@@ -251,6 +257,16 @@ void AObjectiveGate::BeginSphereOverlap(
 
 				PickupItems[i]->Destroy();
 				PickupItems.RemoveAt(i);
+
+				if (PickupItems.Num() != 0)
+				{
+					const int RemainingPickupsToCollect = PickupItemsNum - PickupItemPlacedCount;
+					FString ObjectiveText;
+					ObjectiveText.AppendInt(RemainingPickupsToCollect);
+					ObjectiveText.Append(RemainingPickupsToCollect == 1 ? " battery" : " batteries");
+					ObjectiveText.Append(" left to collect!");
+					EngineRef->UpdateObjectiveText(ObjectiveText);
+				}
 			}
 		}
 	}
@@ -260,6 +276,9 @@ void AObjectiveGate::BeginSphereOverlap(
 	if (PickupItemPlacedCount == PickupItemsNum)
 	{
 		bTrainStopped = false;
+
+		// Default call of this function sets the text back to ""
+		EngineRef->UpdateObjectiveText();
 
 		Destroy();
 	}
