@@ -64,7 +64,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReference()->PlayerAmmo--;
 
 		//Plays the sound at the player
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX, CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,1.3));
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
 
 		//Varaibles for Hitscan check
 		FHitResult HitResult;
@@ -114,12 +114,12 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
 						}
 
-						if(UKismetMathLibrary::RandomBoolWithWeight(0.7) && GetPlayerReference()->VoiceLineTiggerNum == 0)
+						if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)
 						{
 							GetPlayerReference()->VoiceLineTiggerNum = 6;
 							int RandomSFX = FMath::RandRange(0,4 );
 							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 0.7);
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 1.0);
 						}
 						else
 						{

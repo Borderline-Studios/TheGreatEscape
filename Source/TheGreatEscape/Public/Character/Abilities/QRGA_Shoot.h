@@ -60,7 +60,7 @@ public:
 
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
-	USoundBase* ShootSFX;
+	TArray<USoundBase*> ShootSFX;
 
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
