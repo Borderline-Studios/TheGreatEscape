@@ -49,8 +49,11 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 				// Get train
 				ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
+				// Get player character
+				ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+				
 				// If it is the train
-				if (Train)
+				if (Player)
 				{
 					// attack the train, set can attack to false and start timer
 					UE_LOG(LogTemp, Warning, TEXT("drone attack"));

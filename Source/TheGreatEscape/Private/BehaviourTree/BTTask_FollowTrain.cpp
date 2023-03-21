@@ -45,6 +45,9 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 		// get train engine
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+		
+		// player
+		ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 
 		// get enemy
 		AEnemyReworkDrone* const Enemy = Cast<AEnemyReworkDrone>(AIController->GetPawn());
@@ -55,29 +58,33 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			// locations
 			FVector TrainLocation = Train->GetActorLocation();
 			FVector EnemyLocation = Enemy->GetActorLocation();
+			FVector PlayerLocation = Player->GetActorLocation(); // temp
 
-			FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
+			//FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
+			FVector EnemyLocWithOffset = PlayerLocation + FVector(0, 0 , Enemy->ElevationHeight);
 
-			FVector direction = TrainLocWithOffset - EnemyLocation;
+			//FVector direction = TrainLocWithOffset - EnemyLocation;
+			FVector direction = PlayerLocation - EnemyLocation;
 			
 			direction.Normalize();
 			
 			// if direction < slowing dist set vel to slower move dist (train speed)
 			// otherwise have 2 radius 1 to slow 1 to stop
-			if (direction.Dist(TrainLocWithOffset, EnemyLocation) <= 20.0f) // FIX
+			if (direction.Dist(EnemyLocWithOffset, PlayerLocation) <= 20.0f) // FIX
 				{
-				//direction.Z *= 0;
-				direction *= 0;
-				}
-			else if (direction.Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
-			{
 				direction.Z *= 2.0f;
+				direction *= 0;
+				UE_LOG(LogTemp, Warning, TEXT("im an issue"));
+				}
+			else if (direction.Dist(EnemyLocWithOffset, PlayerLocation) <= SlowingDist)
+			{
+				direction.Z *= 5.0f;
 				direction *= Speed / 1.7f;
 			}
 			else
 			{
 				// multiple direction by speed
-				direction.Z *= 4.0f;
+				direction.Z *= 50.0f;
 				direction *= Speed;
 			}
 			
@@ -85,7 +92,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			Enemy->GetMovementComponent()->Velocity = direction;
 
 			// look at train
-			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), TrainLocation);
+			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), PlayerLocation);
 			Enemy->TurretBaseRef->SetRelativeRotation(newTurretBaseRot); // rotate the turret base mesh
 			
 
