@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
+#include "Objectives/ObjectiveGate.h"
 
 UQRGA_Interact::UQRGA_Interact()
 {
@@ -53,6 +54,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				//TODO Make this better (Pick up and drop)
 				else
 				{
+					if (AObjectiveGate* ParentGate = Cast<AObjectiveGate>(HitResult.GetActor()->GetAttachParentActor()))
+					{
+						ParentGate->UpdateObjectiveText("Take this back to the gate blocking the train!");
+					}
+					
 					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 				}
 				//ends the ability

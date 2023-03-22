@@ -39,6 +39,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void UpdateObjectiveText(FString NewText = "") const;
+
 private:
 	// FUNCTIONS
 #if WITH_EDITOR
@@ -58,6 +60,9 @@ private:
 
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void ClearPickups();
+
+	UFUNCTION(CallInEditor, Category = "Functionality")
+	void FixReferences();
 
 	bool CleanPickupsArray();
 #endif

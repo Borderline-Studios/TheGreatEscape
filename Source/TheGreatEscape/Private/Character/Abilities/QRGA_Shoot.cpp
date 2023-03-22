@@ -18,6 +18,9 @@
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "QRGA_Reload.generated.h"
+#include "Character/Abilities/QRGA_Reload.h"
+
 
 UQRGA_Shoot::UQRGA_Shoot()
 {
@@ -65,7 +68,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 
 		//Plays the sound at the player
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
-
+		
 		//Varaibles for Hitscan check
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
@@ -152,7 +155,11 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	
+
+	if (GetPlayerReference()->PlayerAmmo <= 0)
+	{
+		UQRGA_Reload::
+	}
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
 

@@ -75,6 +75,14 @@ void AObjectiveGate::Tick(float DeltaTime)
 
 }
 
+void AObjectiveGate::UpdateObjectiveText(const FString NewText) const
+{
+	if (EngineRef)
+	{
+		EngineRef->UpdateObjectiveText(NewText);
+	}
+}
+
 #if WITH_EDITOR	// This means that these functions only exist and apply while in the editor. These do not apply to packages
 /**
  * @brief 
@@ -186,6 +194,22 @@ void AObjectiveGate::ClearPickups()
 	PickupItems.Empty();
 }
 
+void AObjectiveGate::FixReferences()
+{
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors);
+
+	CleanPickupsArray();
+
+	for (int i = 0; i < AttachedActors.Num(); ++i)
+	{
+		if (AttachedActors[i]->GetClass() == PickupItemClassRef)
+		{
+			PickupItems.Push(AttachedActors[i]);
+		}
+	}
+}
+
 bool AObjectiveGate::CleanPickupsArray()
 {
 	bool bCleanedUp = false;
@@ -239,7 +263,7 @@ void AObjectiveGate::BeginSphereOverlap(
 		ObjText.AppendInt(PickupItemsNum);
 		ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
 		ObjText.Append(" Explore nearby!");
-		EngineRef->UpdateObjectiveText(ObjText);
+		UpdateObjectiveText(ObjText);
 	}
 
 	// Check to see if the train is stopped
@@ -265,7 +289,7 @@ void AObjectiveGate::BeginSphereOverlap(
 					ObjectiveText.AppendInt(RemainingPickupsToCollect);
 					ObjectiveText.Append(RemainingPickupsToCollect == 1 ? " battery" : " batteries");
 					ObjectiveText.Append(" left to collect!");
-					EngineRef->UpdateObjectiveText(ObjectiveText);
+					UpdateObjectiveText(ObjectiveText);
 				}
 			}
 		}
@@ -278,7 +302,7 @@ void AObjectiveGate::BeginSphereOverlap(
 		bTrainStopped = false;
 
 		// Default call of this function sets the text back to ""
-		EngineRef->UpdateObjectiveText();
+		UpdateObjectiveText();
 
 		Destroy();
 	}

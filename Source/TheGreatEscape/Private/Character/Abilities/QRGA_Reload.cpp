@@ -16,7 +16,7 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
 	if (!GetPlayerReference()->bIsADS)
 	{
 		//Checks if ammo is full
@@ -80,5 +80,10 @@ void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyP
 		//Ends ability when animation is finished
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
+	
+}
+
+void UQRGA_Reload::RemoteActivateAbilitiy()
+{
 	
 }

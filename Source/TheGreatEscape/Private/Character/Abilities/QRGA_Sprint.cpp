@@ -33,7 +33,7 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		//Setting the Sprint to false
 		GetPlayerReference()->bIsSprinting = false;
 		//Decreasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 350.0f;
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - GetPlayerReference()->SprintMod;
 		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
 		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != RunFOV)
 		{
@@ -50,7 +50,7 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		//Setting the Sprint to true
 		GetPlayerReference()->bIsSprinting = true;
 		//Increasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  350.0f;
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  GetPlayerReference()->SprintMod;
 		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
 		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != SprintFOV)
 		{
