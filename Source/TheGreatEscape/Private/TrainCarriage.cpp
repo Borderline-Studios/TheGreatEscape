@@ -23,7 +23,7 @@
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
 ATrainEngine* ATrainCarriage::EngineRef;
-APlayerCharacter* ATrainCarriage::PlayerRef;
+// APlayerCharacter* ATrainCarriage::PlayerRef;
 
 /**
  * @brief
@@ -39,7 +39,7 @@ ATrainCarriage::ATrainCarriage()
 
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
 	Box->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+    const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
 	Box->SetStaticMesh(MeshObj.Object);
 	Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
 
@@ -49,11 +49,13 @@ ATrainCarriage::ATrainCarriage()
 	Arrow->SetHiddenInGame(false);
 	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
-	PlayerDetection = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
-	PlayerDetection->SetupAttachment(RootComponent);
-	PlayerDetection->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
-	PlayerDetection->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	PlayerDetection->SetHiddenInGame(false);
+	PlayerDetectionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
+	PlayerDetectionComp->SetupAttachment(RootComponent);
+	PlayerDetectionComp->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
+	PlayerDetectionComp->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	PlayerDetectionComp->SetHiddenInGame(false);
+	PlayerDetectionComp->OnComponentBeginOverlap.AddDynamic(this, &ATrainCarriage::BeginCarriageOverlap);
+	PlayerDetectionComp->OnComponentEndOverlap.AddDynamic(this, &ATrainCarriage::EndCarriageOverlap);
 }
 
 /**
@@ -65,12 +67,14 @@ ATrainCarriage::ATrainCarriage()
  * @param InitDistanceFromFront The distance behind the engine that the carriage is set to be
  * @param AssignedMesh The train carriage mesh being assigned to this carriage.
  * @param NewSplineRef The reference to the spline that the engine is using to travel
+ * @param NewEngineRef
  */
 void ATrainCarriage::InitialiseFromEngine(
 	int CarriageNum,
 	int InitDistanceFromFront,
 	UStaticMesh* AssignedMesh,
-	USplineComponent* NewSplineRef)
+	USplineComponent* NewSplineRef,
+	ATrainEngine* NewEngineRef)
 {
 	CarriageNumber = CarriageNum;
 	
@@ -126,12 +130,12 @@ void ATrainCarriage::InitialiseFromEngine(
 
 		if (!EngineRef)
 		{
-			UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass());
+			EngineRef = NewEngineRef;
 		}
-		if (!PlayerRef)
-		{
-			UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass());
-		}
+		// if (!PlayerRef)
+		// {
+		// 	UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass());
+		// }
 	}
 }
 
@@ -169,17 +173,21 @@ void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 	SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World) + FRotator(0.0f, 90.0f, 0.0f));
 }
 
-void ATrainCarriage::BeginCarriageOverlap(
-	UPrimitiveComponent* OverlappedComponent,
+UBoxComponent* ATrainCarriage::GetPlayerDetectionComponent()
+{
+	return PlayerDetectionComp;
+}
+
+void ATrainCarriage::BeginCarriageOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (EngineRef && OtherActor == PlayerRef)
+	if (EngineRef && OtherActor == EngineRef->PlayerRef)
 	{
-		EngineRef->SetPlayerOnTrain(true);
+		EngineRef->BeginEngineOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	}
 }
 
@@ -189,9 +197,8 @@ void ATrainCarriage::EndCarriageOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (EngineRef && OtherActor == PlayerRef)
+	if (EngineRef && OtherActor == EngineRef->PlayerRef)
 	{
-		EngineRef->SetPlayerOnTrain(false);
+		EngineRef->EndEngineOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 	}
 }
-

@@ -11,6 +11,7 @@
 #include "TrainEngine.h"
 #include "SplineTrack.h"
 #include "TrainStopButton.h"
+#include "Character/Player/PlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -44,11 +45,13 @@ ATrainEngine::ATrainEngine()
 	ArrowComp->SetHiddenInGame(false);
 	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
-	PlayerDetection = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
-	PlayerDetection->SetupAttachment(RootComponent);
-	PlayerDetection->InitBoxExtent(FVector(150.0f, 900.0f, 350.0f));
-	PlayerDetection->SetRelativeLocation(FVector(0.0f, -100.0f, 350.0f));
-	PlayerDetection->SetHiddenInGame(false);
+	PlayerDetectionBoxes.Push(CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector")));
+	PlayerDetectionBoxes[0]->SetupAttachment(RootComponent);
+	PlayerDetectionBoxes[0]->InitBoxExtent(FVector(250.0f, 1500.0f, 350.0f));
+	PlayerDetectionBoxes[0]->SetRelativeLocation(FVector(0.0f, 100.0f, 350.0f));
+	PlayerDetectionBoxes[0]->SetHiddenInGame(false);
+	PlayerDetectionBoxes[0]->OnComponentBeginOverlap.AddDynamic(this, &ATrainEngine::BeginEngineOverlap);
+	PlayerDetectionBoxes[0]->OnComponentEndOverlap.AddDynamic(this, &ATrainEngine::EndEngineOverlap);
 
     for (int i = 0; i < 4; i++)
     {
@@ -173,36 +176,33 @@ void ATrainEngine::BeginPlay()
 			bTrainMoving = true;
 		}
 	}, (StartDelayTime >= 1) ? StartDelayTime : 0.1f, false);
-
-	//GEngine->AddOnScreenDebugMessage(2, 5, FColor::Blue, FString::Printf(TEXT("Train Has Started Counting, will begin moving in %d Seconds"), StartDelayTime));
-
+	
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
 	for (int i = 0; i < CarriageCount; i++)
 	{
 		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
-		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i%4], TrackSplineRef);
+		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i%4], TrackSplineRef, this);
 		
+		PlayerDetectionBoxes.Push(TempRef->GetPlayerDetectionComponent());
+
 		CarriageRefs.Push(TempRef);
 	}
-
-	// EngineStart = ((CarriageCount >= 0) ? CarriageCount : 0) * 1500;
-
+	
 	if (AbilitySystemComponent)
 	{
 		AddStartupGameplayAbilities();
 	}
 
-	if (!StopIndices.IsEmpty())
-	{
-		for (int i = 0; i < StopIndices.Num(); ++i)
-		{
-			StoppedAtIndex.Push(false);
-		}
-	}
-
 	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
 	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -635.0f, 280.0f));
+
+	UpdateObjectiveText("");
+
+	if (!PlayerRef)
+	{
+		PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass()));
+	}
 }
 
 // Called every frame
@@ -210,8 +210,12 @@ void ATrainEngine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UE_LOG(LogTemp, Warning, TEXT("Is the train allowed to move: %hhd"), bHasStartedMoving);
+	UE_LOG(LogTemp, Warning, TEXT("Is the player on the train: %hs"), bPlayerOnTrain ? "true" : "false");
+	UE_LOG(LogTemp, Warning, TEXT("Are both true: %hhd"), bHasStartedMoving && bPlayerOnTrain);
+
 	// Standard Tick Operation
-    if (bHasStartedMoving /* && bPlayerOnTrain */)
+    if (bHasStartedMoving && bPlayerOnTrain)
     {
     	if (bTrainMoving)
     	{
@@ -224,27 +228,6 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
     	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
-
-        if (!StopIndices.IsEmpty())
-        {
-	        for (int i = StopIndices.Num() - 1; i >= 0; i--)
-	        {
-		        if (StopIndices[i] < TrackSplineRef->GetNumberOfSplinePoints() && StopIndices[i] >= 0)
-		        {
-			        const float IndexDistance = TrackSplineRef->GetDistanceAlongSplineAtSplinePoint(StopIndices[i]);
-
-			        if (CurrentSplineProgress >= IndexDistance)
-			        {
-				        if (!StoppedAtIndex[i])
-				        {
-					        StoppedAtIndex[i] = true;
-
-					        ToggleTrainStop();
-				        }
-			        }
-		        }
-	        }
-        }
 
         for (int i = 0; i < CarriageRefs.Num(); i++)
         {
@@ -290,12 +273,20 @@ void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
 	}
 }
 
+/**
+ * @brief 
+ * @param NewText 
+ */
 void ATrainEngine::UpdateObjectiveText(FString NewText)
 {
 	NewText.Append(" ");
 	CurrentObjectiveMessage = NewText;
 }
 
+/**
+ * @brief 
+ * @param bNewPlayerOnTrain 
+ */
 void ATrainEngine::SetPlayerOnTrain(bool bNewPlayerOnTrain)
 {
 	if (bNewPlayerOnTrain != bPlayerOnTrain)
@@ -304,12 +295,68 @@ void ATrainEngine::SetPlayerOnTrain(bool bNewPlayerOnTrain)
 	}
 }
 
-void ATrainEngine::BeginCarriageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+/**
+ * @brief 
+ * @return 
+ */
+bool ATrainEngine::GetPlayerOnTrain()
 {
+	return CheckTrainForPlayer();
 }
 
-void ATrainEngine::EndCarriageOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+UBoxComponent* ATrainEngine::GetEngineDetectionComponent()
 {
+	return PlayerDetectionBoxes[0];
+}
+
+void ATrainEngine::BeginEngineOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (!bPlayerOnTrain && OtherActor == PlayerRef)
+	{
+ 		GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
+		{
+			bPlayerOnTrain = true;
+		}, 0.75f, false);
+	}
+}
+
+void ATrainEngine::EndEngineOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if (bPlayerOnTrain && OtherActor == PlayerRef)
+	{
+		GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
+		{
+			if (!CheckTrainForPlayer())
+			{
+				bPlayerOnTrain = false;
+			}
+			
+		}, 2.0f, false);
+	}
+}
+
+bool ATrainEngine::CheckTrainForPlayer()
+{
+	for (int i = 0; i < PlayerDetectionBoxes.Num(); i++)
+	{
+		TArray<AActor*> OverlappingActors;
+		PlayerDetectionBoxes[i]->GetOverlappingActors(OverlappingActors, APlayerCharacter::StaticClass());
+
+		if (!OverlappingActors.IsEmpty())
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }
