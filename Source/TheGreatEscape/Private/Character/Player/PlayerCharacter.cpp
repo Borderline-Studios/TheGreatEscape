@@ -14,6 +14,7 @@
 #include "Character/Player/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
@@ -32,6 +33,8 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+ // Position the camera
+	
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
@@ -41,6 +44,11 @@ APlayerCharacter::APlayerCharacter()
 	Mesh1P->CastShadow = false;
 	//Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	//Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+	
+	MuzzleSphere = CreateDefaultSubobject<USphereComponent>(TEXT("MuzzleSphere"));
+	MuzzleSphere->SetOnlyOwnerSee(true);
+	MuzzleSphere->SetupAttachment(Mesh1P);
+	MuzzleSphere->InitSphereRadius(50.0f);
 }
 
 void APlayerCharacter::Tick(float DeltaSeconds)

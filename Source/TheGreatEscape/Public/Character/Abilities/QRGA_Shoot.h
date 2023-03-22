@@ -65,6 +65,13 @@ public:
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraSystem* HitVFX;
+	
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* MuzzleVFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraEmitter* MuzzleEmitter;
 
 	//Function that animation nofity will call 
 	UFUNCTION()

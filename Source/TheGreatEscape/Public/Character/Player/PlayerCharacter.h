@@ -23,6 +23,7 @@ class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
 class UCameraComponent;
+class USphereComponent;
 class UAnimMontage;
 class USoundBase;
 /**
@@ -37,9 +38,15 @@ public:
 	/** First person mesh */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
+
+
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
+	USphereComponent* MuzzleSphere;
+	
 	//Animation Montage variable at acces the animation montage in code
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ShootMontage;

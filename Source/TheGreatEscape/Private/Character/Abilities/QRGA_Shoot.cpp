@@ -16,10 +16,9 @@
 #include "Character/QRCharacter.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Character/Player/PlayerCharacter.h"
+#include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "QRGA_Reload.generated.h"
-#include "Character/Abilities/QRGA_Reload.h"
 
 
 UQRGA_Shoot::UQRGA_Shoot()
@@ -68,6 +67,8 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 
 		//Plays the sound at the player
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+
+
 		
 		//Varaibles for Hitscan check
 		FHitResult HitResult;
@@ -75,9 +76,18 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		//Ignore self
 		Params.AddIgnoredActor(GetPlayerReference());
 
+		FVector MuzzleLoc = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
+		FRotator FowardVecRot = GetPlayerReference()->FirstPersonCameraComponent->GetComponentRotation();
 
+		//TODO Fix in beta so no gaming
+		//UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX,	GetPlayerReference()->MuzzleSphere, FName("Name"),
+		//	MuzzleLoc,FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll), EAttachLocation::SnapToTarget, true);
 
-		//TODO Simplfy the Compent location and no magic numbers
+		
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleVFX, MuzzleLoc,
+		FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll),
+		FVector(1.0f, 1.0f, 1.0f), true);
+	
 		//Line trace from crosshair/middle of player screen straight line infront of player
 		if (GetWorld()->LineTraceSingleByChannel(HitResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxShotRange,ECC_Visibility, Params))
 		{
@@ -99,6 +109,9 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 				{
 					//Creates damage effect outgoing handle
 					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+
+					
+					
 					//Actiavte hit VFX on hit object/actor
 					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
 					//play animation
@@ -155,11 +168,7 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
-	if (GetPlayerReference()->PlayerAmmo <= 0)
-	{
-		UQRGA_Reload::
-	}
+	
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
 
