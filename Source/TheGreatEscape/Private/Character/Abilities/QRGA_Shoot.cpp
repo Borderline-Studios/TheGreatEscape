@@ -128,6 +128,18 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 						else
 						{
 							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+
+							// ToDo Maybe put this into function as I (Toni) copied it
+							if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && Enemy->SFXTiggerNum == 0)
+							{
+								Enemy->SFXTiggerNum = FMath::RandRange(4,7 );
+								int RandomSFX = FMath::RandRange(0,2 );
+								UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
+							}
+							else
+							{
+								Enemy->SFXTiggerNum--;
+							}
 						}
 
 						if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)

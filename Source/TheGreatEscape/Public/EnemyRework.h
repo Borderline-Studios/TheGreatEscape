@@ -38,6 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	USoundBase* DeathSFX;
 
+	//Sound effect declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX")
+	TArray<USoundBase*> EnemyHitSFX;
+
 	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
@@ -50,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	float ElevationHeight = 550.0f; // height above train the enemy will float
+
+	// Used Jacob's method to implement SFX
+	int SFXTiggerNum = 0;
 
 
 protected:
