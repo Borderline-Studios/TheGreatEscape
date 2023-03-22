@@ -259,6 +259,7 @@ void AObjectiveGate::BeginSphereOverlap(
 	{
 		bTrainStopped = true;
 		EngineRef->ToggleTrainStop();
+		EngineRef->DisableMovement();
 		FString ObjText = "Collect ";
 		ObjText.AppendInt(PickupItemsNum);
 		ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
@@ -300,6 +301,7 @@ void AObjectiveGate::BeginSphereOverlap(
 	if (PickupItemPlacedCount == PickupItemsNum)
 	{
 		bTrainStopped = false;
+		EngineRef->EnableMovement();
 
 		// Default call of this function sets the text back to ""
 		UpdateObjectiveText();

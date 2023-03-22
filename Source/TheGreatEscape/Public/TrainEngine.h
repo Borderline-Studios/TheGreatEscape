@@ -22,6 +22,7 @@
 
 #include "TrainEngine.generated.h"
 
+class ATrainControlls;
 class ATrainStopButton;
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
@@ -114,6 +115,9 @@ public:
 
     UBoxComponent* GetEngineDetectionComponent();
 
+    void DisableMovement();
+    void EnableMovement();
+
 protected:
 
 
@@ -138,12 +142,11 @@ private:
     // Holds the Shapes used to show the engine
     USceneComponent* SceneRoot;
 
-    UPROPERTY(EditInstanceOnly)
     UStaticMeshComponent* EngineMesh;
     UStaticMeshComponent* Box;
 
-    UPROPERTY(VisibleInstanceOnly)
     ATrainStopButton* EngineStopButton;
+    ATrainControlls* TrainControls;
     UArrowComponent* ArrowComp;
 
     // CARRIAGE HANDLING SECTION
@@ -159,9 +162,10 @@ private:
     // Objective Text Integration
     UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
     FString CurrentObjectiveMessage = TEXT("");
+    // Objective Movement Prevention
+    bool bObjectiveLock = false;
 
     // Player Detection
-    UPROPERTY(EditInstanceOnly)
     TArray<UBoxComponent*> PlayerDetectionBoxes;
     APlayerCharacter* PlayerRef;
     bool bPlayerOnTrain = false;

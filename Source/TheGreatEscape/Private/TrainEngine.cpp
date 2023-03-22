@@ -10,6 +10,7 @@
 
 #include "TrainEngine.h"
 #include "SplineTrack.h"
+#include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -42,14 +43,15 @@ ATrainEngine::ATrainEngine()
 	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	ArrowComp->SetupAttachment(RootComponent);
 	ArrowComp->SetArrowColor(FColor::Purple);
-	ArrowComp->SetHiddenInGame(false);
+	// ArrowComp->SetHiddenInGame(false);
 	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
 	PlayerDetectionBoxes.Push(CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector")));
 	PlayerDetectionBoxes[0]->SetupAttachment(RootComponent);
 	PlayerDetectionBoxes[0]->InitBoxExtent(FVector(250.0f, 1500.0f, 350.0f));
 	PlayerDetectionBoxes[0]->SetRelativeLocation(FVector(0.0f, 100.0f, 350.0f));
-	PlayerDetectionBoxes[0]->SetHiddenInGame(false);
+	// PlayerDetectionBoxes[0]->SetHiddenInGame(true);
+	PlayerDetectionBoxes[0]->SetVisibility(false);
 	PlayerDetectionBoxes[0]->OnComponentBeginOverlap.AddDynamic(this, &ATrainEngine::BeginEngineOverlap);
 	PlayerDetectionBoxes[0]->OnComponentEndOverlap.AddDynamic(this, &ATrainEngine::EndEngineOverlap);
 
@@ -61,22 +63,22 @@ ATrainEngine::ATrainEngine()
 
 	        if (i == 0)				// Passenger
 	        {
-	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Passenger_Car.Train_Passenger_Car'"));
+	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Base_V2.Train_Car_Base_V2'"));
 	        	Mesh = FirstCarMesh.Object;
 	        }
 	    	else if (i == 1)		// Flatbed
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Flatbed_Car.Train_Flatbed_Car'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_FlatBed_V2.Train_Car_FlatBed_V2'"));
 	    		Mesh = SecondCarMesh.Object;
 	        }
 	    	else if (i == 2)		// Weapons
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Weapon_Car.Train_Weapon_Car'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Weapons_V2.Train_Car_Weapons_V2'"));
 	    		Mesh = ThirdCarMesh.Object;
 	        }
 	    	else if (i == 3)		// Living Quarters
 	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/Train_Living_Quarter_Car.Train_Living_Quarter_Car'"));
+	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Windows_V2.Train_Car_Windows_V2'"));
 	    		Mesh = FourthCarMesh.Object;
 	        }
 
@@ -195,7 +197,11 @@ void ATrainEngine::BeginPlay()
 
 	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
 	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -635.0f, 280.0f));
+	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -470.0f, 360.0f));
+
+	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
+	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	TrainControls->SetActorRelativeLocation(FVector(-120.0f, -600.0f, 270.0f));
 
 	UpdateObjectiveText("");
 
@@ -215,7 +221,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("Are both true: %hhd"), bHasStartedMoving && bPlayerOnTrain);
 
 	// Standard Tick Operation
-    if (bHasStartedMoving && bPlayerOnTrain)
+    if (bHasStartedMoving && bPlayerOnTrain && !bObjectiveLock)
     {
     	if (bTrainMoving)
     	{
@@ -246,7 +252,10 @@ void ATrainEngine::Tick(float DeltaTime)
  */
 void ATrainEngine::ToggleTrainStop()
 {
-	bTrainMoving = !bTrainMoving;
+	if (!bObjectiveLock)
+	{
+		bTrainMoving = !bTrainMoving;
+	}
 }
 
 /**
@@ -309,6 +318,16 @@ UBoxComponent* ATrainEngine::GetEngineDetectionComponent()
 	return PlayerDetectionBoxes[0];
 }
 
+void ATrainEngine::DisableMovement()
+{
+	bObjectiveLock = true;
+}
+
+void ATrainEngine::EnableMovement()
+{
+	bObjectiveLock = false;
+}
+
 void ATrainEngine::BeginEngineOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -341,7 +360,7 @@ void ATrainEngine::EndEngineOverlap(
 				bPlayerOnTrain = false;
 			}
 			
-		}, 2.0f, false);
+		}, 2.0f, true);
 	}
 }
 
