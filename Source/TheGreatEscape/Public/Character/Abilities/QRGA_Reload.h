@@ -42,6 +42,14 @@ public:
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
+	UFUNCTION()
+	void RemoteActivateAbilitiy();
+
+	FGameplayAbilitySpecHandle HHandle;
+	FGameplayAbilityActorInfo* HActorInfo;
+	FGameplayAbilityActivationInfo HActivationInfo;
+	FGameplayEventData* HTriggerEventData;
+
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReference();
 };
