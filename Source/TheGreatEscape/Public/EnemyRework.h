@@ -56,7 +56,7 @@ public:
 	float ElevationHeight = 550.0f; // height above train the enemy will float
 
 	// Used Jacob's method to implement SFX
-	int SFXTiggerNum = 0;
+	int SFXTiggerNum = FMath::RandRange(1,4);
 
 
 protected:
