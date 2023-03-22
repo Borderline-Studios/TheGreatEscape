@@ -70,6 +70,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int MaxShotRange = 20000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	float SprintMod = 50;
 
 	FRandomStream Stream;
 
