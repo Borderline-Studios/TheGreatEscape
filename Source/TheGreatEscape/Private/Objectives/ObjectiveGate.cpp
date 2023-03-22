@@ -255,7 +255,7 @@ void AObjectiveGate::BeginSphereOverlap(
 {
 	// If the object colliding with the sphere is the train engine AND the internal tracking variable says we haven't stopped it yet...
 	// Stop the Train and update the tracking boolean
-	if (OtherActor == EngineRef && !bTrainStopped)
+	if (OtherActor == EngineRef && OtherComp == EngineRef->GetEngineDetectionComponent() && !bTrainStopped)
 	{
 		bTrainStopped = true;
 		EngineRef->ToggleTrainStop();

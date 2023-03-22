@@ -30,7 +30,7 @@ public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
 
-	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef);
+	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef, ATrainEngine* NewEngineRef);
 
 protected:
 	// Called when the game starts or when spawned
@@ -45,6 +45,7 @@ public:
 	
 	// FUNCTIONS
 	void ProcessMovement(float EngineSplineDist);
+	UBoxComponent* GetPlayerDetectionComponent();
 	
 private:
 	// VARIABLES
@@ -55,9 +56,7 @@ private:
 
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* Box;
-
-	UBoxComponent* PlayerDetection;
-
+	
 	UPROPERTY(EditInstanceOnly)
 	UArrowComponent* Arrow;
 
@@ -70,13 +69,13 @@ private:
 	TStaticArray<ALight*, 2> LightRefs;
 
 	static ATrainEngine* EngineRef;
-	static APlayerCharacter* PlayerRef;
 
-	// FUNCTIONS
+	// Player Detection
+	UBoxComponent* PlayerDetectionComp;
 	
 
-	// Player Detection Code
-	UFUNCTION()
+	// FUNCTIONS
+	UFUNCTION(meta=(AllowPrivateAccess = "true"))
 	void BeginCarriageOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
@@ -85,7 +84,7 @@ private:
 		bool bFromSweep,
 		const FHitResult &SweepResult
 	);
-	UFUNCTION()
+	UFUNCTION(meta=(AllowPrivateAccess = "true"))
 	void EndCarriageOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,

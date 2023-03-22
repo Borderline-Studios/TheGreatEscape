@@ -90,6 +90,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     // Custom section containing everything added beyond the default Unreal code
+    friend class ATrainCarriage;
     
     // Track Changing
     UPROPERTY(BlueprintReadWrite)
@@ -110,6 +111,8 @@ public:
 
     void SetPlayerOnTrain(bool bNewPlayerOnTrain);
     bool GetPlayerOnTrain();
+
+    UBoxComponent* GetEngineDetectionComponent();
 
 protected:
 
@@ -148,26 +151,25 @@ private:
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
     int CarriageCount = 0;
-    const int DistanceFromFront = 2400;
+    const int DistanceFromFront = 1900;
     const int DistanceBetweenCarriages = 1400;
 
     float EngineStart = 0;
-
-    UPROPERTY(EditInstanceOnly)
-    TArray<int> StopIndices;
-    TArray<bool> StoppedAtIndex;
 
     // Objective Text Integration
     UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
     FString CurrentObjectiveMessage = TEXT("");
 
     // Player Detection
-    UBoxComponent* PlayerDetection;
+    UPROPERTY(EditInstanceOnly)
+    TArray<UBoxComponent*> PlayerDetectionBoxes;
+    APlayerCharacter* PlayerRef;
     bool bPlayerOnTrain = false;
+    FTimerHandle PlayerDetectionTimerHandle;
 
     // Functions
     UFUNCTION()
-    void BeginCarriageOverlap(
+    void BeginEngineOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
@@ -176,10 +178,12 @@ private:
         const FHitResult &SweepResult
     );
     UFUNCTION()
-    void EndCarriageOverlap(
+    void EndEngineOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex
     );
+
+    bool CheckTrainForPlayer();
 };
