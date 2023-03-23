@@ -92,8 +92,11 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	ASplineTrack* SplineRef;
 
-	UPROPERTY(EditInstanceOnly, Category = "Functionality")
+	UPROPERTY(EditInstanceOnly, Category = Functionality)
 	bool bSnapToTrack = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX",  meta = (AllowPrivateAccess = "true"))
+	USoundBase* GateSFX;
 
 	USphereComponent* TrainDetector;
 

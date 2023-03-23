@@ -305,6 +305,9 @@ void AObjectiveGate::BeginSphereOverlap(
 
 		// Default call of this function sets the text back to ""
 		UpdateObjectiveText();
+		
+		// Call sound for gate
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
 
 		Destroy();
 	}

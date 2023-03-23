@@ -42,11 +42,10 @@ public:
 	UStaticMeshComponent* ControlHandle;
 	UStaticMeshComponent* ControlBase;
 
-
 private:
 	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
-
+	
 	// Function to update the rotation of the train controls
 	void UpdateControls();
 };

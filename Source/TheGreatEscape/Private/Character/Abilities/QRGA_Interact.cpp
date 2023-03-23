@@ -44,11 +44,17 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 				{
 					ControlsRef->UpdateEngineSpeed();
+					// play sound
+					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->LeverSFX[FMath::RandRange(0,2)], ControlsRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
 				}
 				//Check if its the train stop button
 				else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
 				{
 					ButtonRef->ToggleTrainMovement();
+
+					// play sound
+					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->ButtonSFX, ButtonRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
+
 				}
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
@@ -62,6 +68,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
 					
 					GetPlayerReferance()->bBatteryPickedUp = true;
+					
 				}
 				//ends the ability
 				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
