@@ -56,6 +56,12 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->ButtonSFX, ButtonRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
 
 				}
+				else if (HitResult.GetActor()->ActorHasTag("MedKit"))
+				{
+					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(HealingEffectClass);
+
+					GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
+				}
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
 				else
