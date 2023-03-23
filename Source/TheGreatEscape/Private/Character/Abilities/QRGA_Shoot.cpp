@@ -68,7 +68,15 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		GetPlayerReference()->PlayerAmmo--;
 
 		//Plays the sound at the player
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+		if (ShootSFX.IsEmpty())
+		{
+			
+		}
+		else
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+		}
+		
 
 
 		
@@ -146,10 +154,13 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 
 						if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)
 						{
-							GetPlayerReference()->VoiceLineTiggerNum = 6;
-							int RandomSFX = FMath::RandRange(0,4 );
-							FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 1.0);
+							if(GetPlayerReference()->QuipSFX.IsEmpty())
+							{
+								GetPlayerReference()->VoiceLineTiggerNum = 6;
+								int RandomSFX = FMath::RandRange(0,4 );
+								FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+								UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 1.0);
+							}
 						}
 						else
 						{
