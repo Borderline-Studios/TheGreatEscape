@@ -41,6 +41,8 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	//Checks is ammo is depleated
 	if(GetPlayerReference()->PlayerAmmo <= 0)
 	{
+		//Plays the sound at the player
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
 		//If ammo is 0 end ability
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
@@ -181,14 +183,12 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	
+	if (GetPlayerReference()->PlayerAmmo >= 0)
+	{
+		
+	}
 	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
 }
-
-void UQRGA_Shoot::ToggleShooting()
-{
-	//TODO Remove this function
-}
-
 
 APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
 {

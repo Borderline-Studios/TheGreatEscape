@@ -18,6 +18,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include <iostream>
 #include <random>
+
+#include "QRGA_Reload.h"
 #include "QRGA_Shoot.generated.h"
 
 //Forward Declearations
@@ -38,15 +40,11 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
-
-	//TODO No Longer needed remember to remove
-	void ToggleShooting();
+	
 
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReference();
-
-	//TODO Remove this handle (Not nedded)
-	FTimerHandle ShootHandle;
+	
 
 	FRandomStream Stream;
 
@@ -62,6 +60,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
 	TArray<USoundBase*> ShootSFX;
 
+	//Sound effect declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
+	TArray<USoundBase*> EmptySFX;
+
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraSystem* HitVFX;
@@ -72,6 +74,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraEmitter* MuzzleEmitter;
+	
+	
 
 	//Function that animation nofity will call 
 	UFUNCTION()

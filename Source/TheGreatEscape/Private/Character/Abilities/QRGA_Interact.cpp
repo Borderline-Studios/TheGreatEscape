@@ -66,7 +66,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					}
 					
 					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-					
+					HitResult.GetComponent()->SetVisibility(false, false);
 					GetPlayerReferance()->bBatteryPickedUp = true;
 					
 				}
