@@ -80,6 +80,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	float SprintMod = 50;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bBatteryPickedUp = false;
+
 	FRandomStream Stream;
 
 	int VoiceLineTiggerNum = 0;

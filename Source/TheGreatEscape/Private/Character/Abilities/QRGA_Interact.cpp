@@ -60,6 +60,8 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					}
 					
 					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+					
+					GetPlayerReferance()->bBatteryPickedUp = true;
 				}
 				//ends the ability
 				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
@@ -72,6 +74,8 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				HitResult.GetComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 				//Attaches to player
 				HitResult.GetComponent()->AttachToComponent(GetPlayerReferance()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
+				HitResult.GetComponent()->SetVisibility(false, false);
+
 			}
 			else
 			{
