@@ -36,6 +36,7 @@ void ANPC::PossessedBy(AController* NewController)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EnemyController NPC cast failed is: %s"), *NewController->GetName());
 	}
+	//
 }
 
 ANPCPatrolPath* ANPC::GetPatrolPath()
