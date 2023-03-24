@@ -94,7 +94,6 @@ private:
 	UStaticMeshComponent* GateLeft;
 	UStaticMeshComponent* GateRight;
 	float TimeSinceEnabled = 0;
-	const int TimeTakenToOpen = 5;
 	const int DoorMoveDistance = 650;
 	bool bOpened = false;
 
