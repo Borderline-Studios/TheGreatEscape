@@ -69,7 +69,7 @@ private:
 #endif
 
 	UFUNCTION()
-	void BeginSphereOverlap(
+	void BeginTrainDetectorOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -78,7 +78,23 @@ private:
 		const FHitResult &SweepResult
 	);
 	UFUNCTION()
-	void EndSphereOverlap(
+	void EndTrainDetectorOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
+	UFUNCTION()
+	void BeginBatteryDetectorOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult &SweepResult
+	);
+	UFUNCTION()
+	void EndBatteryDetectorOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -110,6 +126,7 @@ private:
 	USoundBase* GateSFX;
 
 	USphereComponent* TrainDetector;
+	USphereComponent* BatteryDetector;
 
 	ATrainEngine* EngineRef;
 

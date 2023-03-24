@@ -52,11 +52,20 @@ AObjectiveGate::AObjectiveGate()
 	// Populating and setting up the Sphere Collision Component. Also sets the radius of the sphere.
 	TrainDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Train Detector"));
 	TrainDetector->SetupAttachment(RootComponent);
-	TrainDetector->SetSphereRadius(2000.0f);
+	TrainDetector->SetSphereRadius(1000.0f);
 	// TrainDetector->SetWorldLocation(GetActorLocation());
 	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
-	TrainDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginSphereOverlap);
-	TrainDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndSphereOverlap);
+	TrainDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginTrainDetectorOverlap);
+	TrainDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndTrainDetectorOverlap);
+	
+	BatteryDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Battery Detector"));
+	BatteryDetector->SetupAttachment(RootComponent);
+	BatteryDetector->SetSphereRadius(400.0f);
+	BatteryDetector->SetRelativeLocation(FVector(770.0f,-300.0f,310.0f));
+	// TrainDetector->SetWorldLocation(GetActorLocation());
+	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
+	BatteryDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginBatteryDetectorOverlap);
+	BatteryDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndBatteryDetectorOverlap);
 
 	// Populating the soft class pointer so that proper assets can be spawned.
 	PickupItemClassRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Objectives/PickUp/BP_PickUpObjective.BP_PickUpObjective_C'"))).LoadSynchronous();
@@ -290,7 +299,7 @@ bool AObjectiveGate::CleanPickupsArray()
  * @param bFromSweep 
  * @param SweepResult 
  */
-void AObjectiveGate::BeginSphereOverlap(
+void AObjectiveGate::BeginTrainDetectorOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -313,7 +322,41 @@ void AObjectiveGate::BeginSphereOverlap(
 			ObjText.Append(" Explore nearby!");
 			UpdateObjectiveText(ObjText);
 		}
+	}
+}
 
+/**
+ * @brief 
+ * @param OverlappedComponent 
+ * @param OtherActor 
+ * @param OtherComp 
+ * @param OtherBodyIndex 
+ */
+void AObjectiveGate::EndTrainDetectorOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	// for (int i = 0; i < PickupItems.Num(); ++i)
+	// {
+	// 	if (OtherActor == PickupItems[i])
+	// 	{
+	// 		//PickupItemPlacedCount--;
+	// 	}
+	// }
+}
+
+void AObjectiveGate::BeginBatteryDetectorOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (!bOpened)
+	{
 		// Check to see if the train is stopped
 		if (bTrainStopped && OtherActor == PlayerRef)
 		{
@@ -325,6 +368,10 @@ void AObjectiveGate::BeginSphereOverlap(
 					PlayerRef->bBatteryPickedUp = false;
 				
 					PickupItemPlacedCount++;
+					AActor* PlacedBattery = GetWorld()->SpawnActor(PickupItemClassRef);
+					PlacedBattery->AttachToComponent(BatteryDetector, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+					PlacedBattery->SetActorEnableCollision(false);
+					PlacedBattery->Tags.Empty();
 				
 					UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
 					UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
@@ -357,24 +404,10 @@ void AObjectiveGate::BeginSphereOverlap(
 	}
 }
 
-/**
- * @brief 
- * @param OverlappedComponent 
- * @param OtherActor 
- * @param OtherComp 
- * @param OtherBodyIndex 
- */
-void AObjectiveGate::EndSphereOverlap(
+void AObjectiveGate::EndBatteryDetectorOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	// for (int i = 0; i < PickupItems.Num(); ++i)
-	// {
-	// 	if (OtherActor == PickupItems[i])
-	// 	{
-	// 		//PickupItemPlacedCount--;
-	// 	}
-	// }
 }
