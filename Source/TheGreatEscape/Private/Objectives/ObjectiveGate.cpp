@@ -96,16 +96,16 @@ void AObjectiveGate::Tick(float DeltaTime)
 
 	TimeSinceEnabled += DeltaTime;
 
-	if (TimeSinceEnabled < TimeTakenToOpen)
+	if (TimeSinceEnabled < GateSFX->GetDuration())
 	{
-		const float AlphaTime = TimeSinceEnabled / TimeTakenToOpen;
+		const float AlphaTime = TimeSinceEnabled / GateSFX->GetDuration();
 		const FVector CurrentRightPos = FMath::Lerp(RightGateRelativeLocation, RightGateRelativeLocation + FVector(DoorMoveDistance, 0.0f, 0.0f), AlphaTime);
 		const FVector CurrentLeftPos = FMath::Lerp(LeftGateRelativeLocation, LeftGateRelativeLocation + FVector(-DoorMoveDistance, 0.0f, 0.0f), AlphaTime);
 
 		GateRight->SetRelativeLocation(CurrentRightPos);
 		GateLeft->SetRelativeLocation(CurrentLeftPos);
 	}
-	else if (TimeSinceEnabled >= TimeTakenToOpen)
+	else if (TimeSinceEnabled >= GateSFX->GetDuration())
 	{
 		bTrainStopped = false;
 		EngineRef->EnableMovement();
