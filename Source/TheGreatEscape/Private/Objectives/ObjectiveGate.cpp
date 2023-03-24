@@ -80,6 +80,11 @@ void AObjectiveGate::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (PickupItems.IsEmpty())
+	{
+		FixReferences();
+	}
+
 	if (!EngineRef)
 	{
 		EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
@@ -246,6 +251,7 @@ void AObjectiveGate::ClearPickups()
 	
 	PickupItems.Empty();
 }
+#endif
 
 void AObjectiveGate::FixReferences()
 {
@@ -253,7 +259,7 @@ void AObjectiveGate::FixReferences()
 	GetAttachedActors(AttachedActors);
 
 	CleanPickupsArray();
-
+	
 	for (int i = 0; i < AttachedActors.Num(); ++i)
 	{
 		if (AttachedActors[i]->GetClass() == PickupItemClassRef)
@@ -276,14 +282,12 @@ bool AObjectiveGate::CleanPickupsArray()
 			if (!bCleanedUp)
 			{
 				bCleanedUp = true;
-				
 			}
 		}
 	}
 
 	return bCleanedUp;
 }
-#endif
 
 /**
  * @brief Default Unreal function that allows for the handling of collisions for specific objects. The specific objects are set separately, usually inside the constructor.

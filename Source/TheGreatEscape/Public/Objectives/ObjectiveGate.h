@@ -61,12 +61,12 @@ private:
 
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void ClearPickups();
+#endif
 
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void FixReferences();
 
 	bool CleanPickupsArray();
-#endif
 
 	UFUNCTION()
 	void BeginTrainDetectorOverlap(
