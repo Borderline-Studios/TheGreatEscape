@@ -18,6 +18,7 @@ class USphereComponent;
 class ATrainEngine;
 class ASplineTrack;
 class USplineComponent;
+class APlayerCharacter;
 
 /*
  * 
@@ -86,8 +87,18 @@ private:
 
 	// VARIABLES
 	USceneComponent* Root;
+
+    APlayerCharacter* PlayerRef;
 	
-	UStaticMeshComponent* GateMesh;
+	UStaticMeshComponent* GateFrame;
+	UStaticMeshComponent* GateLeft;
+	UStaticMeshComponent* GateRight;
+	float TimeSinceEnabled = 0;
+	const int DoorMoveDistance = 650;
+	bool bOpened = false;
+
+	FVector LeftGateRelativeLocation;
+	FVector RightGateRelativeLocation;
 
 	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	ASplineTrack* SplineRef;
