@@ -11,6 +11,7 @@
 #include "Objectives/ObjectiveGate.h"
 
 #include "SplineTrack.h"
+#include "Character/Player/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -78,6 +79,11 @@ void AObjectiveGate::BeginPlay()
 	PickupItemPlacedCount = 0;
 	PickupItemsNum = PickupItems.Num();
 	SetActorTickEnabled(false);
+
+	if (!PlayerRef)
+	{
+		PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass()));
+	}
 }
 
 /**
@@ -292,57 +298,62 @@ void AObjectiveGate::BeginSphereOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	// If the object colliding with the sphere is the train engine AND the internal tracking variable says we haven't stopped it yet...
-	// Stop the Train and update the tracking boolean
-	if (OtherActor == EngineRef && OtherComp == EngineRef->GetEngineDetectionComponent() && !bTrainStopped)
+	if (!bOpened)
 	{
-		bTrainStopped = true;
-		EngineRef->ToggleTrainStop();
-		EngineRef->DisableMovement();
-		FString ObjText = "Collect ";
-		ObjText.AppendInt(PickupItemsNum);
-		ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
-		ObjText.Append(" Explore nearby!");
-		UpdateObjectiveText(ObjText);
-	}
-
-	// Check to see if the train is stopped
-	if (bTrainStopped && OtherActor == EngineRef)
-	{
-		// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
-		for (int i = 0; i < PickupItems.Num(); i++)
+		// If the object colliding with the sphere is the train engine AND the internal tracking variable says we haven't stopped it yet...
+		// Stop the Train and update the tracking boolean
+		if (OtherActor == EngineRef && OtherComp == EngineRef->GetEngineDetectionComponent() && !bTrainStopped)
 		{
-			if (OtherActor == PickupItems[i])
+			bTrainStopped = true;
+			EngineRef->ToggleTrainStop();
+			EngineRef->DisableMovement();
+			FString ObjText = "Collect ";
+			ObjText.AppendInt(PickupItemsNum);
+			ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
+			ObjText.Append(" Explore nearby!");
+			UpdateObjectiveText(ObjText);
+		}
+
+		// Check to see if the train is stopped
+		if (bTrainStopped && OtherActor == PlayerRef)
+		{
+			// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
+			for (int i = 0; i < PickupItems.Num(); i++)
 			{
-				PickupItemPlacedCount++;
-				
-				UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
-				UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
-
-				PickupItems[i]->Destroy();
-				PickupItems.RemoveAt(i);
-
-				if (PickupItems.Num() != 0)
+				if (PlayerRef->bBatteryPickedUp)
 				{
-					const int RemainingPickupsToCollect = PickupItemsNum - PickupItemPlacedCount;
-					FString ObjectiveText;
-					ObjectiveText.AppendInt(RemainingPickupsToCollect);
-					ObjectiveText.Append(RemainingPickupsToCollect == 1 ? " battery" : " batteries");
-					ObjectiveText.Append(" left to collect!");
-					UpdateObjectiveText(ObjectiveText);
+					PlayerRef->bBatteryPickedUp = false;
+				
+					PickupItemPlacedCount++;
+				
+					UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
+					UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
+
+					PickupItems.RemoveAt(i);
+
+					if (PickupItems.Num() != 0)
+					{
+						const int RemainingPickupsToCollect = PickupItemsNum - PickupItemPlacedCount;
+						FString ObjectiveText;
+						ObjectiveText.AppendInt(RemainingPickupsToCollect);
+						ObjectiveText.Append(RemainingPickupsToCollect == 1 ? " battery" : " batteries");
+						ObjectiveText.Append(" left to collect!");
+						UpdateObjectiveText(ObjectiveText);
+					}
 				}
 			}
 		}
-	}
 
-	// If the train has stopped and the other component has the tag "interactable" then
-	// Start the train and update the tracking variable.
-	if (PickupItemPlacedCount == PickupItemsNum)
-	{
-		SetActorTickEnabled(true);
+		// If the train has stopped and the other component has the tag "interactable" then
+		// Start the train and update the tracking variable.
+		if (PickupItemPlacedCount == PickupItemsNum)
+		{
+			bOpened = true;
+			SetActorTickEnabled(true);
 		
-		// Call sound for gate
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
+			// Call sound for gate
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
+		}
 	}
 }
 
@@ -359,11 +370,11 @@ void AObjectiveGate::EndSphereOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	for (int i = 0; i < PickupItems.Num(); ++i)
-	{
-		if (OtherActor == PickupItems[i])
-		{
-			//PickupItemPlacedCount--;
-		}
-	}
+	// for (int i = 0; i < PickupItems.Num(); ++i)
+	// {
+	// 	if (OtherActor == PickupItems[i])
+	// 	{
+	// 		//PickupItemPlacedCount--;
+	// 	}
+	// }
 }
