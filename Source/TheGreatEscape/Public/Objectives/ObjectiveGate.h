@@ -86,8 +86,16 @@ private:
 
 	// VARIABLES
 	USceneComponent* Root;
-	
-	UStaticMeshComponent* GateMesh;
+
+	UStaticMeshComponent* GateFrame;
+	UStaticMeshComponent* GateLeft;
+	UStaticMeshComponent* GateRight;
+	float TimeSinceEnabled = 0;
+	const int TimeTakenToOpen = 5;
+	const int DoorMoveDistance = 650;
+
+	FVector LeftGateRelativeLocation;
+	FVector RightGateRelativeLocation;
 
 	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	ASplineTrack* SplineRef;

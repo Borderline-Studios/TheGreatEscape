@@ -21,22 +21,36 @@
 AObjectiveGate::AObjectiveGate()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
 	
 	// Populating and setting up the Static mesh. This one gets set up as the root component,
 	// Also setting the scale and the static mesh used by the mesh component
-	GateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gate Mesh"));
-	GateMesh->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	GateMesh->SetStaticMesh(MeshObj.Object);
-	GateMesh->SetWorldScale3D(FVector(10.0f, 0.5f, 5.0f));
+	GateFrame = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gate Frame"));
+	GateFrame->SetupAttachment(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> GateFrameMesh(TEXT("StaticMesh'/Game/Production/Enviroment/Interactables/Gate/Gate_GateFrame.Gate_GateFrame'"));
+	GateFrame->SetStaticMesh(GateFrameMesh.Object);
+	GateFrame->SetRelativeLocation(FVector(-450.0f, 0.0f, 0.0f));
+	
+	GateRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gate Right"));
+	GateRight->SetupAttachment(GateFrame);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> GateRightMesh(TEXT("StaticMesh'/Game/Production/Enviroment/Interactables/Gate/Gate_GateLeft.Gate_GateLeft'"));
+	GateRight->SetStaticMesh(GateRightMesh.Object);
+	RightGateRelativeLocation = FVector(300.0f, 0.0f, 0.0f);
+	GateRight->SetRelativeLocation(RightGateRelativeLocation);
+	
+	GateLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gate Left"));
+	GateLeft->SetupAttachment(GateFrame);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> GateLeftMesh(TEXT("StaticMesh'/Game/Production/Enviroment/Interactables/Gate/Gate_GateRight.Gate_GateRight'"));
+	GateLeft->SetStaticMesh(GateLeftMesh.Object);
+	LeftGateRelativeLocation = FVector(-250.0f, 0.0f, 0.0f);
+	GateLeft->SetRelativeLocation(LeftGateRelativeLocation);
 
 	// Populating and setting up the Sphere Collision Component. Also sets the radius of the sphere.
 	TrainDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Train Detector"));
-	TrainDetector->SetupAttachment(GateMesh);
+	TrainDetector->SetupAttachment(RootComponent);
 	TrainDetector->SetSphereRadius(2000.0f);
 	// TrainDetector->SetWorldLocation(GetActorLocation());
 	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
@@ -63,15 +77,39 @@ void AObjectiveGate::BeginPlay()
 
 	PickupItemPlacedCount = 0;
 	PickupItemsNum = PickupItems.Num();
+	SetActorTickEnabled(false);
 }
 
 /**
- * @brief Called every frame. This Tick has been disabled as it is not required for this Objective
+ * @brief Called every frame. Starts disabled for the actor, is switched on when the door is opened and then disabled again once the door has opened
  * @param DeltaTime The change in time between frames
  */
 void AObjectiveGate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TimeSinceEnabled += DeltaTime;
+
+	if (TimeSinceEnabled < TimeTakenToOpen)
+	{
+		const float AlphaTime = TimeSinceEnabled / TimeTakenToOpen;
+		const FVector CurrentRightPos = FMath::Lerp(RightGateRelativeLocation, RightGateRelativeLocation + FVector(DoorMoveDistance, 0.0f, 0.0f), AlphaTime);
+		const FVector CurrentLeftPos = FMath::Lerp(LeftGateRelativeLocation, LeftGateRelativeLocation + FVector(-DoorMoveDistance, 0.0f, 0.0f), AlphaTime);
+
+		GateRight->SetRelativeLocation(CurrentRightPos);
+		GateLeft->SetRelativeLocation(CurrentLeftPos);
+	}
+	else if (TimeSinceEnabled >= TimeTakenToOpen)
+	{
+		bTrainStopped = false;
+		EngineRef->EnableMovement();
+
+		// Default call of this function sets the text back to ""
+		UpdateObjectiveText();
+		
+		TimeSinceEnabled = 0;
+		SetActorTickEnabled(false);
+	}
 
 }
 
@@ -159,7 +197,7 @@ void AObjectiveGate::SpawnPickup()
 	CleanPickupsArray();
 	
 	AActor* NewPickup = GetWorld()->SpawnActor(PickupItemClassRef);
-	NewPickup->SetActorLocation((GetActorLocation() + (GateMesh->GetRightVector() * (-250.00 - (50 * PickupItems.Num())))) + FVector(0.0f, 0.0f, 100.0f));
+	NewPickup->SetActorLocation((GetActorLocation() + (GateFrame->GetRightVector() * (-250.00 - (50 * PickupItems.Num())))) + FVector(0.0f, 0.0f, 100.0f));
 	NewPickup->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 	PickupItems.Push(NewPickup);
 }
@@ -223,6 +261,7 @@ bool AObjectiveGate::CleanPickupsArray()
 			if (!bCleanedUp)
 			{
 				bCleanedUp = true;
+				
 			}
 		}
 	}
@@ -268,7 +307,7 @@ void AObjectiveGate::BeginSphereOverlap(
 	}
 
 	// Check to see if the train is stopped
-	if (bTrainStopped)
+	if (bTrainStopped && OtherActor == EngineRef)
 	{
 		// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
 		for (int i = 0; i < PickupItems.Num(); i++)
@@ -300,16 +339,10 @@ void AObjectiveGate::BeginSphereOverlap(
 	// Start the train and update the tracking variable.
 	if (PickupItemPlacedCount == PickupItemsNum)
 	{
-		bTrainStopped = false;
-		EngineRef->EnableMovement();
-
-		// Default call of this function sets the text back to ""
-		UpdateObjectiveText();
+		SetActorTickEnabled(true);
 		
 		// Call sound for gate
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
-
-		Destroy();
 	}
 }
 

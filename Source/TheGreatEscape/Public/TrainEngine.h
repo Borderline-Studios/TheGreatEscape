@@ -190,4 +190,6 @@ private:
     );
 
     bool CheckTrainForPlayer();
+    void EnableTrainMovementTimer();
+    void DisableTrainMovementTimer();
 };
