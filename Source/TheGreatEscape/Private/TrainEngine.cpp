@@ -209,6 +209,17 @@ void ATrainEngine::BeginPlay()
 	{
 		PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass()));
 	}
+
+	TArray<AActor*> OverlappingActors;
+	PlayerDetectionBoxes[0]->GetOverlappingActors(OverlappingActors);
+
+	for (int i = 0; i < OverlappingActors.Num(); ++i)
+	{
+		if (OverlappingActors[i] == PlayerRef)
+		{
+			EnableTrainMovementTimer();
+		}
+	}
 }
 
 // Called every frame
@@ -338,10 +349,7 @@ void ATrainEngine::BeginEngineOverlap(
 {
 	if (!bPlayerOnTrain && OtherActor == PlayerRef)
 	{
- 		GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
-		{
-			bPlayerOnTrain = true;
-		}, 0.75f, false);
+		EnableTrainMovementTimer();
 	}
 }
 
@@ -353,14 +361,7 @@ void ATrainEngine::EndEngineOverlap(
 {
 	if (bPlayerOnTrain && OtherActor == PlayerRef)
 	{
-		GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
-		{
-			if (!CheckTrainForPlayer())
-			{
-				bPlayerOnTrain = false;
-			}
-			
-		}, 2.0f, true);
+		DisableTrainMovementTimer();
 	}
 }
 
@@ -378,4 +379,24 @@ bool ATrainEngine::CheckTrainForPlayer()
 	}
 	
 	return false;
+}
+
+void ATrainEngine::EnableTrainMovementTimer()
+{
+	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
+	{
+		bPlayerOnTrain = true;
+	}, 0.75f, false);
+}
+
+void ATrainEngine::DisableTrainMovementTimer()
+{
+	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
+	{
+		if (!CheckTrainForPlayer())
+		{
+			bPlayerOnTrain = false;
+		}
+		
+	}, 2.0f, true);
 }
