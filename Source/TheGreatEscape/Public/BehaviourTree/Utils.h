@@ -30,6 +30,7 @@ namespace BbKeys
 	TCHAR const * const batteryLocation = TEXT("BatteryLocation");
 	TCHAR const * const enemyHealthLow = TEXT("EnemyHealthLow");
 	TCHAR const * const randChance = TEXT("RandChance");
+	TCHAR const * const stationaryHybrid = TEXT("StationaryHybrid");
 }
 
 /**
