@@ -18,6 +18,9 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
+#include "NiagaraCommon.h"
+#include "ParticleHelper.h"
+#include "Chaos/ImplicitObject.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -69,7 +72,12 @@ void APlayerCharacter::Tick(float DeltaSeconds)
 		
 		if (Value <= 0.0f)
 		{
-			StartDeath();
+			if (bFirstDeathCall)
+			{
+				bFirstDeathCall = false;
+				StartDeath();
+			}
+
 		}
 	}
 }
@@ -81,6 +89,13 @@ void APlayerCharacter::StartDeath()
 {
 	//Displables the player input
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FVector ActorLoc = GetActorLocation();
+	FRotator ActorRot = GetActorRotation();
+	
+	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z - 100), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 5.0f));
+
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, true, true);
 }
 
 /**

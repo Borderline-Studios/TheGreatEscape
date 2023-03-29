@@ -94,6 +94,8 @@ public:
 
 	int VoiceLineTiggerNum = 0;
 
+	bool bFirstDeathCall = true;
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void CallVignette();
 	
