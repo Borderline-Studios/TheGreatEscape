@@ -76,3 +76,4 @@ DerivedDataCache/*
 # For Rider plugin
 Plugins/Developer/RiderLink
 .idea
+TheGreatEscape.uproject.DotSettings.user

@@ -28,7 +28,7 @@ ATrainEngine::ATrainEngine()
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	RootComponent = SceneRoot;
 
-	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
+	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Engine Mesh"));
 	EngineMesh->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/S_Train_Engine.S_Train_Engine'"));
 	EngineMesh->SetStaticMesh(MeshObj.Object);
@@ -227,9 +227,10 @@ void ATrainEngine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("Is the train allowed to move: %hhd"), bHasStartedMoving);
-	UE_LOG(LogTemp, Warning, TEXT("Is the player on the train: %hs"), bPlayerOnTrain ? "true" : "false");
-	UE_LOG(LogTemp, Warning, TEXT("Are both true: %hhd"), bHasStartedMoving && bPlayerOnTrain);
+	if (MovementTimeline.IsPlaying())
+	{
+		MovementTimeline.TickTimeline(DeltaTime);
+	}
 
 	// Standard Tick Operation
     if (bHasStartedMoving && bPlayerOnTrain && !bObjectiveLock)
@@ -253,7 +254,7 @@ void ATrainEngine::Tick(float DeltaTime)
     	
     	if (!UKismetMathLibrary::InRange_FloatFloat(TimerTrack, 0.0, 1.0, false, true))
     	{
-    		TimeSinceStart = 0;
+    		TimeSinceStart -= TimeToComplete;
     	}
     }
 }
@@ -350,6 +351,7 @@ void ATrainEngine::BeginEngineOverlap(
 	if (!bPlayerOnTrain && OtherActor == PlayerRef)
 	{
 		EnableTrainMovementTimer();
+		// PlayerRef->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
@@ -363,6 +365,21 @@ void ATrainEngine::EndEngineOverlap(
 	{
 		DisableTrainMovementTimer();
 	}
+}
+
+void ATrainEngine::ProcessMovementTimeline(float Value)
+{
+	// UE_LOG(LogTemp, Warning, TEXT("CurrentValue = %f"), Value);
+	// FVector CurrentSplineLoc = TrackSplineRef->GetLocationAtDistanceAlongSpline(Value*SplineLength, ESplineCoordinateSpace::World);
+	// FRotator CurrentSplineRot = TrackSplineRef->GetRotationAtDistanceAlongSpline(Value*SplineLength, ESplineCoordinateSpace::World);
+	// CurrentSplineRot.Pitch = 0;
+	// CurrentSplineRot.Yaw -= 90;
+	//
+	// SetActorLocationAndRotation(CurrentSplineLoc, CurrentSplineRot);
+}
+
+void ATrainEngine::OnEndMovementTimeline()
+{
 }
 
 bool ATrainEngine::CheckTrainForPlayer()
@@ -386,6 +403,21 @@ void ATrainEngine::EnableTrainMovementTimer()
 	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
 	{
 		bPlayerOnTrain = true;
+		// if (MovementCurve)
+		// {
+		// 	FOnTimelineFloat ProgressFunction;
+		// 	ProgressFunction.BindUFunction(this, TEXT("ProcessMovementTimeline"));
+		// 	MovementTimeline.AddInterpFloat(MovementCurve, ProgressFunction);
+		//
+		// 	FOnTimelineEvent OnTimelineFinishedFunction;
+		// 	OnTimelineFinishedFunction.BindUFunction(this, TEXT("OnEndMovementTimeline"));
+		// 	MovementTimeline.SetTimelineFinishedFunc(OnTimelineFinishedFunction);
+		//
+		// 	MovementTimeline.SetTimelineLengthMode(TL_LastKeyFrame);
+		// 	MovementTimeline.SetPlayRate(1.0f/TimeToComplete);
+		// 	MovementTimeline.Play();
+		// }
+
 	}, 0.75f, false);
 }
 
@@ -396,6 +428,11 @@ void ATrainEngine::DisableTrainMovementTimer()
 		if (!CheckTrainForPlayer())
 		{
 			bPlayerOnTrain = false;
+			// PlayerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			// if (!MovementTimeline.IsReversing())
+			// {
+			// 	MovementTimeline.Reverse();
+			// }
 		}
 		
 	}, 2.0f, true);

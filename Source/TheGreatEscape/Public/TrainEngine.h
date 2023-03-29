@@ -19,6 +19,7 @@
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
+#include "Components/TimelineComponent.h"
 
 #include "TrainEngine.generated.h"
 
@@ -171,6 +172,11 @@ private:
     bool bPlayerOnTrain = false;
     FTimerHandle PlayerDetectionTimerHandle;
 
+    // TIMELINE Implementation
+    FTimeline MovementTimeline;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+    UCurveFloat* MovementCurve;
+
     // Functions
     UFUNCTION()
     void BeginEngineOverlap(
@@ -188,6 +194,13 @@ private:
         UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex
     );
+
+    // TIMELINE FUNCTIONS
+    UFUNCTION()
+    void ProcessMovementTimeline(float Value);
+
+    UFUNCTION()
+    void OnEndMovementTimeline();
 
     bool CheckTrainForPlayer();
     void EnableTrainMovementTimer();
