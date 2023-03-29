@@ -43,6 +43,11 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 	
 	const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
+	if (!bStationaryHybrid)
+	{
+		AIController->GetBlackboard()->SetValueAsBool(BbKeys::stationaryHybrid, false);
+	}
+
 	// Check AIController not null
 	if (AIController)
 	{

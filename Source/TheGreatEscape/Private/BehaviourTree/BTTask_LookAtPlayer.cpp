@@ -14,6 +14,7 @@
 #include "BehaviourTree/BTTask_LookAtPlayer.h"
 
 #include "EnemyReworkController.h"
+#include "EnemyReworkHybrid.h"
 #include "NPC.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -44,16 +45,33 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 		// Get players location
 		FVector const PlayerLocation = Player->GetActorLocation();
 
-		// get npc
-		ANPC* const NPC = Cast<ANPC>(AIController->GetPawn());
+		if (bNPC)
+		{
+			// get npc
+			ANPC* const NPC = Cast<ANPC>(AIController->GetPawn());
 
-		FVector Forward = PlayerLocation - NPC->GetActorLocation();
-		FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
+			FVector Forward = PlayerLocation - NPC->GetActorLocation();
+			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
 
-		//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
+			//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
 
-		// set rotation of the actor
-		NPC->SetActorRotation(Rot);
+			// set rotation of the actor
+			NPC->SetActorRotation(Rot);
+		}
+		else
+		{
+			// get npc
+			AEnemyReworkHybrid* const Enemy = Cast<AEnemyReworkHybrid>(AIController->GetPawn());
+
+			FVector Forward = PlayerLocation - Enemy->GetActorLocation();
+			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
+
+			//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
+
+			// set rotation of the actor
+			Enemy->SetActorRotation(Rot);
+		}
+		
 
 		// Finish task
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

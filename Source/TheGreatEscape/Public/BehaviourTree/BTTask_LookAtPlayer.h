@@ -34,4 +34,7 @@ private:
 	FRotator OriginalRotation; // original rotation of npc
 	bool bOriginalRotSet = false; // Original rotation has been set
 	float RotationSpeed = 5.0f; // speed of rotation
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
+	bool bNPC = false; 
 };
