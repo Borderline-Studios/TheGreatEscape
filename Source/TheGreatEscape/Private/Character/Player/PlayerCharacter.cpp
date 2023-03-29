@@ -23,6 +23,8 @@
 #include "Chaos/ImplicitObject.h"
 
 
+
+
 APlayerCharacter::APlayerCharacter()
 {
 	// Set size for collision capsule
@@ -96,6 +98,10 @@ void APlayerCharacter::StartDeath()
 	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z - 100), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 5.0f));
 
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, true, true);
+
+	FTimerHandle DeathTimer;
+
+	GetWorld()->GetTimerManager().SetTimer(DeathTimer, this, &APlayerCharacter::LoadLevel, 2.0f, false);
 }
 
 /**
@@ -105,6 +111,11 @@ void APlayerCharacter::StartDeath()
 UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 {
 	return FirstPersonCameraComponent;
+}
+
+void APlayerCharacter::LoadLevel()
+{
+	UGameplayStatics::OpenLevel(this, FName("MainMenu_01"));
 }
 
 
@@ -124,3 +135,5 @@ void APlayerCharacter::SetResources(int ValueToChange, int NewValue)
 	NumScrap = ValueToChange;
 	
 }
+
+

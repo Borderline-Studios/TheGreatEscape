@@ -98,6 +98,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void CallVignette();
+
+	void LoadLevel();
 	
 public:
 	//Constructor
