@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
+#include "Interactables/TrainHorn.h"
 #include "Objectives/ObjectiveGate.h"
 
 UQRGA_Interact::UQRGA_Interact()
@@ -47,6 +48,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					// play sound
 					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->LeverSFX[FMath::RandRange(0,2)], ControlsRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
 				}
+				else if (HitResult.GetActor()->ActorHasTag("Horn"))
+				{
+						ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
+						TrainHorn->PlayHorn();
+				}
 				//Check if its the train stop button
 				else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
 				{
@@ -62,6 +68,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 					GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
 				}
+				
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
 				else
