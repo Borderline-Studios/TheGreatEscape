@@ -25,6 +25,10 @@ public:
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReference();
 
+	void CallEndAbility(float TimeHeld);
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsHeldDown = false;
+
+	FTimerHandle TimerHandle;
 };

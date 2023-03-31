@@ -42,8 +42,11 @@ public:
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
+
+	FTimerHandle ReloadForceEndTimer;
+	
 	UFUNCTION()
-	void RemoteActivateAbilitiy();
+	void ForceEndAbility();
 
 	FGameplayAbilitySpecHandle HHandle;
 	FGameplayAbilityActorInfo* HActorInfo;

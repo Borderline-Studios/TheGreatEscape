@@ -16,6 +16,9 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	
+	GetWorld()->GetTimerManager().SetTimer(ReloadForceEndTimer,this,&UQRGA_Reload::ForceEndAbility, 2.0f, true);
 	
 	if (!GetPlayerReference()->bIsADS)
 	{
@@ -80,6 +83,8 @@ void UQRGA_Reload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	GetWorld()->GetTimerManager().ClearTimer(ReloadForceEndTimer);
 }
 
 bool UQRGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -113,7 +118,7 @@ void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyP
 	
 }
 
-void UQRGA_Reload::RemoteActivateAbilitiy()
+void UQRGA_Reload::ForceEndAbility()
 {
-	
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

@@ -32,24 +32,30 @@ UQRGA_Shoot::UQRGA_Shoot()
 void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	int MaxShotRange = GetPlayerReference()->MaxShotRange;
+
+	GetWorld()->GetTimerManager().SetTimer(ShootForceEndTimer,this,&UQRGA_Shoot::ForceEndAbility, 1.0f, true);
 
 	
-	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//Checks is ammo is depleated
-	if(GetPlayerReference()->PlayerAmmo <= 0)
+	if (!GetPlayerReference()->bIsTransADS)
 	{
-		//Plays the sound at the player
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
-		//If ammo is 0 end ability
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-	else
-	{
-		if (GetPlayerReference()->bIsADS)
+			FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+		FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
+		int MaxShotRange = GetPlayerReference()->MaxShotRange;
+
+		
+		//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+		//Checks is ammo is depleated
+		if(GetPlayerReference()->PlayerAmmo <= 0)
 		{
+			//Plays the sound at the player
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
+			//If ammo is 0 end ability
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
+		else
+		{
+			if (GetPlayerReference()->bIsADS)
+			{
 			//Jumps the animontage to the fire section
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
 			//Added dynamic notify and triggers function if notify is received
@@ -94,98 +100,103 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		//	MuzzleLoc,FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll), EAttachLocation::SnapToTarget, true);
 
 		
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleVFX, MuzzleLoc,
-		FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll),
-		FVector(1.0f, 1.0f, 1.0f), true);
-	
-		//Line trace from crosshair/middle of player screen straight line infront of player
-		if (GetWorld()->LineTraceSingleByChannel(HitResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxShotRange,ECC_Visibility, Params))
-		{
-			float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
-			float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
-			float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
-			float AimPunchAmount = 2.1;
-			
-			//Add crosshair recoil (aim punch)
-			GetPlayerReference()->GetController()->SetControlRotation(FRotator(CamControlPitch + AimPunchAmount, CamControlYaw, CamControlRoll));
-			//Cam Shake
-			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
-			if (HitResult.GetActor())
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleVFX, MuzzleLoc,
+			FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll),
+			FVector(1.0f, 1.0f, 1.0f), true);
+		
+			//Line trace from crosshair/middle of player screen straight line infront of player
+			if (GetWorld()->LineTraceSingleByChannel(HitResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxShotRange,ECC_Visibility, Params))
 			{
-				//Getting the ability system component from the hit actor
-				UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-				//Check if ASC is vaild
-				if(ASC)
+				float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
+				float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
+				float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
+				float AimPunchAmount = 2.1;
+				
+				//Add crosshair recoil (aim punch)
+				GetPlayerReference()->GetController()->SetControlRotation(FRotator(CamControlPitch + AimPunchAmount, CamControlYaw, CamControlRoll));
+				//Cam Shake
+				GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
+				if (HitResult.GetActor())
 				{
-					//Creates damage effect outgoing handle
-					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
-
-					
-					
-					//Actiavte hit VFX on hit object/actor
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
-					//play animation
-					if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
+					//Getting the ability system component from the hit actor
+					UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+					//Check if ASC is vaild
+					if(ASC)
 					{
-						if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
+						//Creates damage effect outgoing handle
+						FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+	
+						
+						
+						//Actiavte hit VFX on hit object/actor
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitResult.Location, HitResult.GetActor()->GetActorRotation());
+						//play animation
+						if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitResult.GetActor()))
 						{
-							// drone thing
-						}
-						else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
-						{
-							// hybrid tins
-						}
-						else
-						{
-							Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
-
-							// ToDo Maybe put this into function as I (Toni) copied it
-							if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && Enemy->SFXTiggerNum == 0)
+							if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 							{
-								Enemy->SFXTiggerNum = FMath::RandRange(4,7 );
-								int RandomSFX = FMath::RandRange(0,2 );
-								UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
+								// drone thing
+							}
+							else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+							{
+								// hybrid tins
 							}
 							else
 							{
-								Enemy->SFXTiggerNum--;
+								Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+	
+								// ToDo Maybe put this into function as I (Toni) copied it
+								if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && Enemy->SFXTiggerNum == 0)
+								{
+									Enemy->SFXTiggerNum = FMath::RandRange(4,7 );
+									int RandomSFX = FMath::RandRange(0,2 );
+									UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
+								}
+								else
+								{
+									Enemy->SFXTiggerNum--;
+								}
 							}
-						}
-
-						if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)
-						{
-							if(GetPlayerReference()->QuipSFX.IsEmpty())
+	
+							if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)
 							{
-								GetPlayerReference()->VoiceLineTiggerNum = 6;
-								int RandomSFX = FMath::RandRange(0,4 );
-								FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-								UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 1.0);
+								if(GetPlayerReference()->QuipSFX.IsEmpty())
+								{
+									GetPlayerReference()->VoiceLineTiggerNum = 6;
+									int RandomSFX = FMath::RandRange(0,4 );
+									FVector CamComLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+									UGameplayStatics::PlaySoundAtLocation(GetWorld(), GetPlayerReference()->QuipSFX[RandomSFX], CamComLocation, FRotator(0,0,0), 1.0);
+								}
+							}
+							else
+							{
+								GetPlayerReference()->VoiceLineTiggerNum--;
 							}
 						}
-						else
-						{
-							GetPlayerReference()->VoiceLineTiggerNum--;
-						}
+						
+						//Uses the out going handle to deal damage
+						ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 					}
-					
-					//Uses the out going handle to deal damage
-					ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				}
-				else if (HitResult.GetActor()->ActorHasTag("Trigger"))
-				{
-					if (HitResult.GetActor()->ActorHasTag("Bridge"))
+					else if (HitResult.GetActor()->ActorHasTag("Trigger"))
 					{
-						if (AWorldInteractTrigger* WorldInteractTrigger = Cast<AWorldInteractTrigger>(HitResult.GetActor()))
+						if (HitResult.GetActor()->ActorHasTag("Bridge"))
 						{
-							if (HitResult.GetActor() == WorldInteractTrigger)
+							if (AWorldInteractTrigger* WorldInteractTrigger = Cast<AWorldInteractTrigger>(HitResult.GetActor()))
 							{
-								WorldInteractTrigger->MoveActorOnTrigger(); 
+								if (HitResult.GetActor() == WorldInteractTrigger)
+								{
+									WorldInteractTrigger->MoveActorOnTrigger(); 
+								}
 							}
 						}
 					}
 				}
 			}
 		}
+	}
+	else
+	{
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }
 
@@ -194,11 +205,9 @@ void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	
-	if (GetPlayerReference()->PlayerAmmo >= 0)
-	{
-		
-	}
-	//GetWorld()->GetTimerManager().ClearTimer(ShootHandle);
+
+	
+	GetWorld()->GetTimerManager().ClearTimer(ShootForceEndTimer);
 }
 
 APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
@@ -221,6 +230,12 @@ void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPa
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
+}
+
+void UQRGA_Shoot::ForceEndAbility()
+{
+	//Ends ability is the animation is done
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 bool UQRGA_Shoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

@@ -75,10 +75,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraEmitter* MuzzleEmitter;
 	
-	
+	FTimerHandle ShootForceEndTimer;
 
 	//Function that animation nofity will call 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
+	UFUNCTION()
+	void ForceEndAbility();
 };
 

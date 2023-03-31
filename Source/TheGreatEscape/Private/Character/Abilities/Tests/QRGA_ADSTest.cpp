@@ -2,7 +2,7 @@
 
 
 #include "Character/Abilities/Tests/QRGA_ADSTest.h"
-
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Character/Player/PlayerCharacter.h"
 
 UQRGA_ADSTest::UQRGA_ADSTest()
@@ -15,19 +15,11 @@ void UQRGA_ADSTest::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
-	{
-		if (bIsHeldDown)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Held"));
-			return;
-		}
-		else
-		{
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-		}
-	},0.5, true);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Held"));
+	
+	UAbilityTask_WaitInputRelease* Task_WaitInputRelease = UAbilityTask_WaitInputRelease::WaitInputRelease(this, false);
+	Task_WaitInputRelease->OnRelease.AddDynamic(this, &UQRGA_ADSTest::CallEndAbility);
+	Task_WaitInputRelease->ReadyForActivation();
 	
 }
 
@@ -35,6 +27,7 @@ void UQRGA_ADSTest::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
 bool UQRGA_ADSTest::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -51,4 +44,9 @@ APlayerCharacter* UQRGA_ADSTest::GetPlayerReference()
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	//Returns Character Ref
 	return CharacterRef;
+}
+
+void UQRGA_ADSTest::CallEndAbility(float TimeHeld)
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
