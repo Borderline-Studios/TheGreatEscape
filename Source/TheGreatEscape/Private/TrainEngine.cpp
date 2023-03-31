@@ -92,8 +92,6 @@ ATrainEngine::ATrainEngine()
 	    if (File.Class)
 	    {
 		    EngineMeshClass = File.Class;
-
-	    	EngineMesh->SetHiddenInGame(true);
 	    }
     }
 
@@ -161,6 +159,8 @@ void ATrainEngine::BeginPlay()
 
 	if (EngineMeshClass)
 	{
+		EngineMesh->SetHiddenInGame(true);
+
 		AActor* TrainEngine = GetWorld()->SpawnActor<AActor>(EngineMeshClass);
 		TrainEngine->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
