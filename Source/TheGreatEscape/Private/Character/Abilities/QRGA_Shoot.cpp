@@ -11,6 +11,7 @@
 #include "EnemyReworkHybrid.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "Character/QRCharacter.h"
@@ -54,21 +55,29 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		}
 		else
 		{
+
+
+
+			
 			if (GetPlayerReference()->bIsADS)
 			{
-			//Jumps the animontage to the fire section
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
-			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
-		}
-		else
-		{
+				//Jumps the animontage to the fire section
+				GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
+				//Added dynamic notify and triggers function if notify is received
+				GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			}
+			else
+			{
 			
-			//Jumps the animontage to the fire section
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
-			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+				//Jumps the animontage to the fire section
+				GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+				//Added dynamic notify and triggers function if notify is received
+				GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			}
 		}
+
+
+		
 		
 		//Decrements the Ammo
 		GetPlayerReference()->PlayerAmmo--;
@@ -81,28 +90,26 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		else
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+			FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
+			FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
+			FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
+			UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->MuzzleSphere, FName(GetPlayerReference()->MuzzleSphere->GetName()),
+															MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
 		}
-		
-
 
 		
 		//Varaibles for Hitscan check
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
+
+
+			
 		//Ignore self
 		Params.AddIgnoredActor(GetPlayerReference());
-
-		FVector MuzzleLoc = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
-		FRotator FowardVecRot = GetPlayerReference()->FirstPersonCameraComponent->GetComponentRotation();
 
 		//TODO Fix in beta so no gaming
 		//UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX,	GetPlayerReference()->MuzzleSphere, FName("Name"),
 		//	MuzzleLoc,FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll), EAttachLocation::SnapToTarget, true);
-
-		
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleVFX, MuzzleLoc,
-			FRotator(FowardVecRot.Pitch, FowardVecRot.Yaw + 90.0f, FowardVecRot.Roll),
-			FVector(1.0f, 1.0f, 1.0f), true);
 		
 			//Line trace from crosshair/middle of player screen straight line infront of player
 			if (GetWorld()->LineTraceSingleByChannel(HitResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxShotRange,ECC_Visibility, Params))
@@ -192,13 +199,12 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 					}
 				}
 			}
+			else
+			{
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			}
 		}
 	}
-	else
-	{
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-}
 
 void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
