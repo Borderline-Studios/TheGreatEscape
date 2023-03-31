@@ -30,8 +30,8 @@ ATrainEngine::ATrainEngine()
 
 	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Engine Mesh"));
 	EngineMesh->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/S_Train_Engine.S_Train_Engine'"));
-	EngineMesh->SetStaticMesh(MeshObj.Object);
+	// ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/S_Train_Engine.S_Train_Engine'"));
+	// EngineMesh->SetStaticMesh(MeshObj.Object);
 	EngineMesh->SetRelativeLocation(FVector(0.0f, 700.0f, -325.0f));
 
 	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Detection Box"));
@@ -83,6 +83,17 @@ ATrainEngine::ATrainEngine()
 	        }
 
 	    	StaticMeshRefs[i] = Mesh;
+	    }
+    }
+
+    if (!EngineMeshClass)
+    {
+	    static ConstructorHelpers::FClassFinder<AActor> File(TEXT("/Game/Production/Train/Art/BP_Train_Engine"));
+	    if (File.Class)
+	    {
+		    EngineMeshClass = File.Class;
+
+	    	EngineMesh->SetHiddenInGame(true);
 	    }
     }
 
@@ -147,6 +158,12 @@ UAbilitySystemComponent* ATrainEngine::GetAbilitySystemComponent() const
 void ATrainEngine::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (EngineMeshClass)
+	{
+		AActor* TrainEngine = GetWorld()->SpawnActor<AActor>(EngineMeshClass);
+		TrainEngine->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
 
 	// Initialising variables
 	TimeSinceStart = 0.0f;

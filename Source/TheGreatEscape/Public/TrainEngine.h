@@ -143,6 +143,10 @@ private:
     // Holds the Shapes used to show the engine
     USceneComponent* SceneRoot;
 
+    UPROPERTY(EditInstanceOnly)
+    TSubclassOf<AActor> EngineMeshClass;
+    AActor* EngineMeshActor;
+    
     UStaticMeshComponent* EngineMesh;
     UStaticMeshComponent* Box;
 

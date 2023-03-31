@@ -14,6 +14,7 @@
 
 //Includes
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -44,7 +45,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category=VFX)
 	USphereComponent* MuzzleSphere;
 	
 	//Animation Montage variable at acces the animation montage in code
