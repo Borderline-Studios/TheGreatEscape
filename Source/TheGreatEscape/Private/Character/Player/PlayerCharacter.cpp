@@ -52,7 +52,7 @@ APlayerCharacter::APlayerCharacter()
 	
 	MuzzleSphere = CreateDefaultSubobject<USphereComponent>(TEXT("MuzzleSphere"));
 	MuzzleSphere->SetOnlyOwnerSee(true);
-	MuzzleSphere->SetupAttachment(Mesh1P);
+	MuzzleSphere->SetupAttachment(GetCapsuleComponent());
 	MuzzleSphere->InitSphereRadius(50.0f);
 }
 
