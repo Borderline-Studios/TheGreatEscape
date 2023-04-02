@@ -3,8 +3,8 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
+// File Name   : TrainEngine.cpp
+// Description : Contains the implementation of the 
 // Author      :  Borderline Studios - (person(s) working on file)
 // Mail        :
 
@@ -27,24 +27,6 @@ ATrainEngine::ATrainEngine()
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	RootComponent = SceneRoot;
-
-	EngineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Engine Mesh"));
-	EngineMesh->SetupAttachment(RootComponent);
-	// ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/Production/Train/Art/All_Train_V1/S_Train_Engine.S_Train_Engine'"));
-	// EngineMesh->SetStaticMesh(MeshObj.Object);
-	EngineMesh->SetRelativeLocation(FVector(0.0f, 700.0f, -325.0f));
-
-	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Detection Box"));
-	Box->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	Box->SetStaticMesh(Cube.Object);
-	Box->SetHiddenInGame(true);
-	
-	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	ArrowComp->SetupAttachment(RootComponent);
-	ArrowComp->SetArrowColor(FColor::Purple);
-	// ArrowComp->SetHiddenInGame(false);
-	ArrowComp->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
 	PlayerDetectionBoxes.Push(CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector")));
 	PlayerDetectionBoxes[0]->SetupAttachment(RootComponent);
@@ -86,6 +68,7 @@ ATrainEngine::ATrainEngine()
 	    }
     }
 
+	// Comment out once the BP functionality has been added
     if (!EngineMeshClass)
     {
 	    static ConstructorHelpers::FClassFinder<AActor> File(TEXT("/Game/Production/Train/Art/BP_Train_Engine"));
@@ -159,10 +142,8 @@ void ATrainEngine::BeginPlay()
 
 	if (EngineMeshClass)
 	{
-		EngineMesh->SetHiddenInGame(true);
-
-		AActor* TrainEngine = GetWorld()->SpawnActor<AActor>(EngineMeshClass);
-		TrainEngine->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		EngineMeshActor = GetWorld()->SpawnActor<AActor>(EngineMeshClass);
+		EngineMeshActor->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	}
 
 	// Initialising variables
@@ -200,7 +181,8 @@ void ATrainEngine::BeginPlay()
 	for (int i = 0; i < CarriageCount; i++)
 	{
 		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
-		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i%4], TrackSplineRef, this);
+		const int CarriageClassCount = CarriageMeshClasses.IsEmpty() ? 1 : CarriageMeshClasses.Num();
+		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, CarriageMeshClasses[i % CarriageClassCount], TrackSplineRef, this);
 		
 		PlayerDetectionBoxes.Push(TempRef->GetPlayerDetectionComponent());
 
@@ -220,7 +202,7 @@ void ATrainEngine::BeginPlay()
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	TrainControls->SetActorRelativeLocation(FVector(-120.0f, -600.0f, 270.0f));
 
-	UpdateObjectiveText("");
+	UpdateObjectiveText();
 
 	if (!PlayerRef)
 	{
@@ -243,11 +225,6 @@ void ATrainEngine::BeginPlay()
 void ATrainEngine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (MovementTimeline.IsPlaying())
-	{
-		MovementTimeline.TickTimeline(DeltaTime);
-	}
 
 	// Standard Tick Operation
     if (bHasStartedMoving && bPlayerOnTrain && !bObjectiveLock)
@@ -321,27 +298,6 @@ void ATrainEngine::UpdateObjectiveText(FString NewText)
 	CurrentObjectiveMessage = NewText;
 }
 
-/**
- * @brief 
- * @param bNewPlayerOnTrain 
- */
-void ATrainEngine::SetPlayerOnTrain(bool bNewPlayerOnTrain)
-{
-	if (bNewPlayerOnTrain != bPlayerOnTrain)
-	{
-		bPlayerOnTrain = bNewPlayerOnTrain;
-	}
-}
-
-/**
- * @brief 
- * @return 
- */
-bool ATrainEngine::GetPlayerOnTrain()
-{
-	return CheckTrainForPlayer();
-}
-
 UBoxComponent* ATrainEngine::GetEngineDetectionComponent()
 {
 	return PlayerDetectionBoxes[0];
@@ -384,21 +340,6 @@ void ATrainEngine::EndEngineOverlap(
 	}
 }
 
-void ATrainEngine::ProcessMovementTimeline(float Value)
-{
-	// UE_LOG(LogTemp, Warning, TEXT("CurrentValue = %f"), Value);
-	// FVector CurrentSplineLoc = TrackSplineRef->GetLocationAtDistanceAlongSpline(Value*SplineLength, ESplineCoordinateSpace::World);
-	// FRotator CurrentSplineRot = TrackSplineRef->GetRotationAtDistanceAlongSpline(Value*SplineLength, ESplineCoordinateSpace::World);
-	// CurrentSplineRot.Pitch = 0;
-	// CurrentSplineRot.Yaw -= 90;
-	//
-	// SetActorLocationAndRotation(CurrentSplineLoc, CurrentSplineRot);
-}
-
-void ATrainEngine::OnEndMovementTimeline()
-{
-}
-
 bool ATrainEngine::CheckTrainForPlayer()
 {
 	for (int i = 0; i < PlayerDetectionBoxes.Num(); i++)
@@ -420,20 +361,6 @@ void ATrainEngine::EnableTrainMovementTimer()
 	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
 	{
 		bPlayerOnTrain = true;
-		// if (MovementCurve)
-		// {
-		// 	FOnTimelineFloat ProgressFunction;
-		// 	ProgressFunction.BindUFunction(this, TEXT("ProcessMovementTimeline"));
-		// 	MovementTimeline.AddInterpFloat(MovementCurve, ProgressFunction);
-		//
-		// 	FOnTimelineEvent OnTimelineFinishedFunction;
-		// 	OnTimelineFinishedFunction.BindUFunction(this, TEXT("OnEndMovementTimeline"));
-		// 	MovementTimeline.SetTimelineFinishedFunc(OnTimelineFinishedFunction);
-		//
-		// 	MovementTimeline.SetTimelineLengthMode(TL_LastKeyFrame);
-		// 	MovementTimeline.SetPlayRate(1.0f/TimeToComplete);
-		// 	MovementTimeline.Play();
-		// }
 
 	}, 0.75f, false);
 }
@@ -445,11 +372,6 @@ void ATrainEngine::DisableTrainMovementTimer()
 		if (!CheckTrainForPlayer())
 		{
 			bPlayerOnTrain = false;
-			// PlayerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-			// if (!MovementTimeline.IsReversing())
-			// {
-			// 	MovementTimeline.Reverse();
-			// }
 		}
 		
 	}, 2.0f, true);

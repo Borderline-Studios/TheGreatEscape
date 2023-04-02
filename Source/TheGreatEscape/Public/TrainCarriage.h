@@ -30,7 +30,7 @@ public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
 
-	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef, ATrainEngine* NewEngineRef);
+	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, TSubclassOf<AActor> CarriageMeshClass, USplineComponent* NewSplineRef, ATrainEngine* NewEngineRef);
 
 protected:
 	// Called when the game starts or when spawned
@@ -54,25 +54,19 @@ private:
 	UPROPERTY(EditInstanceOnly)
 	USceneComponent* SceneRoot;
 
-	UPROPERTY(EditInstanceOnly)
-	UStaticMeshComponent* Box;
-	
-	UPROPERTY(EditInstanceOnly)
-	UArrowComponent* Arrow;
+	AActor* CarriageMeshActor = nullptr;
 
 	// inline static TStaticArray<int, 4> CarriageDistances = TStaticArray<int, 4>(EInPlace::InPlace, 1800);
 	float DistanceFromFront = 0;
 
 	USplineComponent* SplineRef;
 
-	TArray<AActor*> ActorRefs;
 	TStaticArray<ALight*, 2> LightRefs;
 
 	static ATrainEngine* EngineRef;
 
 	// Player Detection
 	UBoxComponent* PlayerDetectionComp;
-	
 
 	// FUNCTIONS
 	UFUNCTION(meta=(AllowPrivateAccess = "true"))

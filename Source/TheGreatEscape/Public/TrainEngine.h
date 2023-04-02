@@ -19,7 +19,6 @@
 #include "QRAttributeSet.h"
 #include "QRAbilitySystemComponent.h"
 #include "QRGameplayAbility.h"
-#include "Components/TimelineComponent.h"
 
 #include "TrainEngine.generated.h"
 
@@ -110,10 +109,7 @@ public:
     // Updating the Objective Message
     UFUNCTION(BlueprintCallable)
     void UpdateObjectiveText(FString NewText = "");
-
-    void SetPlayerOnTrain(bool bNewPlayerOnTrain);
-    bool GetPlayerOnTrain();
-
+    
     UBoxComponent* GetEngineDetectionComponent();
 
     void DisableMovement();
@@ -143,23 +139,23 @@ private:
     // Holds the Shapes used to show the engine
     USceneComponent* SceneRoot;
 
-    UPROPERTY(EditInstanceOnly)
+    UPROPERTY(EditDefaultsOnly, meta=(DisplayThumbnail = "true"))
     TSubclassOf<AActor> EngineMeshClass;
     AActor* EngineMeshActor;
     
-    UStaticMeshComponent* EngineMesh;
-    UStaticMeshComponent* Box;
-
     ATrainStopButton* EngineStopButton;
     ATrainControlls* TrainControls;
-    UArrowComponent* ArrowComp;
 
     // CARRIAGE HANDLING SECTION
     static TStaticArray<UStaticMesh*, 4> StaticMeshRefs;
+    
+    UPROPERTY(EditDefaultsOnly, meta=(DisplayThumbnail = "true"))
+    TArray<TSubclassOf<AActor>> CarriageMeshClasses;
+    
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
     int CarriageCount = 0;
-    const int DistanceFromFront = 1900;
+    const int DistanceFromFront = 2400;
     const int DistanceBetweenCarriages = 1400;
 
     float EngineStart = 0;
@@ -175,11 +171,6 @@ private:
     APlayerCharacter* PlayerRef;
     bool bPlayerOnTrain = false;
     FTimerHandle PlayerDetectionTimerHandle;
-
-    // TIMELINE Implementation
-    FTimeline MovementTimeline;
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-    UCurveFloat* MovementCurve;
 
     // Functions
     UFUNCTION()
@@ -198,13 +189,6 @@ private:
         UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex
     );
-
-    // TIMELINE FUNCTIONS
-    UFUNCTION()
-    void ProcessMovementTimeline(float Value);
-
-    UFUNCTION()
-    void OnEndMovementTimeline();
 
     bool CheckTrainForPlayer();
     void EnableTrainMovementTimer();

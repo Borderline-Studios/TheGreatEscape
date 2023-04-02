@@ -32,22 +32,10 @@ ATrainEngine* ATrainCarriage::EngineRef;
 ATrainCarriage::ATrainCarriage()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	RootComponent = SceneRoot;
-
-	Box = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carriage Mesh"));
-	Box->SetupAttachment(RootComponent);
-    const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	Box->SetStaticMesh(MeshObj.Object);
-	Box->SetWorldScale3D(FVector(2.5f, 1.0f, 0.7f));
-
-	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	Arrow->SetupAttachment(RootComponent);
-	Arrow->SetArrowColor(FColor::Blue);
-	// Arrow->SetHiddenInGame(false);
-	Arrow->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
 	PlayerDetectionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
 	PlayerDetectionComp->SetupAttachment(RootComponent);
@@ -65,43 +53,31 @@ ATrainCarriage::ATrainCarriage()
  * Must be called when initialising each carriage
  * @param CarriageNum The number of carriage this is relative to the engine.
  * @param InitDistanceFromFront The distance behind the engine that the carriage is set to be
- * @param AssignedMesh The train carriage mesh being assigned to this carriage.
+ * @param CarriageMeshClass The train carriage mesh being assigned to this carriage.
  * @param NewSplineRef The reference to the spline that the engine is using to travel
  * @param NewEngineRef
  */
 void ATrainCarriage::InitialiseFromEngine(
 	int CarriageNum,
 	int InitDistanceFromFront,
-	UStaticMesh* AssignedMesh,
+	const TSubclassOf<AActor> CarriageMeshClass,
 	USplineComponent* NewSplineRef,
 	ATrainEngine* NewEngineRef)
 {
 	CarriageNumber = CarriageNum;
-	
-	Box->SetStaticMesh(AssignedMesh);
-	Box->SetWorldScale3D(FVector(1.0f));
 
 	DistanceFromFront = InitDistanceFromFront;
+
+	if (CarriageMeshClass)
+	{
+		CarriageMeshActor = GetWorld()->SpawnActor<AActor>(CarriageMeshClass);
+		CarriageMeshActor->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	}
 
 	if (!SplineRef)
 	{
 		SplineRef = NewSplineRef;
 	}
-
-	// The carriage number system should be done using an ENUM
-	// if (CarriageNumber == 0)
-	// {
-	// 	ATrainControlls* SpeedControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
-	// 	SpeedControls->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-	// 	SpeedControls->SetActorRelativeLocation(FVector(150.0f, -275.0f, 170.0f));
-	//
-	// 	ATrainStopButton* StopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
-	// 	StopButton->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-	// 	StopButton->SetActorRelativeLocation(FVector(-130.0f, -430.0, 330.0f));
-	//
-	// 	ActorRefs.Push(SpeedControls);
-	// 	ActorRefs.Push(StopButton);
-	// }
 
 	// If the carriage is not a flatbed... (we're about to do lighting stuff and the flatbed is open so it doesn't need lighting)
 	if (CarriageNumber % 4 != 1)
