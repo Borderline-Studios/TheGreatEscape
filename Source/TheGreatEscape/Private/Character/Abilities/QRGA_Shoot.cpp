@@ -39,7 +39,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	
 	if (!GetPlayerReference()->bIsTransADS)
 	{
-			FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+		FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 		FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
 		int MaxShotRange = GetPlayerReference()->MaxShotRange;
 
@@ -163,6 +163,8 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 								{
 									Enemy->SFXTiggerNum--;
 								}
+
+								Enemy->PostHitProcess();
 							}
 	
 							if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)

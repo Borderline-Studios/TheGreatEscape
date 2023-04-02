@@ -17,6 +17,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "EnemyReworkController.h"
+#include "GeometryTypes.h"
 #include "Math/UnrealMathUtility.h"
 #include "NiagaraFunctionLibrary.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
@@ -76,13 +77,7 @@ void AEnemyRework::Tick(float DeltaTime)
 	// call super
 	Super::Tick(DeltaTime);
 	
-	// if enemy dead
-	if (CheckHealth() <= 0 && FirstDeath)
-	{
-		FirstDeath = false;
-		PostDeathProcess();
-		Destroy();
-	}
+
 	
 }
 
@@ -92,10 +87,7 @@ void AEnemyRework::Tick(float DeltaTime)
  */
 void AEnemyRework::Attack()
 {
-	
 	//TargetActorASC->ApplyGameplayEffectToTarget(DamageEffect, TargetActorASC, 1, FGameplayEffectContextHandle);
-
-	
 	// Attack code
 	//UE_LOG(LogTemp, Warning, TEXT("Attack function called"));
 }
@@ -125,6 +117,17 @@ void AEnemyRework::PostDeathProcess()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSFX, this->GetActorLocation(), this->GetActorRotation(), 0.5, FMath::RandRange(0.7, 1.4));
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(0.5,0.5,0.5), true);
 
+}
+
+void AEnemyRework::PostHitProcess()
+{
+	// if enemy dead
+	if (CheckHealth() <= 0 && FirstDeath)
+	{
+		FirstDeath = false;
+		PostDeathProcess();
+		Destroy();
+	}
 }
 
 float AEnemyRework::CheckHealth()
