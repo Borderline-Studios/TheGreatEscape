@@ -39,7 +39,7 @@ public:
 	
 	// FUNCTIONS
 	void PopulateTrainRef(ATrainEngine* NewTrainRef);
-	USplineComponent* GetSpline();
+	USplineComponent* GetSpline() const;
 	ASplineTrack* GetNextSpline();
 
 protected:

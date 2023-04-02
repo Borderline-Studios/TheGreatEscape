@@ -227,12 +227,12 @@ void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
 
 /**
  * @brief
- * Deprecated. Use GetSplineComponent() instead.
+ * Exposes the GetSplineComponent Function to code.
  * @return 
  */
-USplineComponent* ASplineTrack::GetSpline()
+USplineComponent* ASplineTrack::GetSpline() const
 {
-	return Spline;
+	return GetSplineComponent();
 }
 
 /**
@@ -247,7 +247,7 @@ ASplineTrack* ASplineTrack::GetNextSpline()
 
 /**
  * @brief
- * Allows external access to this segment's spline component
+ * Allows external access to this segment's spline component through blueprints only
  * @return This segment's spline component
  */
 USplineComponent* ASplineTrack::GetSplineComponent() const
