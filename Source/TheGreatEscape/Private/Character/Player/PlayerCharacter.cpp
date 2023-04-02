@@ -56,38 +56,36 @@ APlayerCharacter::APlayerCharacter()
 	MuzzleSphere->InitSphereRadius(50.0f);
 }
 
-void APlayerCharacter::Tick(float DeltaSeconds)
+void APlayerCharacter::PostHitProcess()
 {
-	Super::Tick(DeltaSeconds);
-
+	
 	//Check if the players health is less than or equal to 0 then kill
 	//todo(Jacob) Set up a better system for this
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
-		bool Found;
-		float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
-	if(Found)
+	bool Found;
+	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
+	if (Found)
 	{
-		if (Value < 30.0f)
+		UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,4)], GetActorLocation(), GetActorRotation(), 0.3);
+		
+		if (Value <= 30.0f)
 		{
 			CallVignette();
 		}
-		
+		else if (Value > 30.0f)
+		{
+			DisableVignette();
+		}
+
+
 		if (Value <= 0.0f)
 		{
-			if (bFirstDeathCall)
-			{
-				bFirstDeathCall = false;
-				StartDeath();
-			}
-
+			PostDeathProcess();
 		}
 	}
 }
 
-/**
- * @brief called when the players health is depleted
- */
-void APlayerCharacter::StartDeath()
+void APlayerCharacter::PostDeathProcess()
 {
 	//Displables the player input
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -104,10 +102,12 @@ void APlayerCharacter::StartDeath()
 	GetWorld()->GetTimerManager().SetTimer(DeathTimer, this, &APlayerCharacter::LoadLevel, 2.0f, false);
 }
 
-/**
- * @brief Returns the FPCC - used for access to line traces in other classes and functions
- * @return FirstPersonCharacterComponenet
- */
+void APlayerCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+}
+
 UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 {
 	return FirstPersonCameraComponent;
@@ -133,7 +133,6 @@ void APlayerCharacter::SetResources(int ValueToChange, int NewValue)
 {
 	ValueToChange = NewValue;
 	NumScrap = ValueToChange;
-	
 }
 
 

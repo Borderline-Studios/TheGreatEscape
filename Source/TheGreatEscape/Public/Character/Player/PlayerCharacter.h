@@ -36,48 +36,50 @@ class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 	GENERATED_BODY()
 	
 public:
+#pragma region Components
 	/** First person mesh */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
-
-
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category=VFX)
 	USphereComponent* MuzzleSphere;
-	
+#pragma endregion
+
+#pragma region Animation
 	//Animation Montage variable at acces the animation montage in code
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ShootMontage;
+#pragma endregion
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* ADSMontage;
-	//Player Ammo variable
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
-	int PlayerAmmo = 6;
-	//Print ability player check
+#pragma region Booleans
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bIsSprinting = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	int NumScrap = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	int Resource2 = 0;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bIsTransADS = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bIsADS = false;
+	
+	bool bFirstDeathCall = true;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bBatteryPickedUp = false;
+#pragma endregion 
 
+#pragma region SFX
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> CamShake;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> QuipSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	TArray<USoundBase*> HitSFX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	USoundBase* ButtonSFX;
@@ -85,36 +87,52 @@ public:
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> LeverSFX;
+#pragma endregion
+
+
+#pragma region Integers-And-Floats
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int NumScrap = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int Resource2 = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int MaxShotRange = 20000;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	float SprintMod = 50;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bBatteryPickedUp = false;
-
-	FRandomStream Stream;
+	//Player Ammo variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
+	int PlayerAmmo = 6;
 
 	int VoiceLineTiggerNum = 0;
-
-	bool bFirstDeathCall = true;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	float SprintMod = 50;
+#pragma endregion 
+	FRandomStream Stream;
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void CallVignette();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisableVignette();
+
 	void LoadLevel();
+
+
 	
 public:
 	//Constructor
 	APlayerCharacter();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable)
 	void PostHitProcess();
+
+	UFUNCTION(BlueprintCallable)
+	void PostDeathProcess();
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
-	void StartDeath();
 	UCameraComponent* GetFirstPersonCameraComponent();
 	
 	UFUNCTION(BlueprintCallable)
