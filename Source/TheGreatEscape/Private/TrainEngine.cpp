@@ -221,6 +221,13 @@ void ATrainEngine::BeginPlay()
 	}
 }
 
+void ATrainEngine::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+}
+
 // Called every frame
 void ATrainEngine::Tick(float DeltaTime)
 {
