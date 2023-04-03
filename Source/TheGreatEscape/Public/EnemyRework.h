@@ -14,6 +14,7 @@
 #include <Character/BASE/GASBASECharacter.h>
 #include "CoreMinimal.h"
 #include "NiagaraEmitter.h"
+#include "Character/Player/PlayerCharacter.h"
 #include "EnemyRework.generated.h"
 
 UCLASS()
@@ -73,7 +74,7 @@ protected:
 
 private:
 	// *** Functions *** ///
-	void SetUpStimulus(); // set up stimulus
+	void SetUpStimulus();// set up stimulus
 
 	// *** Variables *** ///
 	class UAIPerceptionStimuliSourceComponent* Stimulus; // stimulus component

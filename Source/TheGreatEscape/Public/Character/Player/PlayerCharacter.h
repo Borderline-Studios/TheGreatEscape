@@ -105,6 +105,9 @@ public:
 	int PlayerAmmo = 6;
 
 	int VoiceLineTiggerNum = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int CurrentKill = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	float SprintMod = 50;
@@ -130,6 +133,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PostDeathProcess();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void EnemyKilled();
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
