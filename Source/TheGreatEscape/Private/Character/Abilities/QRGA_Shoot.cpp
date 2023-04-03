@@ -34,6 +34,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Test"));
 	GetWorld()->GetTimerManager().SetTimer(ShootForceEndTimer,this,&UQRGA_Shoot::ForceEndAbility, 1.0f, true);
 
 	
