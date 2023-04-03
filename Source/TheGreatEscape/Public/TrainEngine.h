@@ -111,6 +111,7 @@ public:
     void UpdateObjectiveText(FString NewText = "");
     
     UBoxComponent* GetEngineDetectionComponent();
+    ATrainCarriage* GetLastCarriage();
 
     void DisableMovement();
     void EnableMovement();

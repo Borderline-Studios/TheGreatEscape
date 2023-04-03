@@ -307,6 +307,11 @@ UBoxComponent* ATrainEngine::GetEngineDetectionComponent()
 	return PlayerDetectionBoxes[0];
 }
 
+ATrainCarriage* ATrainEngine::GetLastCarriage()
+{
+	return CarriageRefs.IsEmpty() ? nullptr : CarriageRefs.Last();
+}
+
 void ATrainEngine::DisableMovement()
 {
 	bObjectiveLock = true;
