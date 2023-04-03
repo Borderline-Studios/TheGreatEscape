@@ -73,7 +73,7 @@ void USplineTraversalComponent::ProcessMovement(const float TimelineProgress) co
 	
 	const FVector CurrentSplineLoc = SplineRef->GetLocationAtDistanceAlongSpline(TimelineProgress * SplineLength, ESplineCoordinateSpace::World);
 	FRotator CurrentSplineRot = SplineRef->GetRotationAtDistanceAlongSpline(TimelineProgress * SplineLength, ESplineCoordinateSpace::World);
-	CurrentSplineRot.Pitch = 0;
+	CurrentSplineRot.Roll = 0;
 	
 	OwnerRef->SetActorLocationAndRotation(CurrentSplineLoc, CurrentSplineRot);
 }

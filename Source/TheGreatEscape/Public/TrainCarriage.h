@@ -12,7 +12,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "TrainCarriage.generated.h"
 
@@ -45,7 +44,7 @@ public:
 	
 	// FUNCTIONS
 	void ProcessMovement(float EngineSplineDist);
-	UBoxComponent* GetPlayerDetectionComponent();
+	UBoxComponent* GetPlayerDetectionComponent() const;
 	
 private:
 	// VARIABLES

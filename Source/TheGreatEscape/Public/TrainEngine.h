@@ -155,7 +155,7 @@ private:
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
     int CarriageCount = 0;
-    const int DistanceFromFront = 2400;
+    const int DistanceFromFront = 1600;
     const int DistanceBetweenCarriages = 1400;
 
     float EngineStart = 0;

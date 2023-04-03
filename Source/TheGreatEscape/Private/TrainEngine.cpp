@@ -238,8 +238,12 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	const float CurrentSplineProgress = FMath::Lerp(0, SplineLength, TimerTrack);
 
-    	SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World));
-    	SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
+    	const FVector CurrentSplineVector = TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World);
+    	FRotator CurrentSplineRotator = TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f);
+    	CurrentSplineRotator.Pitch = 0;
+    	
+    	SetActorLocation(CurrentSplineVector);
+    	SetActorRotation(CurrentSplineRotator);
 
         for (int i = 0; i < CarriageRefs.Num(); i++)
         {

@@ -12,13 +12,11 @@
 
 #include "TrainCarriage.h"
 
-#include "TrainControlls.h"
-#include "TrainStopButton.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Components/BoxComponent.h"
+#include "TrainEngine.h"
 #include "Components/SplineComponent.h"
 #include "Engine/Rectlight.h"
-#include "Kismet/GameplayStatics.h"
 
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
@@ -108,11 +106,9 @@ void ATrainCarriage::InitialiseFromEngine(
 		{
 			EngineRef = NewEngineRef;
 		}
-		// if (!PlayerRef)
-		// {
-		// 	UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass());
-		// }
 	}
+
+	ProcessMovement(0);
 }
 
 // Called when the game starts or when spawned
@@ -141,15 +137,19 @@ void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 
 	if (CarriageDist < 0)
 	{
-		float Temp = CarriageDist;
+		const float Temp = CarriageDist;
 		CarriageDist = SplineRef->GetSplineLength() + Temp;
 	}
 	
-	SetActorLocation(SplineRef->GetLocationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World));
-	SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World) + FRotator(0.0f, 90.0f, 0.0f));
+	const FVector CurrentSplineVector = SplineRef->GetLocationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World);
+	FRotator CurrentSplineRotator = SplineRef->GetRotationAtDistanceAlongSpline(CarriageDist, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f);
+	CurrentSplineRotator.Pitch = 0;
+	
+	SetActorLocation(CurrentSplineVector);
+	SetActorRotation(CurrentSplineRotator);
 }
 
-UBoxComponent* ATrainCarriage::GetPlayerDetectionComponent()
+UBoxComponent* ATrainCarriage::GetPlayerDetectionComponent() const
 {
 	return PlayerDetectionComp;
 }
