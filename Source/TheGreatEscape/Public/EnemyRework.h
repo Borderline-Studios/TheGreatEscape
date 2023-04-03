@@ -29,6 +29,7 @@ public:
     void Attack(); // attack function
 	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
 	void PostDeathProcess();
+	UFUNCTION(BlueprintCallable)
 	void PostHitProcess();
 
 	float CheckHealth();
