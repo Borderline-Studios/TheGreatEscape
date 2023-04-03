@@ -47,6 +47,6 @@ namespace Utilities
 	};
 
 	// const array of random points for enemies that attack the train
-	float const RandTrainXPoints[] = {300.0f,200.0f,100.0f,0.0f,-100.0f,-200.0f,-300.0f};
+	float const RandTrainXPoints[] = {600.0f,400.0f,200.0f,0.0f,-200.0f,-400.0f,-600.0f};
 	int const XPointsLength = 7;
 }

@@ -44,7 +44,10 @@ public:
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX")
 	TArray<USoundBase*> EnemyHitSFX;
-
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX")
+	USoundBase* DronePewPew;
+	
 	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
@@ -56,7 +59,7 @@ public:
 	bool bAttacking = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float ElevationHeight = 550.0f; // height above train the enemy will float
+	float ElevationHeight = 700.0f; // height above train the enemy will float
 
 	// Used Jacob's method to implement SFX
 	int SFXTiggerNum = FMath::RandRange(1,4);
@@ -68,7 +71,7 @@ protected:
 
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
-	float yOffsetFromTrain = 225.0f; // Y axis offset from train
+	float yOffsetFromTrain = 700.0f; // Y axis offset from train
 
 	
 

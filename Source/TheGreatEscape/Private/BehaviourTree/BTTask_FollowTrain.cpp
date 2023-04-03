@@ -39,6 +39,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	// get controller
 	AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
+	
 
 	// If ai controller not empty
 	if (AIController)
@@ -52,15 +53,34 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 		// get enemy
 		AEnemyReworkDrone* const Enemy = Cast<AEnemyReworkDrone>(AIController->GetPawn());
 
+		//UE_LOG(LogTemp, Warning, TEXT("enemy: %s"), *Enemy->GetName());
+
 		// if train not nullptr
 		if (Player)
 		{
 			// locations
-			FVector TrainLocation = Train->GetActorLocation();
+			ATrainCarriage* CarriageRef = Train->GetLastCarriage();
+
+			FVector TrainLocation;
+			
+			if (CarriageRef)
+			{
+				TrainLocation = CarriageRef->GetActorLocation();
+			}
+			else
+			{
+				TrainLocation = Train->GetActorLocation();
+			}
+			
 			FVector EnemyLocation = Enemy->GetActorLocation();
 			//FVector PlayerLocation = Player->GetActorLocation(); // temp
 
 			FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
+
+			//UE_LOG(LogTemp, Warning, TEXT("TrainTargetPointOffset: %s"), *Enemy->TrainTargetPointOffset.ToString());
+
+			//UE_LOG(LogTemp, Warning, TEXT("TrainTargetPointOffset: %s"), *Enemy->TrainTargetPointOffset.ToString());
+			
 			//FVector PlayerLocWithOffset = PlayerLocation + FVector(0.0f, 0.0f, EvelvationHeight);
 
 			FVector direction = TrainLocWithOffset - EnemyLocation;
@@ -74,7 +94,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			{
 				//direction.Z *= 2.0f;
 				direction *= 0;
-				UE_LOG(LogTemp, Warning, TEXT("im an issue"));
+				//UE_LOG(LogTemp, Warning, TEXT("im an issue"));
 			}
 			else if (FVector::Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
 			{

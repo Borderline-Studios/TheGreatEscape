@@ -60,6 +60,8 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
+
+					UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->DronePewPew, Enemy->GetActorLocation(), FRotator(0,0,0), 0.5f);
 					
 					bCanAttack = false;
 					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_DroneAttack::SetCanAttack, AttackDelay, false);
