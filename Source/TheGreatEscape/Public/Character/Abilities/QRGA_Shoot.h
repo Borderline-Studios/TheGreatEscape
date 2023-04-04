@@ -41,7 +41,6 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	
-
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReference();
 	
@@ -76,6 +75,7 @@ public:
 	UNiagaraEmitter* MuzzleEmitter;
 	
 	FTimerHandle ShootForceEndTimer;
+	
 
 	//Function that animation nofity will call 
 	UFUNCTION()
@@ -83,5 +83,18 @@ public:
 
 	UFUNCTION()
 	void ForceEndAbility();
+
+	//Activates the SFX and VFX
+	UFUNCTION()
+	void ActivateEffects();
+
+	UFUNCTION()
+	FHitResult HitScan(float MaxDistance);
+
+	UFUNCTION()
+	void HitEnemyCheck(FHitResult HitInput);
+
+	UFUNCTION()
+	void HitTagCheck(FHitResult HitInput);
 };
 
