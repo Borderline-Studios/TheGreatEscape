@@ -48,6 +48,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepHealth, Category = "Attribs")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UQRAttributeSet, MaxHealth);
+
+	//UProperty for Health and Max Health
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepHealth, Category = "Attribs")
+	FGameplayAttributeData Shield;
+	ATTRIBUTE_ACCESSORS(UQRAttributeSet, Shield);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepHealth, Category = "Attribs")
+	FGameplayAttributeData MaxShield;
+	ATTRIBUTE_ACCESSORS(UQRAttributeSet, MaxShield);
 	
 	/*GAS built-in Functions to set up player stats*/
 	void AdjustAttributeForMaxChange(const FGameplayAttributeData& AffectedAttribute,
@@ -60,6 +69,12 @@ public:
 
 	UFUNCTION()
 	virtual void OnRepMaxHealth(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	virtual void OnRepShield(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	virtual void OnRepMaxShield(const FGameplayAttributeData& OldValue);
 	
 	/*GAS built-in Functions to set up player stats*/
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

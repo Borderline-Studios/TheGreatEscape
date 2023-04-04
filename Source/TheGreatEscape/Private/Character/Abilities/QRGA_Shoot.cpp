@@ -227,15 +227,21 @@ void UQRGA_Shoot::HitEnemyCheck(FHitResult HitInput)
 
 void UQRGA_Shoot::HitTagCheck(FHitResult HitInput)
 {
-	if (HitInput.GetActor()->ActorHasTag("Trigger"))
+	if(HitInput.IsValidBlockingHit())
 	{
-		if (HitInput.GetActor()->ActorHasTag("Bridge"))
+		if (HitInput.GetActor())
 		{
-			if (AWorldInteractTrigger* WorldInteractTrigger = Cast<AWorldInteractTrigger>(HitInput.GetActor()))
+			if (HitInput.GetActor()->ActorHasTag("Trigger"))
 			{
-				if (HitInput.GetActor() == WorldInteractTrigger)
+				if (HitInput.GetActor()->ActorHasTag("Bridge"))
 				{
-					WorldInteractTrigger->MoveActorOnTrigger(); 
+					if (AWorldInteractTrigger* WorldInteractTrigger = Cast<AWorldInteractTrigger>(HitInput.GetActor()))
+					{
+						if (HitInput.GetActor() == WorldInteractTrigger)
+						{
+							WorldInteractTrigger->MoveActorOnTrigger(); 
+						}
+					}
 				}
 			}
 		}
