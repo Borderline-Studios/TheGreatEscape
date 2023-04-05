@@ -34,4 +34,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
 	UStaticMeshComponent* TurretBaseRef; // ref to turret base
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float Time = 100.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float TimeIncrement = 0.005f;
+	
+	float LastDist;
 };

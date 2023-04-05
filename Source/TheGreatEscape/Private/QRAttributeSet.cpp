@@ -24,6 +24,8 @@ void UQRAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UQRAttributeSet, Health);
+
+	DOREPLIFETIME(UQRAttributeSet, Shield);
 }
 
 /**
@@ -38,6 +40,12 @@ void UQRAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 	{
 
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
+	}
+
+	if(Attribute == GetMaxShieldAttribute())
+	{
+
+		AdjustAttributeForMaxChange(Shield, MaxShield, NewValue, GetShieldAttribute());
 	}
 }
 
@@ -74,6 +82,16 @@ void UQRAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 		}
 	}
+
+	if(Data.EvaluatedData.Attribute == GetShieldAttribute())
+	{
+		SetHealth(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
+
+		if (TargetCharacter)
+		{
+			TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
+		}
+	}
 }
 
 void UQRAttributeSet::AdjustAttributeForMaxChange(const FGameplayAttributeData& AffectedAttribute,
@@ -101,4 +119,14 @@ void UQRAttributeSet::OnRepHealth(const FGameplayAttributeData& OldValue)
 void UQRAttributeSet::OnRepMaxHealth(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UQRAttributeSet, MaxHealth, OldValue);
+}
+
+void UQRAttributeSet::OnRepShield(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UQRAttributeSet, Shield, OldValue);
+}
+
+void UQRAttributeSet::OnRepMaxShield(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UQRAttributeSet, MaxShield, OldValue);
 }
