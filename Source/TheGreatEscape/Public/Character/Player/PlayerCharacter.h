@@ -15,6 +15,7 @@
 //Includes
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
+#include "../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/bit"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -57,18 +58,24 @@ public:
 #pragma region Booleans
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	bool bIsSprinting = false;
+	bool bSprinting = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bIsTransADS = false;
+	bool bTransADS = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bIsADS = false;
+	bool bADS = false;
 	
 	bool bFirstDeathCall = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bBatteryPickedUp = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bRevolverEquipped = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bRifleEquipped = false;
 #pragma endregion 
 
 #pragma region SFX

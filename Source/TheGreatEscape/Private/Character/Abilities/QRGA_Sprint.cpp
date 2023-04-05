@@ -27,11 +27,11 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 	//TODO Add FOV Lerp to show sprint
 	//Checks if player is wanting to sprint
-	if (GetPlayerReference()->bIsSprinting)
+	if (GetPlayerReference()->bSprinting)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"), GetPlayerReference()->bIsSprinting ?  "True" : "False"));
 		//Setting the Sprint to false
-		GetPlayerReference()->bIsSprinting = false;
+		GetPlayerReference()->bSprinting = false;
 		//Decreasing max movement speed
 		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - GetPlayerReference()->SprintMod;
 		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
@@ -44,11 +44,11 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			}
 		}
 	}
-	else if(!GetPlayerReference()->bIsSprinting)
+	else if(!GetPlayerReference()->bSprinting)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"),  GetPlayerReference()->bIsSprinting ?  "TrueF" : "FalseF"));
 		//Setting the Sprint to true
-		GetPlayerReference()->bIsSprinting = true;
+		GetPlayerReference()->bSprinting = true;
 		//Increasing max movement speed
 		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  GetPlayerReference()->SprintMod;
 		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
