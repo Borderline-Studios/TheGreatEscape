@@ -162,6 +162,16 @@ void AGASBASECharacter::Tick(float DeltaTime)
 
 }
 
+void AGASBASECharacter::HandleShieldChanged(float Deltavalue, const FGameplayTagContainer& EventTags)
+{
+	//Checks if the abilities exist
+	if(bAbilitiesInitalized)
+	{
+		//Calls UE built-in function ONHealthChanged() 
+		OnShieldChanged(Deltavalue, EventTags); 
+	}	
+}
+
 /**
  * @brief UE built in movement functions
  * @param Val - speed input

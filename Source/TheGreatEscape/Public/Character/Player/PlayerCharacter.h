@@ -75,10 +75,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> CamShake;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX",  meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> QuipSFX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX",  meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> HitSFX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
@@ -124,9 +124,6 @@ public:
 	void DisableVignette();
 
 	void LoadLevel();
-
-
-	
 public:
 	//Constructor
 	APlayerCharacter();
