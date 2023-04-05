@@ -73,43 +73,95 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			}
 			
 			FVector EnemyLocation = Enemy->GetActorLocation();
-			//FVector PlayerLocation = Player->GetActorLocation(); // temp
 
 			FVector TrainLocWithOffset = TrainLocation + Enemy->TrainTargetPointOffset;
 
 			//UE_LOG(LogTemp, Warning, TEXT("TrainTargetPointOffset: %s"), *Enemy->TrainTargetPointOffset.ToString());
 
-			//UE_LOG(LogTemp, Warning, TEXT("TrainTargetPointOffset: %s"), *Enemy->TrainTargetPointOffset.ToString());
-			
-			//FVector PlayerLocWithOffset = PlayerLocation + FVector(0.0f, 0.0f, EvelvationHeight);
-
 			FVector direction = TrainLocWithOffset - EnemyLocation;
 			//FVector direction = PlayerLocWithOffset - EnemyLocation;
 			
-			direction.Normalize();
+//
+			// Get distance to train
+			DistToTrain = direction.Size();
 			
-			// if direction < slowing dist set vel to slower move dist (train speed)
-			// otherwise have 2 radius 1 to slow 1 to stop
-			if (FVector::Dist(TrainLocWithOffset, EnemyLocation) <= StoppingDist) // FIX
+			direction.Normalize();
+//
+			if (Enemy->Time <= MinTime)
 			{
-				//direction.Z *= 2.0f;
-				direction *= 0;
-				//UE_LOG(LogTemp, Warning, TEXT("im an issue"));
+				Enemy->Time = MinTime;
 			}
-			else if (FVector::Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
+			// Calculate speed based on distance to train
+			Speed = DistToTrain / Enemy->Time;
+
+			UE_LOG(LogTemp, Warning, TEXT("timmmmmee %f"), Enemy->Time);
+			//UE_LOG(LogTemp, Warning, TEXT("Speed: %d"), Speed);
+
+			// SET VELOCITY
+			direction *= Speed;
+			// set velocity of enemy
+			Enemy->GetMovementComponent()->Velocity = direction;
+
+			//UE_LOG(LogTemp, Warning, TEXT("dist %f"), DistToTrain);
+//
+			// If within 'stopping' range
+			if (DistToTrain <= StoppingDist)
 			{
-				direction.Z *= 3.0f;
-				direction *= Speed / 1.7f;
+				UE_LOG(LogTemp, Warning, TEXT("STOPP BITCH"));
+				Enemy->Time += Enemy->TimeIncrement;
+			}
+			// If within 'slowing' range, adjust speed based on distance and try to match speed of train
+			else if (DistToTrain <= SlowingDist)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("SLOWWW"));
+				// check if within error range
+				if (DistToTrain <= Enemy->LastDist + ErrorAmount && DistToTrain >= Enemy->LastDist - ErrorAmount)
+				{
+					Enemy->LastDist = DistToTrain;
+					UE_LOG(LogTemp, Warning, TEXT("in the error range"));
+				}
+				else if (DistToTrain < Enemy->LastDist)
+				{
+					Enemy->Time += Enemy->TimeIncrement;
+					UE_LOG(LogTemp, Warning, TEXT("slowing down"));
+				}
+				else if (DistToTrain > Enemy->LastDist)
+				{
+					Enemy->Time -= Enemy->TimeIncrement;
+					UE_LOG(LogTemp, Warning, TEXT("speeding up"));
+				}
 			}
 			else
 			{
-				// multiple direction by speed
-				direction.Z *= 10.0f;
-				direction *= Speed;
+				Enemy->Time -= Enemy->TimeIncrement;
+				//UE_LOG(LogTemp, Warning, TEXT("speeding up not sd"));
 			}
 			
-			// set velocity of enemy
-			Enemy->GetMovementComponent()->Velocity = direction;
+			Enemy->LastDist = DistToTrain;
+
+			
+			
+			 //if direction < slowing dist set vel to slower move dist (train speed)
+			 //otherwise have 2 radius 1 to slow 1 to stop
+			//if (FVector::Dist(TrainLocWithOffset, EnemyLocation) <= StoppingDist) // FIX
+			//{
+			//	//direction.Z *= 2.0f;
+			//	direction *= 0;
+			//	//UE_LOG(LogTemp, Warning, TEXT("im an issue"));
+			//}
+			//else if (FVector::Dist(TrainLocWithOffset, EnemyLocation) <= SlowingDist)
+			//{
+			//	direction.Z *= 3.0f;
+			//	direction *= Speed / 1.7f;
+			//}
+			//else
+			//{
+			//	// multiple direction by speed
+			//	direction.Z *= 10.0f;
+			//	direction *= Speed;
+			//}
+			
+		
 
 			// look at train
 			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Enemy->GetActorLocation(), TrainLocation);

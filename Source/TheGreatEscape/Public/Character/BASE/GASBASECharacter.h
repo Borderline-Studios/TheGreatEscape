@@ -72,6 +72,11 @@ public:
 	void AddStartupGameplayAbilities();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnShieldChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
+
+	virtual void HandleShieldChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
+
 	//UE Movement Functions
 	virtual  void MoveForward(float Val);
 	void MoveRight(float Val);

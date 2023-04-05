@@ -31,6 +31,7 @@ namespace BbKeys
 	TCHAR const * const enemyHealthLow = TEXT("EnemyHealthLow");
 	TCHAR const * const randChance = TEXT("RandChance");
 	TCHAR const * const stationaryHybrid = TEXT("StationaryHybrid");
+	TCHAR const * const playerInMoveRange = TEXT("PlayerInMoveRange");
 }
 
 /**
@@ -49,4 +50,6 @@ namespace Utilities
 	// const array of random points for enemies that attack the train
 	float const RandTrainXPoints[] = {600.0f,400.0f,200.0f,0.0f,-200.0f,-400.0f,-600.0f};
 	int const XPointsLength = 7;
+
+	
 }

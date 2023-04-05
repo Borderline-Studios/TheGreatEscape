@@ -51,7 +51,14 @@ void UBTService_PlayerInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 		// Get player character
 		ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 
-		// Set bool based on if player is in melee range by finding distance between them
-		AIController->GetBlackboard()->SetValueAsBool(BbKeys::playerInMeleeRange, Enemy->GetDistanceTo(Player) <= MeleeRange);
+		if (bMeleeRangeCheck)
+		{
+			// Set bool based on if player is in melee range by finding distance between them
+			AIController->GetBlackboard()->SetValueAsBool(BbKeys::playerInMeleeRange, Enemy->GetDistanceTo(Player) <= MeleeRange);
+		}
+		else
+		{
+			AIController->GetBlackboard()->SetValueAsBool(BbKeys::playerInMoveRange, Enemy->GetDistanceTo(Player) <= MoveRange);
+		}
 	}
 }
