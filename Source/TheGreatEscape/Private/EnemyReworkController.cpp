@@ -23,6 +23,8 @@
 #include "BehaviourTree/Utils.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Hearing.h"
+
 
 // Set up static array
 TStaticArray<UBehaviorTree*, 4> AEnemyReworkController::BehaviorTreeReferences;
@@ -170,6 +172,7 @@ void AEnemyReworkController::OnTargetDetected(AActor* actor, FAIStimulus const s
 	if (character)
 	{
 		GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
+		//UE_LOG(LogTemp, Warning, TEXT("CAN SEE PLAYER"));
 	}
 
 }
@@ -181,20 +184,66 @@ void AEnemyReworkController::SetupPerceptionSystem()
 {
 	// Create and initalises sight config object
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Conifg"));
-	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-	SightConfig->SightRadius = 2000.0f;
-	SightConfig->LoseSightRadius = SightConfig->SightRadius + 500.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 70.0f;
-	SightConfig->SetMaxAge(0.0f);
-	SightConfig->AutoSuccessRangeFromLastSeenLocation = -1.0f;
-	SightConfig->PointOfViewBackwardOffset = 200.0f;
-	SightConfig->NearClippingRadius = 200.0f;
-	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
-	// ADd sight config component to perception component
-	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnTargetDetected);
-	GetPerceptionComponent()->ConfigureSense(*SightConfig);
+	// if sight config exists
+	if (SightConfig)
+	{
+		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+		SightConfig->SightRadius = 2000.0f;
+		SightConfig->LoseSightRadius = SightConfig->SightRadius + 500.0f;
+		SightConfig->PeripheralVisionAngleDegrees = 80.0f;
+		SightConfig->SetMaxAge(0.0f);
+		SightConfig->AutoSuccessRangeFromLastSeenLocation = -1.0f;
+		SightConfig->PointOfViewBackwardOffset = 200.0f;
+		SightConfig->NearClippingRadius = 200.0f;
+		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+		// ADd sight config component to perception component
+		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnTargetDetected);
+		GetPerceptionComponent()->ConfigureSense(*SightConfig);
+	}
+
+	// Create and initalises hearing config object
+	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
+
+	// if hearing config exists
+	if (HearingConfig)
+	{
+		HearingConfig->HearingRange = 2000.0f;
+		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AEnemyReworkController::OnUpdated);
+		GetPerceptionComponent()->ConfigureSense(*HearingConfig);
+	}
+}
+
+void AEnemyReworkController::OnUpdated(TArray<AActor*> const& updatedActors)
+{
+	// loop through all actors that were updated
+	for (int x = 0; x < updatedActors.Num(); ++x)
+	{
+		FActorPerceptionBlueprintInfo info;
+		GetPerceptionComponent()->GetActorsPerception(updatedActors[x], info);
+
+		// check that the last stimuli sensed was hearing
+		for (int y = 0; y < info.LastSensedStimuli.Num(); ++y)
+		{
+			FAIStimulus const stimulus = info.LastSensedStimuli[y];
+			if (stimulus.Tag == AiTags::noiseTag) // check if it was the hearing sense
+			{
+				GetBlackboard()->SetValueAsBool(BbKeys::hasHeardNoise, stimulus.WasSuccessfullySensed());
+				GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, stimulus.StimulusLocation);
+			}
+			else // it was sight perception
+			{
+				//GetBlackboard()->SetValueAsBool(BbKeys::canSeePlayer, stimulus.WasSuccessfullySensed());
+			}
+		}
+		
+	}
 }

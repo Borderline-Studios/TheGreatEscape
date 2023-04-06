@@ -37,11 +37,9 @@ UBTTask_FindTrain::UBTTask_FindTrain(FObjectInitializer const& ObjectInitializer
  */
 EBTNodeResult::Type UBTTask_FindTrain::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Get AI controller
-	const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
-
-	// if not nullptr
-	if (AIController)
+	
+	// Get AI controller & if not nullptr
+	if (const AEnemyReworkController*  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get train
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
