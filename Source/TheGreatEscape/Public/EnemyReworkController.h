@@ -46,7 +46,12 @@ private:
 	// *** Functions *** ///
 	UFUNCTION()
 	void OnTargetDetected(AActor* actor, FAIStimulus const stimulus); // On target detected
+
+	UFUNCTION()
 	void SetupPerceptionSystem(); // Sets up the perception system
+
+	UFUNCTION()
+	void OnUpdated(TArray<AActor*> const& updatedActors);
 
 	// *** Variables *** ///
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
@@ -55,6 +60,8 @@ private:
 	class UBlackboardComponent* Blackboard; // Blackboard
 
 	class UAISenseConfig_Sight* SightConfig; // Sight sense config
+	
+	class UAISenseConfig_Hearing* HearingConfig; // Hearing sense config
 	
 	
 };

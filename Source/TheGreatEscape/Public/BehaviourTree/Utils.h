@@ -32,6 +32,15 @@ namespace BbKeys
 	TCHAR const * const randChance = TEXT("RandChance");
 	TCHAR const * const stationaryHybrid = TEXT("StationaryHybrid");
 	TCHAR const * const playerInMoveRange = TEXT("PlayerInMoveRange");
+	TCHAR const * const hasHeardNoise = TEXT("HasHeardNoise");
+}
+
+/**
+ * @brief Keeps track of AI tags used for perception
+ */
+namespace AiTags
+{
+	TCHAR const * const noiseTag = TEXT("Noise");
 }
 
 /**

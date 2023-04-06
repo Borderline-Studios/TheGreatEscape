@@ -20,6 +20,8 @@
 #include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "BehaviourTree/Utils.h"
+#include "Perception/AISense_Hearing.h"
 
 
 UQRGA_Shoot::UQRGA_Shoot()
@@ -128,6 +130,7 @@ void UQRGA_Shoot::ActivateEffects()
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
 	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), CamCompLocation, 1.0f, GetPlayerReference(), 0.0f, AiTags::noiseTag); // Let AI know sound was played
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
