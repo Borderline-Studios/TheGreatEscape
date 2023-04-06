@@ -1,23 +1,11 @@
-// Bachelor of Software Engineering
-// Media Design School
-// Auckland
-// New Zealand
-// 
-// (c) 2022 Media Design School
-//
-// File Name   : QRGA_Shoot.h
-// Description : The header file for the shoot ability
-// Author      : Borderline Studios - Jacob MacLean
-// Mail        : Jacob.MacLean@mds.ac.nz
+// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
 
 #pragma once
-//Includes
+
 #include "CoreMinimal.h"
 #include "QRGameplayAbility.h"
 #include "NiagaraFunctionLibrary.h"
-
-#include "QRGA_Reload.h"
-#include "QRGA_Shoot.generated.h"
+#include "QRGA_RevolverShoot.generated.h"
 
 //Forward Declearations
 class APlayerCharacter;
@@ -25,13 +13,12 @@ class APlayerCharacter;
  * 
  */
 UCLASS()
-class THEGREATESCAPE_API UQRGA_Shoot : public UQRGameplayAbility
+class THEGREATESCAPE_API UQRGA_RevolverShoot : public UQRGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	//Constructor	
-	UQRGA_Shoot();
+	UQRGA_RevolverShoot();
 
 	//GAS functions for adding Logic to abilities
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -47,10 +34,6 @@ public:
 	//Declearation of effect to apply when enemy is hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
-
-	//Animation Montage declearation
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Animation)
-	UAnimMontage* AM_Fire;
 
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
@@ -90,5 +73,5 @@ public:
 
 	UFUNCTION()
 	void HitTagCheck(FHitResult HitInput);
+	
 };
-

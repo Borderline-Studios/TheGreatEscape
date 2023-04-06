@@ -1,11 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
 
 
-#include "Character/Abilities/QRGA_Shoot.h"
+#include "Character/Abilities/Revolver/QRGA_RevolverShoot.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "BlueprintNodeHelpers.h"
-#include "ShaderCompiler.h"
-//#include "../../../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/string"
 #include "EnemyRework.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
@@ -14,25 +11,24 @@
 #include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Character/QRCharacter.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "BehaviourTree/Utils.h"
-#include "Perception/AISense_Hearing.h"
 
-
-UQRGA_Shoot::UQRGA_Shoot()
+UQRGA_RevolverShoot::UQRGA_RevolverShoot()
 {
 	//sets the input key via the Enum
 	AbilityInputID = EGASAbilityInputID::Shoot;
 }
 
-void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UQRGA_RevolverShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
@@ -55,7 +51,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 			//Jumps the animontage to the fire section
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
 			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
 		}
 		else
 		{
@@ -63,7 +59,7 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 			//Jumps the animontage to the fire section
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
 		}
 
 		ActivateEffects();
@@ -81,21 +77,26 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 }
 
-
-void UQRGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UQRGA_RevolverShoot::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
 	GetPlayerReference()->bTransADS = false;
 	if (ShootForceEndTimer.IsValid())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ShootForceEndTimer);
 	}
-
 }
 
-APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
+bool UQRGA_RevolverShoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+APlayerCharacter* UQRGA_RevolverShoot::GetPlayerReference()
 {
 	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
@@ -103,7 +104,8 @@ APlayerCharacter* UQRGA_Shoot::GetPlayerReference()
 	return CharacterRef;
 }
 
-void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+void UQRGA_RevolverShoot::CallEndAbility(FName NotifyName,
+	const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
 	//Checks if the Nofity name
 	if (NotifyName == FName("FinishedFire"))
@@ -117,20 +119,19 @@ void UQRGA_Shoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPa
 	}
 }
 
-void UQRGA_Shoot::ForceEndAbility()
+void UQRGA_RevolverShoot::ForceEndAbility()
 {
 	//Ends ability is the animation is done
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UQRGA_Shoot::ActivateEffects()
+void UQRGA_RevolverShoot::ActivateEffects()
 {
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
 	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
-	UAISense_Hearing::ReportNoiseEvent(GetWorld(), CamCompLocation, 1.0f, GetPlayerReference(), 0.0f, AiTags::noiseTag); // Let AI know sound was played
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
@@ -148,10 +149,8 @@ void UQRGA_Shoot::ActivateEffects()
 	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
 }
 
-FHitResult UQRGA_Shoot::HitScan(float MaxDistance)
+FHitResult UQRGA_RevolverShoot::HitScan(float MaxDistance)
 {
-	//Varaibles for Hitscan check
-	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	//Ignore self
 	Params.AddIgnoredActor(GetPlayerReference());
@@ -162,7 +161,7 @@ FHitResult UQRGA_Shoot::HitScan(float MaxDistance)
 	return HitScanResult;
 }
 
-void UQRGA_Shoot::HitEnemyCheck(FHitResult HitInput)
+void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
@@ -228,7 +227,7 @@ void UQRGA_Shoot::HitEnemyCheck(FHitResult HitInput)
 	}
 }
 
-void UQRGA_Shoot::HitTagCheck(FHitResult HitInput)
+void UQRGA_RevolverShoot::HitTagCheck(FHitResult HitInput)
 {
 	if(HitInput.IsValidBlockingHit())
 	{
@@ -249,11 +248,4 @@ void UQRGA_Shoot::HitTagCheck(FHitResult HitInput)
 			}
 		}
 	}
-}
-
-bool UQRGA_Shoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                     const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                     const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }

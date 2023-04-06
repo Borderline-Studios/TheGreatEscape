@@ -1,24 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
 
 
-#include "Character/Abilities/QRGA_Reload.h"
-
+#include "Character/Abilities/Revolver/QRGA_RevolverReload.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 
-UQRGA_Reload::UQRGA_Reload()
+UQRGA_RevolverReload::UQRGA_RevolverReload()
 {
 	//Setting the input key via the enum
 	AbilityInputID = EGASAbilityInputID::Reload;
 }
 
-void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UQRGA_RevolverReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	
-	GetWorld()->GetTimerManager().SetTimer(ReloadForceEndTimer,this,&UQRGA_Reload::ForceEndAbility, 2.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(ReloadForceEndTimer,this,&UQRGA_RevolverReload::ForceEndAbility, 2.0f, true);
 	
 	if (!GetPlayerReference()->bADS)
 	{
@@ -38,7 +37,7 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			//Jumps animontage ot the reload section to player reload animation
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
 			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
 
 			//Plays reload sound at location
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
@@ -66,7 +65,7 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			//Jumps animontage ot the reload section to player reload animation
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
 			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
 
 		
 			//Plays reload sound at location
@@ -76,33 +75,25 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		}
 	
 	}
-	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UQRGA_Reload::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UQRGA_RevolverReload::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
 	GetWorld()->GetTimerManager().ClearTimer(ReloadForceEndTimer);
 }
 
-bool UQRGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UQRGA_RevolverReload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
-APlayerCharacter* UQRGA_Reload::GetPlayerReference()
-{
-	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
-	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
-	//Returns Character Ref
-	return CharacterRef;
-}
-
-void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+void UQRGA_RevolverReload::CallEndAbility(FName NotifyName,
+	const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
 	//Checks the Nofity name
 	if (NotifyName == FName("FinishedReload"))
@@ -115,10 +106,17 @@ void UQRGA_Reload::CallEndAbility(FName NotifyName, const FBranchingPointNotifyP
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	
 }
 
-void UQRGA_Reload::ForceEndAbility()
+void UQRGA_RevolverReload::ForceEndAbility()
 {
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
+APlayerCharacter* UQRGA_RevolverReload::GetPlayerReference()
+{
+	//Casts to the player and assigns the pointer reference to the CharacterRef Varaible
+	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	//Returns Character Ref
+	return CharacterRef;
 }
