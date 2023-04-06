@@ -196,11 +196,11 @@ void ATrainEngine::BeginPlay()
 
 	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
 	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -470.0f, 360.0f));
+	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -600.0f, 420.0f));
 
 	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	TrainControls->SetActorRelativeLocation(FVector(-120.0f, -600.0f, 270.0f));
+	TrainControls->SetActorRelativeLocation(FVector(-150.0f, -740.0f, 240.0f));
 
 	UpdateObjectiveText();
 
@@ -219,6 +219,13 @@ void ATrainEngine::BeginPlay()
 			EnableTrainMovementTimer();
 		}
 	}
+}
+
+void ATrainEngine::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorldTimerManager().ClearAllTimersForObject(this);
 }
 
 // Called every frame

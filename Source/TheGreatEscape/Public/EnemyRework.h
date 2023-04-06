@@ -52,14 +52,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector TrainTargetPointOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bAttacking = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float ElevationHeight = 700.0f; // height above train the enemy will float
+	float ElevationHeight = 600.0f; // height above train the enemy will float
 
 	// Used Jacob's method to implement SFX
 	int SFXTiggerNum = FMath::RandRange(1,4);
