@@ -53,7 +53,7 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 
 		// Get nav system and generate random location near the player
 		UNavigationSystemV1* const NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-		if (NavSystem->GetRandomReachablePointInRadius(PlayerLocation, SearchRadius, Location, nullptr))
+		if (NavSystem->GetRandomReachablePointInRadius(Enemy->GetActorLocation(), SearchRadius, Location, nullptr))
 		{
 			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, Location.Location);
 		}

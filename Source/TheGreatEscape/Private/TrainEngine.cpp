@@ -13,6 +13,8 @@
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Character/Player/PlayerCharacter.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -225,7 +227,8 @@ void ATrainEngine::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	GetWorldTimerManager().ClearAllTimersForObject(this);
+	GetWorldTimerManager().ClearTimer(PlayerDetectionTimerHandle);
+
 }
 
 // Called every frame
@@ -340,7 +343,8 @@ void ATrainEngine::BeginEngineOverlap(
 	if (!bPlayerOnTrain && OtherActor == PlayerRef)
 	{
 		EnableTrainMovementTimer();
-		// PlayerRef->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+		// PlayerRef->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
 
@@ -361,11 +365,14 @@ bool ATrainEngine::CheckTrainForPlayer()
 	for (int i = 0; i < PlayerDetectionBoxes.Num(); i++)
 	{
 		TArray<AActor*> OverlappingActors;
-		PlayerDetectionBoxes[i]->GetOverlappingActors(OverlappingActors, APlayerCharacter::StaticClass());
+		PlayerDetectionBoxes[i]->GetOverlappingActors(OverlappingActors, ACharacter::StaticClass());
 
-		if (!OverlappingActors.IsEmpty())
+		for (int j = 0; j < OverlappingActors.Num(); j++)
 		{
-			return true;
+			if (Cast<APawn>(OverlappingActors[j])->IsPlayerControlled())
+			{
+				return true;
+			}
 		}
 	}
 	
@@ -377,7 +384,6 @@ void ATrainEngine::EnableTrainMovementTimer()
 	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
 	{
 		bPlayerOnTrain = true;
-
 	}, 0.75f, false);
 }
 
@@ -388,7 +394,8 @@ void ATrainEngine::DisableTrainMovementTimer()
 		if (!CheckTrainForPlayer())
 		{
 			bPlayerOnTrain = false;
+
+			// PlayerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		}
-		
 	}, 2.0f, true);
 }
