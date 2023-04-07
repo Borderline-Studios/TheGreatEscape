@@ -107,7 +107,7 @@ public:
 	int RandomInt = 0; // can remove no issue
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	int MaxShotRange = 20000;
+	int MaxShotRange = 5000;
 
 	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))

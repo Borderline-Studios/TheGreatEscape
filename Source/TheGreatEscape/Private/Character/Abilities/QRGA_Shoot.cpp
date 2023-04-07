@@ -158,7 +158,9 @@ FHitResult UQRGA_Shoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X + FMath::RandRange(-20.0f, +20.0f),CamCompLocation.Y + FMath::RandRange(-20.0f, +20.0f), CamCompLocation.Z);
+	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,true, 1.0f , 0, 5.0f );
 	return HitScanResult;
 }
 

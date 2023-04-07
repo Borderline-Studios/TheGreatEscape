@@ -157,7 +157,9 @@ FHitResult UQRGA_RevolverShoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X + FMath::FRandRange(-250.0f, +250.0f),CamCompLocation.Y + FMath::FRandRange(-250.0f, +250.0f), CamCompLocation.Z + FMath::FRandRange(-250.0f, +250.0f));
+	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
 }
 
