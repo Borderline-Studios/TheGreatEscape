@@ -2,15 +2,10 @@
 
 
 #include "Character/Abilities/QRGA_Sprint.h"
-
-#include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Character/Abilities/Data.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-
-//TODO Clean Up print screens
-//TODO Try and make the sprint hold instead of toggle
 
 //Constructor
 UQRGA_Sprint::UQRGA_Sprint()
@@ -25,46 +20,16 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	//TODO Add FOV Lerp to show sprint
-	//Checks if player is wanting to sprint
-	if (GetPlayerReference()->bSprinting)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"), GetPlayerReference()->bIsSprinting ?  "True" : "False"));
-		//Setting the Sprint to false
-		GetPlayerReference()->bSprinting = false;
-		//Decreasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - GetPlayerReference()->SprintMod;
-		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
-		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != RunFOV)
-		{
-			while(FOV != RunFOV)
-			{
-				GetPlayerReference()->GetFirstPersonCameraComponent()->SetFieldOfView(FOV - 1);
-				FOV--;
-			}
-		}
-	}
-	else if(!GetPlayerReference()->bSprinting)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ToggleSprint = %hs"),  GetPlayerReference()->bIsSprinting ?  "TrueF" : "FalseF"));
-		//Setting the Sprint to true
-		GetPlayerReference()->bSprinting = true;
-		//Increasing max movement speed
-		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed +  GetPlayerReference()->SprintMod;
-		int FOV = GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView;
-		if(GetPlayerReference()->GetFirstPersonCameraComponent()->FieldOfView != SprintFOV)
-		{
-			while(FOV != SprintFOV)
-			{
-				GetPlayerReference()->GetFirstPersonCameraComponent()->SetFieldOfView(FOV + 1);
-				FOV++;
-			}
-		}
+	InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
+	InputRelaese->OnRelease.AddDynamic(this, &UQRGA_Sprint::ReleasedInput);
+	InputRelaese->ReadyForActivation();
 
-	}
+	float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
 
-	//Ends ability
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+	//Added dynamic notify and triggers function if notify is received
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Sprint::CallEndAbility);
 }
 
 void UQRGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -90,4 +55,29 @@ APlayerCharacter* UQRGA_Sprint::GetPlayerReference()
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	//Returns Character Ref
 	return CharacterRef;
+}
+
+void UQRGA_Sprint::ReleasedInput(float TimePressed)
+{
+	float RunSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 150.0f;
+
+	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	//Added dynamic notify and triggers function if notify is received
+	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Sprint::CallEndAbility);
+	
+
+}
+
+void UQRGA_Sprint::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if (NotifyName == FName("FinishedGather"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	if (NotifyName == FName("Gather"))
+	{
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("SprintHold");
+	}
 }
