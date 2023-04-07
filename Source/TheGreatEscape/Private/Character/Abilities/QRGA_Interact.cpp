@@ -67,6 +67,12 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(HealingEffectClass);
 
 					GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
+					bool Found;
+					float Health = GetPlayerReferance()->GetAbilitySystemComponent()->GetGameplayAttributeValue(GetPlayerReferance()->Attributes->GetHealthAttribute(), Found);
+					if (Health > 30.0f && Found)
+					{
+						GetPlayerReferance()->DisableVignette();
+					}
 				}
 				
 				//Checks if its a pick upable

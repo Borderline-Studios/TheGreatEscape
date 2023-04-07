@@ -31,4 +31,6 @@ enum class EGASAbilityInputID : uint8
 	MeleeEnemyAttack,
 	Sprint,
 	Gather,
+	EquipRevolver,
+	EquipRifle,
 };
