@@ -15,10 +15,17 @@ void UQRGA_Fanning::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	if (GetPlayerReference()->PlayerAmmo > 0)
+	{
+		ShotsRemaining = GetPlayerReference()->PlayerAmmo;
 
-	ShotsRemaining = GetPlayerReference()->PlayerAmmo;
+		GetWorld()->GetTimerManager().SetTimer(FanHandle,this ,&UQRGA_Fanning::FanLoop, 0.2f, true);
+	}
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 
-	GetWorld()->GetTimerManager().SetTimer(FanHandle,this ,&UQRGA_Fanning::FanLoop, 0.2f, true);
 }
 
 void UQRGA_Fanning::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

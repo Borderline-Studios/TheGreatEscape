@@ -19,11 +19,9 @@ void UQRGA_Crouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
 	InputRelaese->OnRelease.AddDynamic(this, &UQRGA_Crouch::ReleasedInput);
 	InputRelaese->ReadyForActivation();
-	float CrouchRadSize = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	float CrouchHalfHeight = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()/2;
-	
-	GetPlayerReferance()->GetCapsuleComponent()->SetCapsuleSize(CrouchRadSize, CrouchHalfHeight); 
-	
+	float HalfHeight = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	float CrouchHalfHeight = HalfHeight/2;
+	GetPlayerReferance()->LerpLocation(HalfHeight, CrouchHalfHeight, false);
 }
 
 void UQRGA_Crouch::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -49,10 +47,9 @@ APlayerCharacter* UQRGA_Crouch::GetPlayerReferance()
 
 void UQRGA_Crouch::ReleasedInput(float TimePressed)
 {
-	float CrouchRadSize = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleRadius();
-	float CrouchHalfHeight = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()*2;
-	
-	GetPlayerReferance()->GetCapsuleComponent()->SetCapsuleSize(CrouchRadSize, CrouchHalfHeight);
+	float HalfHeight = GetPlayerReferance()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	float StandingHalfHeight = HalfHeight * 2;
+	GetPlayerReferance()->LerpLocation(HalfHeight, StandingHalfHeight, false);
 	
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }

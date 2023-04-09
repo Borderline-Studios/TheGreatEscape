@@ -25,7 +25,7 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	InputRelaese->ReadyForActivation();
 
 	float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
-
+	GetPlayerReference()->LerpFOV(90.0f, 110.0f, false);
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
 	//Added dynamic notify and triggers function if notify is received
@@ -60,8 +60,9 @@ APlayerCharacter* UQRGA_Sprint::GetPlayerReference()
 void UQRGA_Sprint::ReleasedInput(float TimePressed)
 {
 	float RunSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed - 150.0f;
-
+	GetPlayerReference()->LerpFOV(90.0f, 110.0f, true);
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+
 
 	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
 	//Added dynamic notify and triggers function if notify is received

@@ -14,12 +14,25 @@ void UQRGA_RevolverEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	if (!GetPlayerReference()->bRevolverEquipped)
+	{
+		/*UnEquip the rifle here
+		 *
+		 *
+		 **/
 
-	GetPlayerReference()->bRevolverEquipped = true;
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate", GetPlayerReference()->ShootMontage);
+		//Move this to new function
+		GetPlayerReference()->bRevolverEquipped = true;
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate", GetPlayerReference()->ShootMontage);
 
-	//Checks for an Animnotify then triggers function
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+		//Checks for an Animnotify then triggers function
+		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+	}
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+
 }
 
 void UQRGA_RevolverEquip::EndAbility(const FGameplayAbilitySpecHandle Handle,

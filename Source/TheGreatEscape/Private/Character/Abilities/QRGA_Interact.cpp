@@ -74,6 +74,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 						GetPlayerReferance()->DisableVignette();
 					}
 				}
+				else if (HitResult.GetActor()->ActorHasTag("Rifle"))
+				{
+					HitResult.GetActor()->Destroy();
+					GetPlayerReferance()->bRiflePickedUp = true;
+				}
 				
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)

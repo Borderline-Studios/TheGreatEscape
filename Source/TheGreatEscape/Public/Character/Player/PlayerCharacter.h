@@ -75,6 +75,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRifleEquipped = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bRiflePickedUp = false;
 #pragma endregion 
 
 #pragma region SFX
@@ -128,6 +131,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DisableVignette();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void LerpFOV(float From, float To, bool Reverse);
+
+	//Lerp Location for Crouch
+	UFUNCTION(BlueprintImplementableEvent)
+	void LerpLocation(float From, float To, bool Reverse);
 
 	void LoadLevel();
 public:
