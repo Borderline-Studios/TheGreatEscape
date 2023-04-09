@@ -35,6 +35,14 @@ AEnemyRework::AEnemyRework()
 	SetUpStimulus(); // call function to set up stimulus
 
 	CalcRandomAttackPos(); // Find new target point
+
+	// load death effect
+
+	if (!DeathEffectReference)
+	{
+		DeathEffects = TSoftClassPtr<AEnemyRework>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_EnemyReworkDeath.BP_EnemyReworkDeath_C'")));
+		DeathEffectReference = DeathEffects.LoadSynchronous();
+	}
 	
 }
 
@@ -109,12 +117,15 @@ void AEnemyRework::CalcRandomAttackPos()
 
 	// set new vector
 	TrainTargetPointOffset = FVector(newXVal, yOffsetFromTrain, ElevationHeight);
-	UE_LOG(LogTemp, Warning, TEXT("Target location for train: %s"), *TrainTargetPointOffset.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Target location for train: %s"), *TrainTargetPointOffset.ToString());
 }
 
 void AEnemyRework::PostDeathProcess()
 {
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSFX, this->GetActorLocation(), this->GetActorRotation(), 0.5, FMath::RandRange(0.7, 1.4));
+	// Spawn in body parts
+	FVector location =  this->GetActorLocation();
+	AActor* deathEffect = Cast<AActor>(GetWorld()->SpawnActor(DeathEffectReference, &location));
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(0.5,0.5,0.5), true);
 
 }
