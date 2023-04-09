@@ -44,7 +44,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				//Checks if its the Train controls
 				if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 				{
-					ControlsRef->UpdateEngineSpeed();
+					// ControlsRef->UpdateEngineSpeed();
 					// play sound
 					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->LeverSFX[FMath::RandRange(0,2)], ControlsRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
 				}

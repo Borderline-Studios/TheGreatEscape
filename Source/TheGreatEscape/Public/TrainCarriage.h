@@ -12,7 +12,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+
+#include "Train/TrainCarParent.h"
+
 #include "TrainCarriage.generated.h"
 
 class APlayerCharacter;
@@ -21,7 +23,7 @@ class UBoxComponent;
 class USplineComponent;
 class ALight;
 UCLASS()
-class THEGREATESCAPE_API ATrainCarriage : public AActor
+class THEGREATESCAPE_API ATrainCarriage : public ATrainCarParent
 {
 	GENERATED_BODY()
 	
@@ -29,11 +31,12 @@ public:
 	// Sets default values for this actor's properties
 	ATrainCarriage();
 
-	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, TSubclassOf<AActor> CarriageMeshClass, USplineComponent* NewSplineRef, ATrainEngine* NewEngineRef);
+	void InitialiseFromEngine(int CarriageNum, int InitDistanceFromFront, UStaticMesh* AssignedMesh, USplineComponent* NewSplineRef, ATrainEngine* NewEngineRef);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:	
 	// Called every frame
@@ -49,39 +52,23 @@ public:
 private:
 	// VARIABLES
 	int CarriageNumber;
-	
-	UPROPERTY(EditInstanceOnly)
-	USceneComponent* SceneRoot;
-
-	AActor* CarriageMeshActor = nullptr;
-
-	// inline static TStaticArray<int, 4> CarriageDistances = TStaticArray<int, 4>(EInPlace::InPlace, 1800);
-	float DistanceFromFront = 0;
-
-	USplineComponent* SplineRef;
-
+	float DistanceFromFront = 0;	
 	TStaticArray<ALight*, 2> LightRefs;
-
 	static ATrainEngine* EngineRef;
 
-	// Player Detection
-	UBoxComponent* PlayerDetectionComp;
-
 	// FUNCTIONS
-	UFUNCTION(meta=(AllowPrivateAccess = "true"))
-	void BeginCarriageOverlap(
+	virtual void BeginCarOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
-		const FHitResult &SweepResult
-	);
-	UFUNCTION(meta=(AllowPrivateAccess = "true"))
-	void EndCarriageOverlap(
+		const FHitResult& SweepResult
+		) override;
+	virtual void EndCarOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
-	);
+		) override;
 };
