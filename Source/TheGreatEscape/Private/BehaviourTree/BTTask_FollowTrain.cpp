@@ -94,7 +94,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			// Calculate speed based on distance to train
 			Speed = DistToTrain / Enemy->Time;
 
-			UE_LOG(LogTemp, Warning, TEXT("timmmmmee %f"), Enemy->Time);
+			//UE_LOG(LogTemp, Warning, TEXT("timmmmmee %f"), Enemy->Time);
 			//UE_LOG(LogTemp, Warning, TEXT("Speed: %d"), Speed);
 
 			// SET VELOCITY
@@ -107,7 +107,7 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 			// If within 'stopping' range
 			if (DistToTrain <= StoppingDist)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("STOPP BITCH"));
+				//UE_LOG(LogTemp, Warning, TEXT("STOPP BITCH"));
 				Enemy->Time += Enemy->TimeIncrement;
 			}
 			// If within 'slowing' range, adjust speed based on distance and try to match speed of train
@@ -118,17 +118,17 @@ EBTNodeResult::Type UBTTask_FollowTrain::ExecuteTask(UBehaviorTreeComponent& Own
 				if (DistToTrain <= Enemy->LastDist + ErrorAmount && DistToTrain >= Enemy->LastDist - ErrorAmount)
 				{
 					Enemy->LastDist = DistToTrain;
-					UE_LOG(LogTemp, Warning, TEXT("in the error range"));
+					//UE_LOG(LogTemp, Warning, TEXT("in the error range"));
 				}
 				else if (DistToTrain < Enemy->LastDist)
 				{
 					Enemy->Time += Enemy->TimeIncrement;
-					UE_LOG(LogTemp, Warning, TEXT("slowing down"));
+					//UE_LOG(LogTemp, Warning, TEXT("slowing down"));
 				}
 				else if (DistToTrain > Enemy->LastDist)
 				{
 					Enemy->Time -= Enemy->TimeIncrement;
-					UE_LOG(LogTemp, Warning, TEXT("speeding up"));
+					//UE_LOG(LogTemp, Warning, TEXT("speeding up"));
 				}
 			}
 			else

@@ -64,6 +64,10 @@ public:
 	// Used Jacob's method to implement SFX
 	int SFXTiggerNum = FMath::RandRange(1,4);
 
+	TSoftClassPtr<AActor> DeathEffects; // weak pointer to the death effect
+
+	UClass* DeathEffectReference; // Array of enemy references
+
 
 protected:
 	// *** Functions *** ///
