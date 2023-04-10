@@ -183,13 +183,19 @@ void UQRGA_Shoot::HitEnemyCheck(FHitResult HitInput)
 				{
 	
 				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+				else if (AEnemyReworkHybrid* enemyHybrid = Cast<AEnemyReworkHybrid>(Enemy))
 				{
+					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+					// audio
 					// hybrid tins
+					enemyHybrid->PostHitProcess();
+
 				}
 				else
 				{
 					Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+
+					
 	
 					// ToDo Maybe put this into function as I (Toni) copied it
 					if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && Enemy->SFXTiggerNum == 0)

@@ -13,6 +13,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyRework.h"
 #include "HybridEnemyProjectile.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BTTask_HybridAttack.generated.h"
@@ -35,11 +36,14 @@ public:
 	UFUNCTION() 
 	void SetCanAttack(); // reset attack bool & timer
 
-	// *** Variables *** ///
+	void ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 	
+	// *** Variables *** ///
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSoftClassPtr<AHybridEnemyProjectile> ProjectileClass; // weak pointer to class type we want
 
+	FActorSpawnParameters SpawnParams;
+	
 	UClass* LoadedBpProjectile; // Class to spawn
 	
 	FTimerHandle AttackDelayHandle; // Timer handle to handle the attack delay
@@ -47,5 +51,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float AttackDelay = 3.0f; // Delay between attacks
+
+	UStaticMeshComponent* LeftTurret;
+	UStaticMeshComponent* RightTurret;
+
+	bool bDelegateBound = false;
 
 };

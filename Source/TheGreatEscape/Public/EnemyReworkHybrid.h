@@ -14,6 +14,7 @@
 
 #include "CoreMinimal.h"
 #include "EnemyRework.h"
+#include "HybridEnemyProjectile.h"
 #include "EnemyReworkHybrid.generated.h"
 
 /**
@@ -29,11 +30,19 @@ public:
 	AEnemyReworkHybrid(); // constructor
 	virtual void PossessedBy(AController* NewController) override; // possessed by
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
+	virtual void PostDeathProcess() override;
+	virtual void PostHitProcess() override;
+
+	
 
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
 	UStaticMeshComponent* LeftTurretRef; // ref to turret
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
-	UStaticMeshComponent* RightTurretRef; // ref to turret 
+	UStaticMeshComponent* RightTurretRef; // ref to turret
+
+	TSoftClassPtr<AActor> DeathEffectsHybrid; // weak pointer to the death effect
+	UClass* DeathEffectReferenceHyrbid; // Array of enemy references
+	
 };

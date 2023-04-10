@@ -23,11 +23,14 @@ UBTTask_HybridAttack::UBTTask_HybridAttack(FObjectInitializer const& ObjectIniti
 {
   NodeName = TEXT("Hybrid Attack");
 
- // Find class we want
- ProjectileClass = TSoftClassPtr<AHybridEnemyProjectile>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_HybridProjectile.BP_HybridProjectile_C'")));
+  if (!LoadedBpProjectile)
+  {
+   // Find class we want
+   ProjectileClass = TSoftClassPtr<AHybridEnemyProjectile>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_HybridProjectile.BP_HybridProjectile_C'")));
 
- // Load the class we want onto class pointer
- LoadedBpProjectile = ProjectileClass.LoadSynchronous();
+   // Load the class we want onto class pointer
+   LoadedBpProjectile = ProjectileClass.LoadSynchronous();
+  }
 }
 
 /**
@@ -53,26 +56,23 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     Enemy->bAttacking = true;
 
     // Spawn Parameters
-    FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = Enemy;
-    
-    if (ProjectileClass)
-    {
-     // SPawn projectile
-     AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, Enemy->LeftTurretRef->GetSocketLocation("ShootLocationL"), Enemy->LeftTurretRef->GetSocketRotation("ShootLocationL"), SpawnParams);
 
-     if (!Projectile)
-     {
-      UE_LOG(LogTemp, Warning, TEXT("Projectile class not found"));
-     }
-     else
-     {
-      UE_LOG(LogTemp, Warning, TEXT("SPAWNED PROJ"))
-     }
+    LeftTurret = Enemy->LeftTurretRef;
+    RightTurret = Enemy->RightTurretRef;
+    
+    // SET ANIM CALL
+     Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
+
+    if (!bDelegateBound)
+    {
+     //Enemy->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UBTTask_HybridAttack::ShootGun);
+     bDelegateBound = true;
     }
    
      bCanAttack = false;
-     Enemy->bAttacking = false; 
+     Enemy->bAttacking = false;
+    
      GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_HybridAttack::SetCanAttack, AttackDelay, false);
    }
   // Finish task
@@ -97,4 +97,44 @@ void UBTTask_HybridAttack::SetCanAttack()
 
  // clear timer
  GetWorld()->GetTimerManager().ClearTimer(AttackDelayHandle);
+}
+
+void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+ 
+ if (LoadedBpProjectile)
+ {
+		
+		
+  if (NotifyName == FName("LeftTurretShot"))
+  {
+   // SPawn projectile
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurret->GetSocketLocation("ShootLocationL"), LeftTurret->GetSocketRotation("ShootLocationL"), SpawnParams);
+
+   if (!Projectile)
+   {
+    UE_LOG(LogTemp, Warning, TEXT("Projectile class not found LEFT"));
+   }
+   else
+   {
+    UE_LOG(LogTemp, Warning, TEXT("SPAWNED PROJ"))
+   }
+  }
+  if (NotifyName == FName("RightTurretShot"))
+  {
+   // SPawn projectile
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurret->GetSocketLocation("ShootLocationR"), RightTurret->GetSocketRotation("ShootLocationL"), SpawnParams);
+
+   if (!Projectile)
+   {
+    UE_LOG(LogTemp, Warning, TEXT("Projectile class not found RIGHT"));
+   }
+   else
+   {
+    UE_LOG(LogTemp, Warning, TEXT("SPAWNED PROJ"))
+   }
+  }
+			
+		
+ }
 }
