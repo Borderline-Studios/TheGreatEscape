@@ -47,6 +47,10 @@ EBTNodeResult::Type UBTTask_FindPlayerLocation::ExecuteTask(UBehaviorTreeCompone
 	{
 		AIController->GetBlackboard()->SetValueAsBool(BbKeys::stationaryHybrid, false);
 	}
+	else
+    {
+    	AIController->GetBlackboard()->SetValueAsBool(BbKeys::stationaryHybrid, true);
+    }
 
 	// Check AIController not null
 	if (AIController)

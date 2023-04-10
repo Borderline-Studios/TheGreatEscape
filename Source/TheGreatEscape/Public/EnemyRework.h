@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bAttacking = false;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+	bool bCloseUpEnemy = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	float ElevationHeight = 600.0f; // height above train the enemy will float
 

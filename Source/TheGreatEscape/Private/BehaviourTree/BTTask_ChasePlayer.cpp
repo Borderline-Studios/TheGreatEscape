@@ -11,7 +11,10 @@
 // Mail        : toni.natta@mds.ac.nz
 
 #include "BehaviourTree/BTTask_ChasePlayer.h"
+
+#include "EnemyReworkHybrid.h"
 #include "EnemyReworkController.h"
+#include "EnemyReworkHybrid.h"
 #include "TrainEngine.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -26,6 +29,8 @@
 UBTTask_ChasePlayer::UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = TEXT("Chase Target");
+
+	defaultStoppingDistance = StoppingDistance;
 }
 
 /**
@@ -47,7 +52,7 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 		FVector const TargetLocation = AIController->GetBlackboard()->GetValueAsVector(BbKeys::targetLocation);
 
 		// Get Enemy
-		APawn* const Enemy = AIController->GetPawn();
+		AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn());
 
 		FVector distance = TargetLocation - Enemy->GetActorLocation();
 
@@ -60,6 +65,19 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 
 		// get train engine
 		ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
+
+		if (AEnemyReworkHybrid* hybrid = Cast<AEnemyReworkHybrid>(Enemy))
+		{
+			if (Enemy->bCloseUpEnemy)
+			{
+				StoppingDistance = 200.0f;
+			}
+			else
+			{
+				StoppingDistance = defaultStoppingDistance;
+			}
+		}
+		
 		
 		if (distance.Dist(TargetLocation, Enemy->GetActorLocation()) >= StoppingDistance)
 		{
@@ -67,6 +85,7 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 			{
 				// move to player location
 				UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
+				AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
 			}
 			else
 			{

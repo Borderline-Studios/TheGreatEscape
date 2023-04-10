@@ -33,9 +33,10 @@ public:
 protected:
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
-	float StoppingDistance = 300.0f;
+	float StoppingDistance = 600.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowProtectedAccess = "true"))
 	bool bChasePlayer = true;
 
+	float defaultStoppingDistance = 0.0f;
 };
