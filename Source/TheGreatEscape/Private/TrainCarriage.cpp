@@ -32,16 +32,10 @@ ATrainCarriage::ATrainCarriage()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	RootComponent = SceneRoot;
-
-	PlayerDetectionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector"));
-	PlayerDetectionComp->SetupAttachment(RootComponent);
-	PlayerDetectionComp->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
-	PlayerDetectionComp->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	// PlayerDetectionComp->SetHiddenInGame(false);
-	PlayerDetectionComp->OnComponentBeginOverlap.AddDynamic(this, &ATrainCarriage::BeginCarriageOverlap);
-	PlayerDetectionComp->OnComponentEndOverlap.AddDynamic(this, &ATrainCarriage::EndCarriageOverlap);
+	PlayerDetectionComponent->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
+	PlayerDetectionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	PlayerDetectionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATrainCarriage::BeginCarOverlap);
+	PlayerDetectionComponent->OnComponentEndOverlap.AddDynamic(this, &ATrainCarriage::EndCarOverlap);
 }
 
 /**
@@ -51,14 +45,14 @@ ATrainCarriage::ATrainCarriage()
  * Must be called when initialising each carriage
  * @param CarriageNum The number of carriage this is relative to the engine.
  * @param InitDistanceFromFront The distance behind the engine that the carriage is set to be
- * @param CarriageMeshClass The train carriage mesh being assigned to this carriage.
+ * @param AssignedMesh The train carriage mesh being assigned to this carriage.
  * @param NewSplineRef The reference to the spline that the engine is using to travel
- * @param NewEngineRef
+ * @param NewEngineRef A reference to the engine
  */
 void ATrainCarriage::InitialiseFromEngine(
 	int CarriageNum,
 	int InitDistanceFromFront,
-	const TSubclassOf<AActor> CarriageMeshClass,
+	UStaticMesh* AssignedMesh,
 	USplineComponent* NewSplineRef,
 	ATrainEngine* NewEngineRef)
 {
@@ -66,10 +60,9 @@ void ATrainCarriage::InitialiseFromEngine(
 
 	DistanceFromFront = InitDistanceFromFront;
 
-	if (CarriageMeshClass)
+	if (AssignedMesh)
 	{
-		CarriageMeshActor = GetWorld()->SpawnActor<AActor>(CarriageMeshClass);
-		CarriageMeshActor->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		CarMesh->SetStaticMesh(AssignedMesh);
 	}
 
 	if (!SplineRef)
@@ -118,11 +111,15 @@ void ATrainCarriage::BeginPlay()
 	
 }
 
+void ATrainCarriage::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
 // Called every frame
 void ATrainCarriage::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 /**
@@ -131,7 +128,7 @@ void ATrainCarriage::Tick(float DeltaTime)
  * This is called typically inside the tick function of the engine.
  * @param EngineSplineDist The engine's current distance along the spline
  */
-void ATrainCarriage::ProcessMovement(float EngineSplineDist)
+void ATrainCarriage::ProcessMovement(const float EngineSplineDist)
 {
 	float CarriageDist = EngineSplineDist - DistanceFromFront;
 
@@ -151,30 +148,25 @@ void ATrainCarriage::ProcessMovement(float EngineSplineDist)
 
 UBoxComponent* ATrainCarriage::GetPlayerDetectionComponent() const
 {
-	return PlayerDetectionComp;
+	return PlayerDetectionComponent;
 }
 
-void ATrainCarriage::BeginCarriageOverlap(UPrimitiveComponent* OverlappedComponent,
+void ATrainCarriage::BeginCarOverlap(
+	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (EngineRef && OtherActor == EngineRef->PlayerRef)
-	{
-		EngineRef->BeginEngineOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-	}
+	Super::BeginCarOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
 
-void ATrainCarriage::EndCarriageOverlap(
+void ATrainCarriage::EndCarOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (EngineRef && OtherActor == EngineRef->PlayerRef)
-	{
-		EngineRef->EndEngineOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-	}
+	Super::EndCarOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 }

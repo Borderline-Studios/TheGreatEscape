@@ -11,8 +11,7 @@
 // Mail        :	jake.laird@mds.ac.nz
 
 #include "SplineTrack.h"
-
-#include "Kismet/GameplayStatics.h"
+#include "TrainEngine.h"
 #include "Kismet/KismetMathLibrary.h"
 
 /**

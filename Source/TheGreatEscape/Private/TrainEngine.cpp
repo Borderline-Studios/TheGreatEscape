@@ -9,17 +9,14 @@
 // Mail        :
 
 #include "TrainEngine.h"
+
+// Forward Declarations
 #include "SplineTrack.h"
+
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
-#include "Character/Player/PlayerCharacter.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
-
-// Static Variable Declarations
-TStaticArray<UStaticMesh*, 4> ATrainEngine::StaticMeshRefs;
 
 // Sets default values
 ATrainEngine::ATrainEngine()
@@ -27,58 +24,10 @@ ATrainEngine::ATrainEngine()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	RootComponent = SceneRoot;
-
-	PlayerDetectionBoxes.Push(CreateDefaultSubobject<UBoxComponent>(TEXT("Player Detector")));
-	PlayerDetectionBoxes[0]->SetupAttachment(RootComponent);
-	PlayerDetectionBoxes[0]->InitBoxExtent(FVector(250.0f, 1500.0f, 350.0f));
-	PlayerDetectionBoxes[0]->SetRelativeLocation(FVector(0.0f, 100.0f, 350.0f));
-	// PlayerDetectionBoxes[0]->SetHiddenInGame(true);
-	PlayerDetectionBoxes[0]->SetVisibility(false);
-	PlayerDetectionBoxes[0]->OnComponentBeginOverlap.AddDynamic(this, &ATrainEngine::BeginEngineOverlap);
-	PlayerDetectionBoxes[0]->OnComponentEndOverlap.AddDynamic(this, &ATrainEngine::EndEngineOverlap);
-
-    for (int i = 0; i < 4; i++)
-    {
-	    if (!StaticMeshRefs[i])
-	    {
-	    	UStaticMesh* Mesh = nullptr;
-
-	        if (i == 0)				// Passenger
-	        {
-	        	const ConstructorHelpers::FObjectFinder<UStaticMesh> FirstCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Base_V2.Train_Car_Base_V2'"));
-	        	Mesh = FirstCarMesh.Object;
-	        }
-	    	else if (i == 1)		// Flatbed
-	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> SecondCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_FlatBed_V2.Train_Car_FlatBed_V2'"));
-	    		Mesh = SecondCarMesh.Object;
-	        }
-	    	else if (i == 2)		// Weapons
-	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> ThirdCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Weapons_V2.Train_Car_Weapons_V2'"));
-	    		Mesh = ThirdCarMesh.Object;
-	        }
-	    	else if (i == 3)		// Living Quarters
-	        {
-	    		const ConstructorHelpers::FObjectFinder<UStaticMesh> FourthCarMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Train_V2/Train_Car_Windows_V2.Train_Car_Windows_V2'"));
-	    		Mesh = FourthCarMesh.Object;
-	        }
-
-	    	StaticMeshRefs[i] = Mesh;
-	    }
-    }
-
-	// Comment out once the BP functionality has been added
-    if (!EngineMeshClass)
-    {
-	    static ConstructorHelpers::FClassFinder<AActor> File(TEXT("/Game/Production/Train/Art/BP_Train_Engine"));
-	    if (File.Class)
-	    {
-		    EngineMeshClass = File.Class;
-	    }
-    }
+	PlayerDetectionComponent->InitBoxExtent(FVector(250.0f, 1500.0f, 350.0f));
+	PlayerDetectionComponent->SetRelativeLocation(FVector(0.0f, 100.0f, 350.0f));
+	PlayerDetectionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATrainEngine::BeginCarOverlap);
+	PlayerDetectionComponent->OnComponentEndOverlap.AddDynamic(this, &ATrainEngine::EndCarOverlap);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UQRAbilitySystemComponent>(TEXT("Ability System"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -89,14 +38,14 @@ ATrainEngine::ATrainEngine()
 
 #pragma region GAS
 void ATrainEngine::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags,
-	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser)
+	ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamageCauser)
 {
-	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamagerCauser);
+	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
 
-void ATrainEngine::HandleHealthChanged(float Deltavalue, const FGameplayTagContainer& EventTags)
+void ATrainEngine::HandleHealthChanged(float DeltaValue, const FGameplayTagContainer& EventTags)
 {
-	OnHealthChanged(Deltavalue, EventTags);
+	OnHealthChanged(DeltaValue, EventTags);
 }
 
 void ATrainEngine::AddStartupGameplayAbilities()
@@ -141,53 +90,39 @@ UAbilitySystemComponent* ATrainEngine::GetAbilitySystemComponent() const
 void ATrainEngine::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (EngineMeshClass)
-	{
-		EngineMeshActor = GetWorld()->SpawnActor<AActor>(EngineMeshClass);
-		EngineMeshActor->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-	}
+	
+	SetCurrentWorld(GetWorld());
 
 	// Initialising variables
 	TimeSinceStart = 0.0f;
-	bHasStartedMoving = false;
+	bStartedMoving = false;
 	SplineLength = -5;
 
 	// Checking for a spline reference and connecting if one is detected
-	if (!TrackActorRef) {}
-	else if (USplineComponent* TempSplineRef = Cast<USplineComponent>(TrackActorRef->GetRootComponent()); TempSplineRef != nullptr)
+	if (!WorldSplineRef) {}
+	else if (USplineComponent* TempSplineRef = Cast<USplineComponent>(WorldSplineRef->GetSpline()); TempSplineRef != nullptr)
 	{
-		TrackSplineRef = TempSplineRef;
+		SplineRef = TempSplineRef;
 	}
 
-	if (TrackSplineRef)
+	if (SplineRef)
 	{
 		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("Train Spline Ref populated"));
-		SplineLength = TrackSplineRef->GetSplineLength();
+		SplineLength = SplineRef->GetSplineLength();
 
-		SetActorLocation(TrackSplineRef->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
-		SetActorRotation(TrackSplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
+		SetActorLocation(SplineRef->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
+		SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 	}
-	
-	FTimerHandle TrainStartHandle;
-	GetWorld()->GetTimerManager().SetTimer(TrainStartHandle, [&]()
-	{
-		if (TrackSplineRef)
-		{
-			bHasStartedMoving = true;
-			bTrainMoving = true;
-		}
-	}, (StartDelayTime >= 1) ? StartDelayTime : 0.1f, false);
+
+	bStartedMoving = true;
+	bTrainMoving = true;
 	
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
 	for (int i = 0; i < CarriageCount; i++)
 	{
 		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
-		const int CarriageClassCount = CarriageMeshClasses.IsEmpty() ? 1 : CarriageMeshClasses.Num();
-		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, CarriageMeshClasses[i % CarriageClassCount], TrackSplineRef, this);
+		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i % StaticMeshRefs.Num()], SplineRef, this);
 		
-		PlayerDetectionBoxes.Push(TempRef->GetPlayerDetectionComponent());
-
 		CarriageRefs.Push(TempRef);
 	}
 	
@@ -211,24 +146,22 @@ void ATrainEngine::BeginPlay()
 		PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass()));
 	}
 
-	TArray<AActor*> OverlappingActors;
-	PlayerDetectionBoxes[0]->GetOverlappingActors(OverlappingActors);
-
-	for (int i = 0; i < OverlappingActors.Num(); ++i)
+	if (EngineMesh)
 	{
-		if (OverlappingActors[i] == PlayerRef)
-		{
-			EnableTrainMovementTimer();
-		}
+		CarMesh->SetStaticMesh(EngineMesh);
 	}
+
+	EnableTrainMovementTimer();
 }
 
 void ATrainEngine::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+}
 
-	GetWorldTimerManager().ClearTimer(PlayerDetectionTimerHandle);
-
+void ATrainEngine::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 // Called every frame
@@ -237,7 +170,7 @@ void ATrainEngine::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Standard Tick Operation
-    if (bHasStartedMoving && bPlayerOnTrain && !bObjectiveLock)
+    if (bStartedMoving && GetPlayerOnTrain() && !bObjectiveLocked)
     {
     	if (bTrainMoving)
     	{
@@ -248,8 +181,8 @@ void ATrainEngine::Tick(float DeltaTime)
 
     	const float CurrentSplineProgress = FMath::Lerp(0, SplineLength, TimerTrack);
 
-    	const FVector CurrentSplineVector = TrackSplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World);
-    	FRotator CurrentSplineRotator = TrackSplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f);
+    	const FVector CurrentSplineVector = SplineRef->GetLocationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World);
+    	FRotator CurrentSplineRotator = SplineRef->GetRotationAtDistanceAlongSpline(CurrentSplineProgress, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f);
     	CurrentSplineRotator.Pitch = 0;
     	
     	SetActorLocation(CurrentSplineVector);
@@ -272,33 +205,9 @@ void ATrainEngine::Tick(float DeltaTime)
  */
 void ATrainEngine::ToggleTrainStop()
 {
-	if (!bObjectiveLock)
+	if (!bObjectiveLocked)
 	{
 		bTrainMoving = !bTrainMoving;
-	}
-}
-
-/**
- * @brief
- * This function does nothing
- * @param NewSpeed 
- */
-void ATrainEngine::SetTrainSpeed(ETrainSpeed NewSpeed)
-{
-	switch (NewSpeed)
-	{
-	case ETrainSpeed::Slow:
-		TrainSpeedModifier = 0.5f;
-		break;
-	case ETrainSpeed::Standard:
-		TrainSpeedModifier = 1.0f;
-		break;
-	case ETrainSpeed::Fast:
-		TrainSpeedModifier = 2.0f;
-		break;
-	default:
-		TrainSpeedModifier = 1.0f;
-		break;
 	}
 }
 
@@ -312,9 +221,9 @@ void ATrainEngine::UpdateObjectiveText(FString NewText)
 	CurrentObjectiveMessage = NewText;
 }
 
-UBoxComponent* ATrainEngine::GetEngineDetectionComponent()
+UBoxComponent* ATrainEngine::GetEngineDetectionComponent() const
 {
-	return PlayerDetectionBoxes[0];
+	return PlayerDetectionComponent;
 }
 
 ATrainCarriage* ATrainEngine::GetLastCarriage()
@@ -324,15 +233,15 @@ ATrainCarriage* ATrainEngine::GetLastCarriage()
 
 void ATrainEngine::DisableMovement()
 {
-	bObjectiveLock = true;
+	bObjectiveLocked = true;
 }
 
 void ATrainEngine::EnableMovement()
 {
-	bObjectiveLock = false;
+	bObjectiveLocked = false;
 }
 
-void ATrainEngine::BeginEngineOverlap(
+void ATrainEngine::BeginCarOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -340,62 +249,14 @@ void ATrainEngine::BeginEngineOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (!bPlayerOnTrain && OtherActor == PlayerRef)
-	{
-		EnableTrainMovementTimer();
-
-		// PlayerRef->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-	}
+	Super::BeginCarOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
 
-void ATrainEngine::EndEngineOverlap(
+void ATrainEngine::EndCarOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (bPlayerOnTrain && OtherActor == PlayerRef)
-	{
-		DisableTrainMovementTimer();
-	}
-}
-
-bool ATrainEngine::CheckTrainForPlayer()
-{
-	for (int i = 0; i < PlayerDetectionBoxes.Num(); i++)
-	{
-		TArray<AActor*> OverlappingActors;
-		PlayerDetectionBoxes[i]->GetOverlappingActors(OverlappingActors, ACharacter::StaticClass());
-
-		for (int j = 0; j < OverlappingActors.Num(); j++)
-		{
-			if (Cast<APawn>(OverlappingActors[j])->IsPlayerControlled())
-			{
-				return true;
-			}
-		}
-	}
-	
-	return false;
-}
-
-void ATrainEngine::EnableTrainMovementTimer()
-{
-	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
-	{
-		bPlayerOnTrain = true;
-	}, 0.75f, false);
-}
-
-void ATrainEngine::DisableTrainMovementTimer()
-{
-	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
-	{
-		if (!CheckTrainForPlayer())
-		{
-			bPlayerOnTrain = false;
-
-			// PlayerRef->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		}
-	}, 2.0f, true);
+	Super::EndCarOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 }
