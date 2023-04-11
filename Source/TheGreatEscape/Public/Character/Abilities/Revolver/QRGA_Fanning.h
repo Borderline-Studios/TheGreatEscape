@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "QRGameplayAbility.h"
+#include "NiagaraFunctionLibrary.h"
 #include "QRGA_Fanning.generated.h"
 
 class APlayerCharacter;
@@ -22,7 +23,6 @@ public:
 
 	//Gets a Reference to the player
 	APlayerCharacter* GetPlayerReference();
-
 	
 	FTimerHandle FanHandle;
 
@@ -33,10 +33,42 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
 	TArray<USoundBase*> ShootSFX;
 
+	//Declearation of effect to apply when enemy is hit
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+
+	//Sound effect declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
+	TArray<USoundBase*> EmptySFX;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* HitVFX;
+	
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* MuzzleVFX;
+
 	//Function that animation nofity will call 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
 	int ShotsRemaining = 0;
+
+	//Activates the SFX and VFX
+	UFUNCTION()
+	void ActivateEffects();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateTraceParticle(FHitResult HitResult);
+
+	UFUNCTION()
+	FHitResult HitScan(float MaxDistance);
+
+	UFUNCTION()
+	void HitEnemyCheck(FHitResult HitInput);
+
+	UFUNCTION()
+	void HitTagCheck(FHitResult HitInput);
 	
 };

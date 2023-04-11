@@ -62,8 +62,10 @@ void UQRGA_RevolverShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
 		}
 
-		ActivateEffects();
+	
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+		ActivateTraceParticle(HitResult);
+		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
 		{
 			HitEnemyCheck(HitResult);
@@ -125,7 +127,7 @@ void UQRGA_RevolverShoot::ForceEndAbility()
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
-void UQRGA_RevolverShoot::ActivateEffects()
+void UQRGA_RevolverShoot::ActivateEffects(FHitResult HitInput)
 {
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
@@ -137,7 +139,8 @@ void UQRGA_RevolverShoot::ActivateEffects()
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
 	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->MuzzleSphere, FName(GetPlayerReference()->MuzzleSphere->GetName()),
 													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
-
+	
+	
 	float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
 	float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
 	float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
@@ -157,7 +160,7 @@ FHitResult UQRGA_RevolverShoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X + FMath::FRandRange(-250.0f, +250.0f),CamCompLocation.Y + FMath::FRandRange(-250.0f, +250.0f), CamCompLocation.Z + FMath::FRandRange(-250.0f, +250.0f));
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-250, 250), CamCompLocation.Z + FMath::FRandRange(-250, 250));
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
