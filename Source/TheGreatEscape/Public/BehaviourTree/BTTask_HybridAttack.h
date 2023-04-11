@@ -36,6 +36,7 @@ public:
 	UFUNCTION() 
 	void SetCanAttack(); // reset attack bool & timer
 
+	UFUNCTION()
 	void ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 	
 	// *** Variables *** ///
@@ -52,8 +53,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float AttackDelay = 3.0f; // Delay between attacks
 
-	UStaticMeshComponent* LeftTurret;
-	UStaticMeshComponent* RightTurret;
+	FTransform LeftTurret;
+	FTransform RightTurret;
 
 	bool bDelegateBound = false;
 

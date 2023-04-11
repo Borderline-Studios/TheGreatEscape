@@ -36,11 +36,11 @@ public:
 	
 
 	// *** Variables *** ///
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
-	UStaticMeshComponent* LeftTurretRef; // ref to turret
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Socket")
+	FTransform LeftTurretRef; // ref to turret
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
-	UStaticMeshComponent* RightTurretRef; // ref to turret
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Socket")
+	FTransform RightTurretRef; // ref to turret
 
 	TSoftClassPtr<AActor> DeathEffectsHybrid; // weak pointer to the death effect
 	UClass* DeathEffectReferenceHyrbid; // Array of enemy references

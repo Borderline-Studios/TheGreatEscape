@@ -184,7 +184,10 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				}
 				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
 				{
+					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+					// audio
 					// hybrid tins
+					enemyHybrid->PostHitProcess();
 				}
 				else
 				{

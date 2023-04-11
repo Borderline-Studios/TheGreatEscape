@@ -14,6 +14,7 @@
 
 #include "EnemyReworkController.h"
 #include "EnemyReworkHybrid.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 /**
  * @brief constructor, name the node
@@ -63,12 +64,9 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     
     // SET ANIM CALL
      Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
-
-    if (!bDelegateBound)
-    {
-     //Enemy->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UBTTask_HybridAttack::ShootGun);
-     bDelegateBound = true;
-    }
+   
+     Enemy->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UBTTask_HybridAttack::ShootGun);
+    
    
      bCanAttack = false;
      Enemy->bAttacking = false;
@@ -109,7 +107,7 @@ void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotif
   if (NotifyName == FName("LeftTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurret->GetSocketLocation("ShootLocationL"), LeftTurret->GetSocketRotation("ShootLocationL"), SpawnParams);
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurret.GetLocation(), LeftTurret.GetRotation().Rotator(), SpawnParams);
 
    if (!Projectile)
    {
@@ -123,7 +121,7 @@ void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotif
   if (NotifyName == FName("RightTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurret->GetSocketLocation("ShootLocationR"), RightTurret->GetSocketRotation("ShootLocationL"), SpawnParams);
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurret.GetLocation(), RightTurret.GetRotation().Rotator(), SpawnParams);
 
    if (!Projectile)
    {

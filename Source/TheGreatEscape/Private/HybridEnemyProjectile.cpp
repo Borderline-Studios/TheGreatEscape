@@ -117,6 +117,7 @@ void AHybridEnemyProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Ot
 			
 			FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
 			ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), ASC);
+			otherActor->PostHitProcess();
 			UE_LOG(LogTemp, Warning, TEXT("Player dmg proj"));
 		}
 	}
