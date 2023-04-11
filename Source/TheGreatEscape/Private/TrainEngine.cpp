@@ -150,6 +150,8 @@ void ATrainEngine::BeginPlay()
 	{
 		CarMesh->SetStaticMesh(EngineMesh);
 	}
+
+	EnableTrainMovementTimer();
 }
 
 void ATrainEngine::EndPlay(const EEndPlayReason::Type EndPlayReason)

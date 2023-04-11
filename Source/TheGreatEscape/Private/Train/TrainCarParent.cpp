@@ -155,7 +155,10 @@ void ATrainCarParent::EnableTrainMovementTimer() const
 {
 	GetWorldTimerManager().SetTimer(PlayerDetectionTimerHandle, [&]()
 	{
-		bPlayerOnTrain = true;
+		if (CheckTrainForPlayer())
+		{
+			bPlayerOnTrain = true;
+		}
 	}, 0.75f, false);
 }
 
