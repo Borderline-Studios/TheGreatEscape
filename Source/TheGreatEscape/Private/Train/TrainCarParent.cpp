@@ -48,9 +48,10 @@ void ATrainCarParent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 
 	// FINAL (MUST BE LAST)
+	PlayerRef = nullptr;
 	bPlayerOnTrain = false;
 	bClearedStaticTimers = false;
-	UWorld* CurrentWorldRef = nullptr;
+	CurrentWorldRef = nullptr;
 }
 
 void ATrainCarParent::PostInitializeComponents()
