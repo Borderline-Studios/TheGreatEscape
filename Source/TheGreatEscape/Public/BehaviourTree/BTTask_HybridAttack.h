@@ -53,8 +53,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float AttackDelay = 3.0f; // Delay between attacks
 
-	FTransform LeftTurret;
-	FTransform RightTurret;
+	FVector LeftTurretLoc;
+	FVector RightTurretLoc;
+
+	FRotator LeftTurretRot;
+	FRotator RightTurretRot;
 
 	bool bDelegateBound = false;
 

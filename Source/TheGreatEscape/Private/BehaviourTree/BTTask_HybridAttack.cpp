@@ -59,8 +59,11 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     // Spawn Parameters
     SpawnParams.Owner = Enemy;
 
-    LeftTurret = Enemy->LeftTurretRef;
-    RightTurret = Enemy->RightTurretRef;
+    LeftTurretLoc = Enemy->GetMesh()->GetSocketLocation("L_WristSocket");
+    RightTurretLoc = Enemy->GetMesh()->GetSocketLocation("R_WristSocket");
+
+    LeftTurretRot = FRotator(Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, 90.0f);
+    RightTurretRot = FRotator(Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, 90.0f);
     
     // SET ANIM CALL
      Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
@@ -107,7 +110,7 @@ void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotif
   if (NotifyName == FName("LeftTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurret.GetLocation(), LeftTurret.GetRotation().Rotator(), SpawnParams);
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRot, SpawnParams);
 
    if (!Projectile)
    {
@@ -121,7 +124,7 @@ void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotif
   if (NotifyName == FName("RightTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurret.GetLocation(), RightTurret.GetRotation().Rotator(), SpawnParams);
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
 
    if (!Projectile)
    {

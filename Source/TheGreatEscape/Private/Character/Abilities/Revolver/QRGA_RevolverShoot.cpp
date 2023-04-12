@@ -187,7 +187,7 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
 					// audio
 					// hybrid tins
-					enemyHybrid->PostHitProcess();
+					Enemy->PostHitProcess();
 				}
 				else
 				{
