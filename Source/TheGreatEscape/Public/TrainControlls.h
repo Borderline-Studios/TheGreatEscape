@@ -34,9 +34,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void UpdateEngineSpeed();
+	// void UpdateEngineSpeed();
 
-	ETrainSpeed ControlSetting = ETrainSpeed::Standard;
+	// ETrainSpeed ControlSetting = ETrainSpeed::Standard;
 
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* ControlHandle;

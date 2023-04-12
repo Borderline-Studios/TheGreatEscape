@@ -14,9 +14,10 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
-#include "TrainEngine.h"
 #include "GameFramework/Actor.h"
 #include "SplineTrack.generated.h"
+
+class ATrainEngine;
 
 UCLASS()
 class THEGREATESCAPE_API ASplineTrack : public AActor

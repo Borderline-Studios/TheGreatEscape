@@ -20,7 +20,7 @@
 ATrainControlls::ATrainControlls()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	if (!EngineRef)
 	{
@@ -59,64 +59,64 @@ void ATrainControlls::Tick(float DeltaTime)
 
 }
 
-void ATrainControlls::UpdateEngineSpeed()
-{
-	switch (ControlSetting)
-	{
-	default:
-	case ETrainSpeed::Slow:
-		ControlSetting = ETrainSpeed::Standard;
-		break;
-	case ETrainSpeed::Standard:
-		ControlSetting = ETrainSpeed::Fast;
-		break;
-	case ETrainSpeed::Fast:
-		ControlSetting = ETrainSpeed::Slow;
-		break;
-	}
-
-	EngineRef->SetTrainSpeed(ControlSetting);
-
-	UpdateControls();
-}
+// void ATrainControlls::UpdateEngineSpeed()
+// {
+// 	switch (ControlSetting)
+// 	{
+// 	default:
+// 	case ETrainSpeed::Slow:
+// 		ControlSetting = ETrainSpeed::Standard;
+// 		break;
+// 	case ETrainSpeed::Standard:
+// 		ControlSetting = ETrainSpeed::Fast;
+// 		break;
+// 	case ETrainSpeed::Fast:
+// 		ControlSetting = ETrainSpeed::Slow;
+// 		break;
+// 	}
+//
+// 	EngineRef->SetTrainSpeed(ControlSetting);
+//
+// 	UpdateControls();
+// }
 
 /**
-	 * @brief Update the train control rotation based on the setting
-	 * @param ControlSetting The Setting you wish to change to
-	 */
-void ATrainControlls::UpdateControls()
-{
-	CurrentRotation = ControlHandle->GetRelativeRotation();
-	// float RotateValue;
-	
-	// Rotate the mesh based on the setting
-	switch (ControlSetting)
-	{
-	case ETrainSpeed::Slow:
-		{
-			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, -45.0f));
-			
-			// RotateValue = -50.0f;
-			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
-		}
-		break;
-	case ETrainSpeed::Standard:
-		{
-			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-
-			// RotateValue = 0.0f;
-			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
-		}
-		break;
-	case ETrainSpeed::Fast:
-		{
-			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 45.0f));
-			
-			// RotateValue = 50.0f;
-			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
-		}
-		break;
-	default: ;
-	}
-}
+* @brief Update the train control rotation based on the setting
+* @param ControlSetting The Setting you wish to change to
+*/
+// void ATrainControlls::UpdateControls()
+// {
+// 	CurrentRotation = ControlHandle->GetRelativeRotation();
+// 	// float RotateValue;
+// 	
+// 	// Rotate the mesh based on the setting
+// 	switch (ControlSetting)
+// 	{
+// 	case ETrainSpeed::Slow:
+// 		{
+// 			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, -45.0f));
+// 			
+// 			// RotateValue = -50.0f;
+// 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
+// 		}
+// 		break;
+// 	case ETrainSpeed::Standard:
+// 		{
+// 			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+//
+// 			// RotateValue = 0.0f;
+// 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
+// 		}
+// 		break;
+// 	case ETrainSpeed::Fast:
+// 		{
+// 			ControlHandle->SetRelativeRotation(FRotator(0.0f, 0.0f, 45.0f));
+// 			
+// 			// RotateValue = 50.0f;
+// 			// ControlHandle->SetRelativeRotation(FMath::Lerp(FQuat(CurrentRotation), FQuat(FRotator(RotateValue, 0.0f, 0.0f)), 0.01f));
+// 		}
+// 		break;
+// 	default: ;
+// 	}
+// }
 

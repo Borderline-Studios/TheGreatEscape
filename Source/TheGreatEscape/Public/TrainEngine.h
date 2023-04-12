@@ -11,8 +11,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SplineComponent.h"
-#include "GameFramework/Actor.h"
+
+#include "Train/TrainCarParent.h"
 #include "TrainCarriage.h"
 
 #include "AbilitySystemInterface.h"
@@ -24,21 +24,13 @@
 
 class ATrainControlls;
 class ATrainStopButton;
+class ASplineTrack;
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
 class UQRAttributeSet;
 
-// Enums
-UENUM(BlueprintType)
-enum class ETrainSpeed : uint8
-{
-    Slow,
-    Standard,
-    Fast
-};
-
 UCLASS()
-class THEGREATESCAPE_API ATrainEngine : public AActor
+class THEGREATESCAPE_API ATrainEngine : public ATrainCarParent
 {
     GENERATED_BODY()
     
@@ -66,16 +58,16 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     void OnDamaged(float DamageAmount, const FHitResult& HitInfo,
                    const struct FGameplayTagContainer& DamageTags,
-                   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+                   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamageCauser);
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
 
     virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo,
                    const struct FGameplayTagContainer& DamageTags,
-                   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamagerCauser);
+                   ATheGreatEscapeCharacter* InstigatorCharacter, AActor* DamageCauser);
 
-    virtual void HandleHealthChanged(float Deltavalue, const struct FGameplayTagContainer& EventTags);
+    virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
     
     void AddStartupGameplayAbilities();
     
@@ -85,34 +77,29 @@ public:
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
-
+    //
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void PostInitializeComponents() override;
 
 public:    
     // Called every frame
     virtual void Tick(float DeltaTime) override;
-
-    // Custom section containing everything added beyond the default Unreal code
-    friend class ATrainCarriage;
     
     // Track Changing
     UPROPERTY(BlueprintReadWrite)
     bool bShouldChangeTracks = true;
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
-    AActor* TrackActorRef;
+    ASplineTrack* WorldSplineRef;
 
     // Functions
     UFUNCTION(BlueprintCallable)
     void ToggleTrainStop();
-
-    UFUNCTION(BlueprintCallable)
-    void SetTrainSpeed(ETrainSpeed NewSpeed);
-
+    
     // Updating the Objective Message
     UFUNCTION(BlueprintCallable)
     void UpdateObjectiveText(FString NewText = "");
     
-    UBoxComponent* GetEngineDetectionComponent();
+    UBoxComponent* GetEngineDetectionComponent() const;
     ATrainCarriage* GetLastCarriage();
 
     void DisableMovement();
@@ -120,40 +107,29 @@ public:
 
 protected:
 
-
 private:    
     // Variables
     // Obtaining the spline for the train to follow
-    USplineComponent* TrackSplineRef;
-    float SplineLength;
     UPROPERTY(EditInstanceOnly)
     int TimeToComplete = 30;
-    UPROPERTY(EditInstanceOnly)
-    int StartDelayTime;
+    float SplineLength;
     
     float TimeSinceStart;
-    bool bHasStartedMoving = false;
+    bool bStartedMoving = false;
     bool bTrainMoving = true;
     float TrainSpeedModifier = 1.0f;
     
-    // Keeping track of the entire track (pun intended)
-    TArray<class ASplineTrack*> CompleteTrackRefs;
-
-    // Holds the Shapes used to show the engine
-    USceneComponent* SceneRoot;
-
-    UPROPERTY(EditDefaultsOnly, meta=(DisplayThumbnail = "true"))
-    TSubclassOf<AActor> EngineMeshClass;
-    AActor* EngineMeshActor;
-    
+    // Extra controls that have additional functionality
     ATrainStopButton* EngineStopButton;
     ATrainControlls* TrainControls;
 
+    //
+    UPROPERTY(EditDefaultsOnly)
+    UStaticMesh* EngineMesh = nullptr;
+
     // CARRIAGE HANDLING SECTION
-    static TStaticArray<UStaticMesh*, 4> StaticMeshRefs;
-    
-    UPROPERTY(EditDefaultsOnly, meta=(DisplayThumbnail = "true"))
-    TArray<TSubclassOf<AActor>> CarriageMeshClasses;
+    UPROPERTY(EditDefaultsOnly)
+    TArray<UStaticMesh*> StaticMeshRefs;
     
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
@@ -167,33 +143,21 @@ private:
     UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
     FString CurrentObjectiveMessage = TEXT("");
     // Objective Movement Prevention
-    bool bObjectiveLock = false;
-
-    // Player Detection
-    TArray<UBoxComponent*> PlayerDetectionBoxes;
-    APlayerCharacter* PlayerRef;
-    bool bPlayerOnTrain = false;
-    FTimerHandle PlayerDetectionTimerHandle;
-
+    bool bObjectiveLocked = false;
+    
     // Functions
-    UFUNCTION()
-    void BeginEngineOverlap(
+    virtual void BeginCarOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex,
         bool bFromSweep,
-        const FHitResult &SweepResult
-    );
-    UFUNCTION()
-    void EndEngineOverlap(
+        const FHitResult& SweepResult
+        ) override;
+    virtual void EndCarOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex
-    );
-
-    bool CheckTrainForPlayer();
-    void EnableTrainMovementTimer();
-    void DisableTrainMovementTimer();
+        ) override;
 };
