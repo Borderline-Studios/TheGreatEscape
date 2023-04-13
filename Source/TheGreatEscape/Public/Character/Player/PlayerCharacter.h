@@ -121,6 +121,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int PlayerAmmo = 6;
 
+	//Player Ammo variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
+	int RifleAmmo = 30;
+	//Player Ammo variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
+	int CurrentRifleAmmo = RifleAmmo;
+	
+
 	int VoiceLineTiggerNum = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
