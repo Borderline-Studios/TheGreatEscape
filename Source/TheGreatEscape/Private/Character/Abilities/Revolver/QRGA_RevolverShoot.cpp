@@ -8,6 +8,7 @@
 #include "EnemyReworkHybrid.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "BehaviourTree/Utils.h"
 #include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,6 +17,7 @@
 #include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Perception/AISense_Hearing.h"
 
 UQRGA_RevolverShoot::UQRGA_RevolverShoot()
 {
@@ -132,12 +134,14 @@ void UQRGA_RevolverShoot::ActivateEffects()
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
 	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), CamCompLocation, 1.0f, GetPlayerReference(), 0.0f, AiTags::noiseTag); // Let AI know sound was played
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
 	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->MuzzleSphere, FName(GetPlayerReference()->MuzzleSphere->GetName()),
 													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
 
+	
 	float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
 	float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
 	float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
