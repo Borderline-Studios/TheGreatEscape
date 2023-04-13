@@ -57,6 +57,9 @@ public:
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
+	UFUNCTION()
+	void EndFanning();
+
 	int ShotsRemaining = 0;
 
 	//Activates the SFX and VFX

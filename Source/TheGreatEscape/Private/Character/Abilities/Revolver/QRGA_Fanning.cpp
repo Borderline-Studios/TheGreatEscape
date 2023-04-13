@@ -23,19 +23,10 @@ void UQRGA_Fanning::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if (GetPlayerReference()->PlayerAmmo > 0)
-	{
-		ShotsRemaining = GetPlayerReference()->PlayerAmmo;
-
-		FanLoop();
-
-		//GetWorld()->GetTimerManager().SetTimer(FanHandle,this ,&UQRGA_Fanning::FanLoop, 0.15f, true);
-	}
-	else
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-
+	
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FanActivate");
+	//Added dynamic notify and triggers function if notify is received
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);
 }
 
 void UQRGA_Fanning::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -82,27 +73,47 @@ void UQRGA_Fanning::FanLoop()
 		//Here HitTagCheck
 		HitTagCheck(HitResult);
 	}
-	if (ShotsRemaining == 0)
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
 }
 
 void UQRGA_Fanning::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
+	if (NotifyName == FName("FanActiFinished"))
+	{
+		if (GetPlayerReference()->PlayerAmmo > 0)
+		{
+			ShotsRemaining = GetPlayerReference()->PlayerAmmo;
+
+			FanLoop();
+		}
+		else
+		{
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
+	}
 	//Checks if the Nofity name
 	if (NotifyName == FName("AnimFinished"))
 	{
 		if(ShotsRemaining <= 0)
 		{
-			//Ends ability is the animation is done
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			EndFanning();
 		}
 		else if(ShotsRemaining > 0)
 		{
 			FanLoop();
 		}
 	}
+	if (NotifyName == FName("FanDeactiFinished"))
+	{
+		//Ends ability is the animation is done
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+}
+
+void UQRGA_Fanning::EndFanning()
+{
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FanDeactivate");
+	//Added dynamic notify and triggers function if notify is received
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);	
 }
 
 void UQRGA_Fanning::ActivateEffects()
