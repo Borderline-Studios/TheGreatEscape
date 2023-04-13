@@ -83,9 +83,24 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
 		{
 			if (bChasePlayer)
 			{
-				// move to player location
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
-				AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+			
+			    if (AEnemyReworkHybrid* hybrid = Cast<AEnemyReworkHybrid>(Enemy))
+            	{
+            		if (AIController->GetBlackboard()->GetValueAsBool(BbKeys::playerPathExists))
+            		{
+            			// move to player location
+            			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
+            			AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+            		}
+            	}
+				else
+				{
+					// move to player location
+                    UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, PlayerLocation);
+                    AIController->GetBlackboard()->SetValueAsVector(BbKeys::targetLocation, PlayerLocation);
+				}
+            		
+				
 			}
 			else
 			{
