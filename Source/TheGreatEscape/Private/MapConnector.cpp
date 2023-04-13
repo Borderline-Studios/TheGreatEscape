@@ -4,12 +4,10 @@
 #include "MapConnector.h"
 
 //#include "Camera/CameraActor.h"
+#include "SplineTrack.h"
 #include "TrainEngine.h"
-#include "Character/QRCharacter.h"
 #include "Character/Player/PlayerCharacter.h"
-#include "GameFramework/GameModeBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "TheGreatEscape/TheGreatEscapeCharacter.h"
 
 // Sets default values
 AMapConnector::AMapConnector()
@@ -19,12 +17,11 @@ AMapConnector::AMapConnector()
 
 	CollisionDetection = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionDetection"));
 	CollisionDetection->SetupAttachment(RootComponent);
-	CollisionDetection->SetWorldScale3D(FVector(3.0f, 3.0f, 3.0f));
+	CollisionDetection->SetWorldScale3D(FVector(25.0f));
 
 	RootComponent = CollisionDetection;
 
 	CollisionDetection->OnComponentBeginOverlap.AddDynamic(this, &AMapConnector::BeginFrontOverlap);
-
 }
 
 // Called when the game starts or when spawned
@@ -85,16 +82,38 @@ void AMapConnector::BeginFrontOverlap(
 		FTimerHandle LoadLevelHandle;
 		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, [&]()
 		{
-			if (UseWorldRef)
-			{
-				UGameplayStatics::OpenLevelBySoftObjectPtr(this, NextWorldRef);
-			}
-			else
-			{
-				UGameplayStatics::OpenLevel(this, NextMapName);
-			}
-			
+			UGameplayStatics::OpenLevelBySoftObjectPtr(this, NextWorldRef);
 		}, BlendTime + 1, false);
 	}
 }
 
+#if WITH_EDITOR
+void AMapConnector::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AMapConnector, SplineRef))
+	{
+		if (SplineRef)
+		{
+			const USplineComponent* SplineComponentRef = SplineRef->GetSpline();
+			SetActorLocation(SplineComponentRef->GetLocationAtSplinePoint(SplineComponentRef->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World));
+			SetActorRotation(SplineComponentRef->GetRotationAtSplinePoint(SplineComponentRef->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World));
+		}
+	}
+}
+
+void AMapConnector::PostEditMove(bool bFinished)
+{
+	Super::PostEditMove(bFinished);
+
+	if (SplineRef)
+	{
+		const USplineComponent* SplineComponentRef = SplineRef->GetSpline();
+		SetActorLocation(SplineComponentRef->GetLocationAtSplinePoint(SplineComponentRef->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World));
+		SetActorRotation(SplineComponentRef->GetRotationAtSplinePoint(SplineComponentRef->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World));
+	}
+}
+#endif

@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "MapConnector.generated.h"
 
+class ASplineTrack;
+
 UCLASS()
 class THEGREATESCAPE_API AMapConnector : public AActor
 {
@@ -26,26 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	USceneComponent* SceneRoot;
-
-	UBoxComponent* CollisionDetection;
-
-	UPROPERTY(EditInstanceOnly)
-	float BlendTime = 1.0f;
-	UPROPERTY(EditInstanceOnly)
-	float ZHeight = 100.0f;
-	UPROPERTY(EditInstanceOnly)
-	bool UseWorldRef = false;
-	UPROPERTY(EditInstanceOnly)
-	FName NextMapName = "Jake_Test";
-	UPROPERTY(EditInstanceOnly)
-	TSoftObjectPtr<UWorld> NextWorldRef;
-
-	AActor* PlayerRef;
-	UCameraComponent* PlayerCamRef;
-
-	bool IsEndingMap = false;
-
+	// FUNCTIONS
 	UFUNCTION()
 	void BeginFrontOverlap(
 	UPrimitiveComponent* OverlappedComponent,
@@ -55,4 +38,27 @@ private:
 	bool bFromSweep,
 	const FHitResult &SweepResult
 	);
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void PostEditMove(bool bFinished) override;
+#endif
+
+	// VARIABLES
+	UBoxComponent* CollisionDetection;
+
+	UPROPERTY(EditInstanceOnly)
+	ASplineTrack* SplineRef;
+	
+	UPROPERTY(EditInstanceOnly)
+	float BlendTime = 1.0f;
+
+	UPROPERTY(EditInstanceOnly)
+	TSoftObjectPtr<UWorld> NextWorldRef;
+
+	AActor* PlayerRef;
+	UCameraComponent* PlayerCamRef;
+	
+	// UPROPERTY(EditInstanceOnly)
+	float ZHeight = 100.0f;
 };
