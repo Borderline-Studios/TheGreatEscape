@@ -23,6 +23,8 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	GetWorld()->GetTimerManager().SetTimer(ForceEndHandle, this ,&UQRGA_Interact::ForceEndAbility, 1.0f, false);
+	
 	//Creating variables for the Line Trace
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -76,8 +78,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Rifle"))
 				{
-					HitResult.GetActor()->Destroy();
-					GetPlayerReferance()->bRiflePickedUp = true;
+					GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+					//Checks for an Animnotify then triggers function
+					GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Interact::CallEndAbility);
+					ActorToDestory = HitResult.GetActor();
 				}
 				
 				//Checks if its a pick upable
@@ -95,7 +99,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					
 				}
 				//ends the ability
-				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+				//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 			}
 			//TODO test if this actually does anything.
 			//Checks if the component is Interactable
@@ -118,7 +122,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		
 	}
 	//Ends ability no matter what (avoid lock up)
-	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
 void UQRGA_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -140,4 +144,34 @@ APlayerCharacter* UQRGA_Interact::GetPlayerReferance()
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	//Returns Character Ref
 	return CharacterRef;
+}
+
+void UQRGA_Interact::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	//Checks if the Nofity name
+	if (NotifyName == FName("Gather"))
+	{
+		GetPlayerReferance()->RevolverMesh1P->SetVisibility(false);
+		GetPlayerReferance()->bRiflePickedUp = true;
+		ActorToDestory->Destroy();
+		GetPlayerReferance()->RifleMesh1P->SetVisibility(true);
+		FirstRifleEqiup();
+	}
+	if (NotifyName == FName("Activated"))
+	{
+		//Ends ability is the animation is done
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+}
+
+void UQRGA_Interact::ForceEndAbility()
+{
+	//Ends ability is the animation is done
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
+void UQRGA_Interact::FirstRifleEqiup()
+{
+	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
 }

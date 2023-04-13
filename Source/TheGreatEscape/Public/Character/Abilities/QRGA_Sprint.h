@@ -51,7 +51,7 @@ private:
 	int SprintFOV = 100;
 
 	UFUNCTION()
-void ReleasedInput(float TimePressed);
+	void ReleasedInput(float TimePressed);
 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);

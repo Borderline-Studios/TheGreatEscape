@@ -23,10 +23,10 @@ void UQRGA_RevolverEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 		//Move this to new function
 		GetPlayerReference()->bRevolverEquipped = true;
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate", GetPlayerReference()->ShootMontage);
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate", GetPlayerReference()->ShootMontage);
 
 		//Checks for an Animnotify then triggers function
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
 	}
 	else
 	{

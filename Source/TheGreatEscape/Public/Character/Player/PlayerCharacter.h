@@ -37,9 +37,14 @@ class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 	
 public:
 #pragma region Components
-	/** First person mesh */
+	/* Revolver Mesh*/
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
-	USkeletalMeshComponent* Mesh1P;
+	USkeletalMeshComponent* RevolverMesh1P;
+
+	/* Rifle Mesh*/
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
+	USkeletalMeshComponent* RifleMesh1P;
+	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;

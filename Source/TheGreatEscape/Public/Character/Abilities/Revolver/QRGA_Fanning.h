@@ -23,6 +23,8 @@ public:
 
 	//Gets a Reference to the player
 	APlayerCharacter* GetPlayerReference();
+
+	
 	
 	FTimerHandle FanHandle;
 
@@ -48,6 +50,8 @@ public:
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraSystem* MuzzleVFX;
+
+	TArray<FName> FanSections = {"FanVar1", "FanVar2", "FanVar3"};
 
 	//Function that animation nofity will call 
 	UFUNCTION()

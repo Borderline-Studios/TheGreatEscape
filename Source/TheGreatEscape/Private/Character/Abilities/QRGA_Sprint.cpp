@@ -21,15 +21,15 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
-	InputRelaese->OnRelease.AddDynamic(this, &UQRGA_Sprint::ReleasedInput);
+	InputRelaese->OnRelease.AddUniqueDynamic(this, &UQRGA_Sprint::ReleasedInput);
 	InputRelaese->ReadyForActivation();
 
 	float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
 	GetPlayerReference()->LerpFOV(90.0f, 110.0f, false);
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
 	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Sprint::CallEndAbility);
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
 }
 
 void UQRGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -64,11 +64,9 @@ void UQRGA_Sprint::ReleasedInput(float TimePressed)
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 
 
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
 	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Sprint::CallEndAbility);
-	
-
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
 }
 
 void UQRGA_Sprint::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
@@ -79,6 +77,6 @@ void UQRGA_Sprint::CallEndAbility(FName NotifyName, const FBranchingPointNotifyP
 	}
 	if (NotifyName == FName("Gather"))
 	{
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("SprintHold");
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("SprintHold");
 	}
 }

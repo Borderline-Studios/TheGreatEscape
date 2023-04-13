@@ -27,7 +27,9 @@ void UQRGA_Fanning::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		ShotsRemaining = GetPlayerReference()->PlayerAmmo;
 
-		GetWorld()->GetTimerManager().SetTimer(FanHandle,this ,&UQRGA_Fanning::FanLoop, 0.2f, true);
+		FanLoop();
+
+		//GetWorld()->GetTimerManager().SetTimer(FanHandle,this ,&UQRGA_Fanning::FanLoop, 0.15f, true);
 	}
 	else
 	{
@@ -65,12 +67,12 @@ void UQRGA_Fanning::FanLoop()
 	{
 		GetPlayerReference()->PlayerAmmo--;
 	}
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection(FanSections[FMath::RandRange(0,2)]);
 	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	//Plays the sound at the player
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(1.0f, 1.0f));
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.2, FMath::RandRange(1.0f, 1.0f));
 	FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
 	ActivateTraceParticle(HitResult);
 	ActivateEffects();
@@ -89,12 +91,16 @@ void UQRGA_Fanning::FanLoop()
 void UQRGA_Fanning::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
 	//Checks if the Nofity name
-	if (NotifyName == FName("FinishedFire"))
+	if (NotifyName == FName("AnimFinished"))
 	{
 		if(ShotsRemaining <= 0)
 		{
 			//Ends ability is the animation is done
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
+		else if(ShotsRemaining > 0)
+		{
+			FanLoop();
 		}
 	}
 }
@@ -105,7 +111,7 @@ void UQRGA_Fanning::ActivateEffects()
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
 	
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
@@ -131,7 +137,7 @@ FHitResult UQRGA_Fanning::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-500, 500), CamCompLocation.Z + FMath::FRandRange(-500, 500));
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-400.0f, 400.0f), CamCompLocation.Z + FMath::FRandRange(-400.0f, 400.0f));
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
