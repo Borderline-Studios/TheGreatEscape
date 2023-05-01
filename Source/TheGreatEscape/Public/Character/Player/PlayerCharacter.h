@@ -15,6 +15,7 @@
 //Includes
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
+#include "../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/stdbool.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -76,7 +77,7 @@ public:
 	bool bBatteryPickedUp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bRevolverEquipped = false;
+	bool bRevolverEquipped = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRifleEquipped = false;
@@ -165,6 +166,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void EnemyKilled();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void CallDamageText(float DamageAmount, bool ShieldDamage, FHitResult HitResult);
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;

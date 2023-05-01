@@ -28,49 +28,55 @@ void UQRGA_RevolverShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	int MaxShotRange = GetPlayerReference()->MaxShotRange;
-	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	//Checks is ammo is depleated
-	if(GetPlayerReference()->PlayerAmmo <= 0)
+	if (GetPlayerReference()->bRevolverEquipped)
 	{
-		//Plays the sound at the player
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
-		//If ammo is 0 end ability
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-	else if (!GetPlayerReference()->bTransADS)
-	{
-		//Decrements the Ammo
-		GetPlayerReference()->PlayerAmmo--;
-
-		if (GetPlayerReference()->bADS)
+		FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+		FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
+		int MaxShotRange = GetPlayerReference()->MaxShotRange;
+		//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+		//Checks is ammo is depleated
+		if(GetPlayerReference()->PlayerAmmo <= 0)
 		{
-			//Jumps the animontage to the fire section
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
-			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
+			//Plays the sound at the player
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
+			//If ammo is 0 end ability
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+		}
+		else if (!GetPlayerReference()->bTransADS)
+		{
+			//Decrements the Ammo
+			GetPlayerReference()->PlayerAmmo--;
+	
+			if (GetPlayerReference()->bADS)
+			{
+				//Jumps the animontage to the fire section
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
+				//Added dynamic notify and triggers function if notify is received
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
+			}
+			else
+			{
+			
+				//Jumps the animontage to the fire section
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+				//Added dynamic notify and triggers function if notify is received
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
+			}
+	
+		
+			FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+			ActivateTraceParticle(HitResult);
+			ActivateEffects(HitResult);
+			if (HitResult.IsValidBlockingHit())
+			{
+				HitEnemyCheck(HitResult);
+				//Here HitTagCheck
+				HitTagCheck(HitResult);
+			}
 		}
 		else
 		{
-		
-			//Jumps the animontage to the fire section
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
-			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
-		}
-
-	
-		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
-		ActivateTraceParticle(HitResult);
-		ActivateEffects(HitResult);
-		if (HitResult.IsValidBlockingHit())
-		{
-			HitEnemyCheck(HitResult);
-			//Here HitTagCheck
-			HitTagCheck(HitResult);
+			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 		}
 	}
 	else
@@ -225,9 +231,19 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
 			}
-				
-			//Uses the out going handle to deal damage
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			// bool to check if it was found & the value the health equals
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value <= 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			}
+			else if (!bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			}
 		}
 	}
 }

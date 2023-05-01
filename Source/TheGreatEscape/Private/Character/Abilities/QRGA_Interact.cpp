@@ -155,6 +155,8 @@ void UQRGA_Interact::CallEndAbility(FName NotifyName, const FBranchingPointNotif
 		GetPlayerReferance()->bRiflePickedUp = true;
 		ActorToDestory->Destroy();
 		GetPlayerReferance()->RifleMesh1P->SetVisibility(true);
+		GetPlayerReferance()->bRevolverEquipped = false;
+		GetPlayerReferance()->bRifleEquipped = true;
 		FirstRifleEqiup();
 	}
 	if (NotifyName == FName("Activated"))

@@ -6,6 +6,7 @@
 
 UQRGA_RifleEquip::UQRGA_RifleEquip()
 {
+	AbilityInputID = EGASAbilityInputID::EquipRifle;
 }
 
 void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -13,12 +14,16 @@ void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	GetPlayerReferance()->bRevolverEquipped = false;
+	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
+	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
 }
 
 void UQRGA_RifleEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	GetPlayerReferance()->bRifleEquipped = true;
 }
 
 bool UQRGA_RifleEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -34,4 +39,19 @@ APlayerCharacter* UQRGA_RifleEquip::GetPlayerReferance()
 	APlayerCharacter* CharacterRef = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 	//Returns Character Ref
 	return CharacterRef;
+}
+
+void UQRGA_RifleEquip::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if (NotifyName == FName("Gather"))
+	{
+		GetPlayerReferance()->RevolverMesh1P->SetVisibility(false);
+		GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+		GetPlayerReferance()->RifleMesh1P->SetVisibility(true);
+		GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
+	}
+	if (NotifyName == FName("Activated"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }

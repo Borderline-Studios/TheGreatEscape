@@ -23,10 +23,17 @@ void UQRGA_Fanning::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FanActivate");
-	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);
+	if (GetPlayerReference()->bRevolverEquipped)
+	{
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FanActivate");
+		//Added dynamic notify and triggers function if notify is received
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Fanning::CallEndAbility);
+	}
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+
 }
 
 void UQRGA_Fanning::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

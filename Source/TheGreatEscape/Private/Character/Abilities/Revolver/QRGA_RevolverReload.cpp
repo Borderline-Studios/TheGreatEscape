@@ -17,64 +17,72 @@ void UQRGA_RevolverReload::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	GetWorld()->GetTimerManager().SetTimer(ReloadForceEndTimer,this,&UQRGA_RevolverReload::ForceEndAbility, 2.0f, true);
-	
-	if (!GetPlayerReference()->bADS)
+	if(GetPlayerReference()->bRevolverEquipped)
 	{
-		//Checks if ammo is full
-		if (GetPlayerReference()->PlayerAmmo == 6)
+		GetWorld()->GetTimerManager().SetTimer(ReloadForceEndTimer,this,&UQRGA_RevolverReload::ForceEndAbility, 2.0f, true);
+	
+		if (!GetPlayerReference()->bADS)
 		{
-			//End ability if ammo is full (Reload no needed)
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			//Checks if ammo is full
+			if (GetPlayerReference()->PlayerAmmo == 6)
+			{
+				//End ability if ammo is full (Reload no needed)
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			}
+			else
+			{
+				//Sets ammo to zero to avoid any issues (Probably not nessessary)
+				GetPlayerReference()->PlayerAmmo = 0;
+				//Sets ammo to full
+				GetPlayerReference()->PlayerAmmo = 6;
+
+				//Jumps animontage ot the reload section to player reload animation
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+				//Checks for an Animnotify then triggers function
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
+
+				//Plays reload sound at location
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
+													  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+													  FRotator(0,0,0), 0.3, 1);
+			}
 		}
+
 		else
 		{
-			//Sets ammo to zero to avoid any issues (Probably not nessessary)
-			GetPlayerReference()->PlayerAmmo = 0;
-			//Sets ammo to full
-			GetPlayerReference()->PlayerAmmo = 6;
+			
+			//Checks if ammo is full
+			if (GetPlayerReference()->PlayerAmmo == 6)
+			{
+				//End ability if ammo is full (Reload no needed)
+				EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+			}
+			else
+			{
+				//Sets ammo to zero to avoid any issues (Probably not nessessary)
+				GetPlayerReference()->PlayerAmmo = 0;
+				//Sets ammo to full
+				GetPlayerReference()->PlayerAmmo = 6;
+				
+				//Jumps animontage ot the reload section to player reload animation
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
+				//Checks for an Animnotify then triggers function
+				GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
 
-			//Jumps animontage ot the reload section to player reload animation
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
-			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
-
-			//Plays reload sound at location
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
-												  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-												  FRotator(0,0,0), 0.3, 1);
+			
+				//Plays reload sound at location
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
+													  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
+													  FRotator(0,0,0), 0.3, 1);
+			}
+		
 		}
 	}
-
 	else
 	{
-		
-		//Checks if ammo is full
-		if (GetPlayerReference()->PlayerAmmo == 6)
-		{
-			//End ability if ammo is full (Reload no needed)
 			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-		}
-		else
-		{
-			//Sets ammo to zero to avoid any issues (Probably not nessessary)
-			GetPlayerReference()->PlayerAmmo = 0;
-			//Sets ammo to full
-			GetPlayerReference()->PlayerAmmo = 6;
-			
-			//Jumps animontage ot the reload section to player reload animation
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
-			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverReload::CallEndAbility);
-
-		
-			//Plays reload sound at location
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
-												  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
-												  FRotator(0,0,0), 0.3, 1);
-		}
-	
 	}
+	
 }
 
 void UQRGA_RevolverReload::EndAbility(const FGameplayAbilitySpecHandle Handle,
