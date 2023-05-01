@@ -45,4 +45,6 @@ private:
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
 
 	int currentStateMachineIndex = 0; // Index to hold what state machine we are currently on
+
+	bool temp = false;
 };

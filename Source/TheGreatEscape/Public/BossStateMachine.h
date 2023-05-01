@@ -29,7 +29,8 @@ namespace StateMachine
 	// Transition between states, holds the condition to go to next state & the next state
 	struct FTransition
 	{
-		FSimpleDelegate Condition;
+		DECLARE_DELEGATE_RetVal(bool, FConditionDelegate);
+		FConditionDelegate ConditionDelegate;
 		FState NextState;
 	};
 

@@ -26,7 +26,10 @@ void ABoss::Tick(float DeltaTime)
 
 	for (int i = 0; i < StateMachines[currentStateMachineIndex].CurrentState.Transitions.Num(); i++)
 	{
-		StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].Condition.Execute();
+		if (StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].ConditionDelegate.Execute())
+		{
+			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].NextState;
+		}
 		// if any condition returns true go to next state 
 	}
 }
@@ -74,18 +77,20 @@ void ABoss::StateMachineSetUps()
 	// TRANSITIONS - Sequence 1
 	
 	// Laser Condition & NextState
-	LaserSeq1Transition.Condition.BindLambda([&]()
+	LaserSeq1Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Binded LaserSeq1Transition Condition lamda function")); // Condition
-		//return true;
+		UE_LOG(LogTemp, Warning, TEXT("LaserSeq1Transition lambda called")); // Condition
+
+		//temp = true;
+		return true;
 	});
 	LaserSeq1Transition.NextState = LaserResetSeq1State; // To laser reset (seq 1)
 
 	// Laser Reset Condition & next state
-	LaserResetSeq1Transition.Condition.BindLambda([&]()
+	LaserResetSeq1Transition.ConditionDelegate.BindLambda([&]() ->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded LaserResetSeq1Transition Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	LaserResetSeq1Transition.NextState = LaserSeq1State; // To Laser (seq 1)
 
@@ -93,34 +98,34 @@ void ABoss::StateMachineSetUps()
 	// TRANSITIONS - Sequence 2
 	
 	// Parkour condition & next state
-	ParkourModeTransition.Condition.BindLambda([&]()
+	ParkourModeTransition.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded ParkourModeTransition Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	ParkourModeTransition.NextState = FistSeq2State; // To Fist attack (seq 2)
 
 	// Fist seq 2 Condition & next state
-	FistSeq2Transition.Condition.BindLambda([&]()
+	FistSeq2Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistSeq2Transition Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistSeq2Transition.NextState = FistResetSeq2State; // To fist reset (seq 2)
 
 	// Fist reset seq 2 condition & next state: Transition 1 -> Parkour
-	FistResetSeq2Transition1.Condition.BindLambda([&]()
+	FistResetSeq2Transition1.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistResetSeq2Transition1 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistResetSeq2Transition1.NextState = ParkourModeState; // To parkour (seq 2)
 
 	// Fist reset seq 2 condition & next state: Transition 2 -> fist
-	FistResetSeq2Transition2.Condition.BindLambda([&]()
+	FistResetSeq2Transition2.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistResetSeq2Transition2 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistResetSeq2Transition2.NextState = FistSeq2State; // to fist attack (seq 2)
 
@@ -128,50 +133,50 @@ void ABoss::StateMachineSetUps()
 	// TRANSITIONS - Sequence 3
 
 	// Laser seq 3 condition & next state
-	LaserSeq3Transition.Condition.BindLambda([&]()
+	LaserSeq3Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded LaserSeq3Transition Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	LaserSeq3Transition.NextState = LaserResetSeq3State; // to laser reset (seq 3)
 
 	// laser reset seq 3 condition & next state: Transition 1 -> fist
-	LaserResetSeq3Transition1.Condition.BindLambda([&]()
+	LaserResetSeq3Transition1.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded LaserResetSeq3Transition1 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	LaserResetSeq3Transition1.NextState = FistSeq3State; // to fist attack (seq 3)
 
 	// laser reset seq 3 condition & next state: Transition 2 -> laser 
-	LaserResetSeq3Transition2.Condition.BindLambda([&]()
+	LaserResetSeq3Transition2.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded LaserResetSeq3Transition2 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	LaserResetSeq3Transition2.NextState = LaserSeq3State; // to laser (seq 3)
 
 	// fist seq 3 condition & next state
-	FistSeq3Transition.Condition.BindLambda([&]()
+	FistSeq3Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistSeq3Transition Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistSeq3Transition.NextState = FistResetSeq3State; // to fist reset (seq 3)
 
 	// fist reset seq 3 condition & next state: Transition 1 -> laser 
-	FistResetSeq3Transition1.Condition.BindLambda([&]()
+	FistResetSeq3Transition1.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistResetSeq3Transition1 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistResetSeq3Transition1.NextState = LaserSeq3State; // to laser (seq 3)
 
 	// fist reset seq 3 condition & next state: Transition 2 -> fist  
-	FistResetSeq3Transition2.Condition.BindLambda([&]()
+	FistResetSeq3Transition2.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded FistResetSeq3Transition2 Condition lamda function")); // Condition
-		//return true;
+		return true;
 	});
 	FistResetSeq3Transition2.NextState = FistSeq3State; // to fist (seq 3)
 
@@ -259,6 +264,7 @@ void ABoss::StateMachineSetUps()
  */
 void ABoss::Laser()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Laser pew pew"));
 }
 
 /**
@@ -266,6 +272,7 @@ void ABoss::Laser()
  */
  void ABoss::LaserReset()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Resetting laser"));
 }
 
 /**
