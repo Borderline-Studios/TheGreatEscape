@@ -28,7 +28,7 @@ void ABoss::Tick(float DeltaTime)
 	{
 		if (StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].ConditionDelegate.Execute())
 		{
-			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].NextState;
+			//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].NextState;
 		}
 		// if any condition returns true go to next state 
 	}
@@ -264,7 +264,7 @@ void ABoss::StateMachineSetUps()
  */
 void ABoss::Laser()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Laser pew pew"));
+	//UE_LOG(LogTemp, Warning, TEXT("Laser pew pew"));
 }
 
 /**
@@ -272,7 +272,7 @@ void ABoss::Laser()
  */
  void ABoss::LaserReset()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Resetting laser"));
+	//UE_LOG(LogTemp, Warning, TEXT("Resetting laser"));
 }
 
 /**
