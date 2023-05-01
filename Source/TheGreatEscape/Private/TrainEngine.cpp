@@ -129,7 +129,7 @@ void ATrainEngine::BeginPlay()
 
 	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
 	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -600.0f, 420.0f));
+	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -610.0f, 422.0f));
 
 	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
