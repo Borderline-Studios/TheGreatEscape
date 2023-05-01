@@ -103,19 +103,15 @@ void ATrainEngine::BeginPlay()
 	else if (USplineComponent* TempSplineRef = Cast<USplineComponent>(WorldSplineRef->GetSpline()); TempSplineRef != nullptr)
 	{
 		SplineRef = TempSplineRef;
-	}
 
-	if (SplineRef)
-	{
-		//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("Train Spline Ref populated"));
 		SplineLength = SplineRef->GetSplineLength();
 
 		SetActorLocation(SplineRef->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 		SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
-	}
 
-	bStartedMoving = true;
-	bTrainMoving = true;
+		bStartedMoving = true;
+		bTrainMoving = true;
+	}
 	
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
 	for (int i = 0; i < CarriageCount; i++)
