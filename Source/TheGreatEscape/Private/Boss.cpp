@@ -14,7 +14,12 @@
 
 ABoss::ABoss()
 {
+	// Set Up the state machines & their states
 	StateMachineSetUps();
+
+	// Load the laser
+	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Laser.Laser_C'")));
+	LaserClassRef = LaserRef.LoadSynchronous();
 }
 
 void ABoss::Tick(float DeltaTime)

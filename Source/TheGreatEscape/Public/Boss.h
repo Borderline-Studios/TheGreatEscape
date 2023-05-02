@@ -46,5 +46,6 @@ private:
 
 	int currentStateMachineIndex = 0; // Index to hold what state machine we are currently on
 
-	bool temp = false;
+	TSoftClassPtr<AActor> LaserRef; // weak pointer to laser class
+	UClass* LaserClassRef; // Reference to laser
 };
