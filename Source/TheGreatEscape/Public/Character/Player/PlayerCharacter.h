@@ -15,7 +15,6 @@
 //Includes
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
-#include "../../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/INCLUDE/stdbool.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
