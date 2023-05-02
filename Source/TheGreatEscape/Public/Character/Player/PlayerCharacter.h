@@ -37,9 +37,14 @@ class THEGREATESCAPE_API APlayerCharacter : public AGASBASECharacter
 	
 public:
 #pragma region Components
-	/** First person mesh */
+	/* Revolver Mesh*/
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
-	USkeletalMeshComponent* Mesh1P;
+	USkeletalMeshComponent* RevolverMesh1P;
+
+	/* Rifle Mesh*/
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly ,Category=Mesh)
+	USkeletalMeshComponent* RifleMesh1P;
+	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
@@ -71,10 +76,13 @@ public:
 	bool bBatteryPickedUp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bRevolverEquipped = false;
+	bool bRevolverEquipped = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRifleEquipped = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bRiflePickedUp = false;
 #pragma endregion 
 
 #pragma region SFX
@@ -107,11 +115,19 @@ public:
 	int RandomInt = 0; // can remove no issue
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	int MaxShotRange = 20000;
+	int MaxShotRange = 5000;
 
 	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int PlayerAmmo = 6;
+
+	//Player Ammo variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
+	int RifleAmmo = 30;
+	//Player Ammo variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
+	int CurrentRifleAmmo = RifleAmmo;
+	
 
 	int VoiceLineTiggerNum = 0;
 
@@ -128,6 +144,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DisableVignette();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void LerpFOV(float From, float To, bool Reverse);
+
+	//Lerp Location for Crouch
+	UFUNCTION(BlueprintImplementableEvent)
+	void LerpLocation(float From, float To, bool Reverse);
 
 	void LoadLevel();
 public:
@@ -142,6 +165,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void EnemyKilled();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void CallDamageText(float DamageAmount, bool ShieldDamage, FHitResult HitResult);
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;

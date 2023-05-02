@@ -36,9 +36,9 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			GetPlayerReference()->PlayerAmmo = 6;
 
 			//Jumps animontage ot the reload section to player reload animation
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
 			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
 
 			//Plays reload sound at location
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
@@ -64,9 +64,9 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			GetPlayerReference()->PlayerAmmo = 6;
 			
 			//Jumps animontage ot the reload section to player reload animation
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
 			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
 
 		
 			//Plays reload sound at location

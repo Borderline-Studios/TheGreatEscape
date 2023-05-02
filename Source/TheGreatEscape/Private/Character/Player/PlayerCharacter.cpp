@@ -42,13 +42,20 @@ APlayerCharacter::APlayerCharacter()
 	
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);
-	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
-	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
-	//Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+	RevolverMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
+	RevolverMesh1P->SetOnlyOwnerSee(true);
+	RevolverMesh1P->SetupAttachment(FirstPersonCameraComponent);
+	RevolverMesh1P->bCastDynamicShadow = false;
+	RevolverMesh1P->CastShadow = false;
+
+	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
+	RifleMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RifleMesh1P"));
+	RifleMesh1P->SetOnlyOwnerSee(true);
+	RifleMesh1P->SetupAttachment(FirstPersonCameraComponent);
+	RifleMesh1P->bCastDynamicShadow = false;
+	RifleMesh1P->CastShadow = false;
+	//RevolverMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
+	//RevolverMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 	
 	MuzzleSphere = CreateDefaultSubobject<USphereComponent>(TEXT("MuzzleSphere"));
 	MuzzleSphere->SetOnlyOwnerSee(true);

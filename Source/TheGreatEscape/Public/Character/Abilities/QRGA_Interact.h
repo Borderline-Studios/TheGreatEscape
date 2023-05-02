@@ -18,6 +18,7 @@
 
 //Forward Declearation
 class APlayerCharacter;
+class UQRGA_RifleEquip; 
 /**
  * 
  */
@@ -39,4 +40,17 @@ public:
 
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReferance();
+
+	UFUNCTION()
+	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
+	UFUNCTION()
+	void ForceEndAbility();
+
+	
+	void FirstRifleEqiup();
+
+	AActor* ActorToDestory;
+
+	FTimerHandle ForceEndHandle;
 };
