@@ -214,6 +214,7 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 					}
 	
 					Enemy->PostHitProcess();
+					GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f);
 				}
 	
 				if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)

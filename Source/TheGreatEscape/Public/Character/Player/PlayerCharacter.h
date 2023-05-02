@@ -165,9 +165,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void EnemyKilled();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void CallDamageText(float DamageAmount, bool ShieldDamage, FHitResult HitResult);
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
@@ -175,6 +172,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void CreateDamageWidget(FHitResult HitResult, float Damage);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetResources(int ValueToChange, int NewValue);
