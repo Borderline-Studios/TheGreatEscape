@@ -50,7 +50,7 @@ public:
 	//Components
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	/** Returns Mesh1P subobject **/
+	/** Returns RevolverMesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent;}
