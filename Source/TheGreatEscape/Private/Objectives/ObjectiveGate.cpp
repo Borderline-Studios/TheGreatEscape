@@ -10,6 +10,7 @@
 
 #include "Objectives/ObjectiveGate.h"
 
+#include "TrainEngine.h"
 #include "SplineTrack.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
