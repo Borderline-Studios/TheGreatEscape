@@ -33,4 +33,5 @@ enum class EGASAbilityInputID : uint8
 	Gather,
 	EquipRevolver,
 	EquipRifle,
+	Crouch,
 };

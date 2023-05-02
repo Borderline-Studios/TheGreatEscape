@@ -34,6 +34,11 @@ public:
 	//Functions and Constructor
 	
 	UQRGA_Sprint();
+	
+	UPROPERTY()
+	class UAbilityTask_WaitInputRelease* InputRelaese;
+
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
@@ -44,4 +49,10 @@ public:
 private:
 	int RunFOV = 90;
 	int SprintFOV = 100;
+
+	UFUNCTION()
+	void ReleasedInput(float TimePressed);
+
+	UFUNCTION()
+	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 };
