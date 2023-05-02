@@ -26,6 +26,7 @@ public:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	
 	//Function to return a reference to the player for access persistence player values.
+	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
 	
 
@@ -50,6 +51,10 @@ public:
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraSystem* MuzzleVFX;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* TraceVFX;
 	
 	FTimerHandle ShootForceEndTimer;
 	
@@ -63,7 +68,7 @@ public:
 
 	//Activates the SFX and VFX
 	UFUNCTION()
-	void ActivateEffects();
+	void ActivateEffects(FHitResult HitInput);
 
 	UFUNCTION()
 	FHitResult HitScan(float MaxDistance);
@@ -73,5 +78,8 @@ public:
 
 	UFUNCTION()
 	void HitTagCheck(FHitResult HitInput);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateTraceParticle(FHitResult HitInput);
 	
 };

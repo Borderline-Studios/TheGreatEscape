@@ -42,7 +42,7 @@ void UQRAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
 	}
 
-	if(Attribute == GetMaxShieldAttribute())
+	else if(Attribute == GetMaxShieldAttribute())
 	{
 
 		AdjustAttributeForMaxChange(Shield, MaxShield, NewValue, GetShieldAttribute());
@@ -83,13 +83,13 @@ void UQRAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		}
 	}
 
-	if(Data.EvaluatedData.Attribute == GetShieldAttribute())
+	else if(Data.EvaluatedData.Attribute == GetShieldAttribute())
 	{
-		SetHealth(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
+		SetShield(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
 
 		if (TargetCharacter)
 		{
-			TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
+			TargetCharacter->HandleShieldChanged(DeltaValue, SourceTags);
 		}
 	}
 }

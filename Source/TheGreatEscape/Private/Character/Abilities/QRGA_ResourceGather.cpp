@@ -19,9 +19,9 @@ void UQRGA_ResourceGather::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	//jumps the animontage to the Deactivate section
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
 	//Addes notify to actiave function 
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::ResourceLogic);
+	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::ResourceLogic);
 
 }
 
@@ -78,9 +78,9 @@ void UQRGA_ResourceGather::ResourceLogic(FName NotifyName, const FBranchingPoint
 			
 		}
 		//Jumps animontage to activate
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
 		//Add notify to trigger ability when done
-		GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::CallEndAbilitity);
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_ResourceGather::CallEndAbilitity);
 	}
 }
 

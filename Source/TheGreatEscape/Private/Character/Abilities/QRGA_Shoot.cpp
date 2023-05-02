@@ -53,17 +53,17 @@ void UQRGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		if (GetPlayerReference()->bADS)
 		{
 			//Jumps the animontage to the fire section
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("FireADS");
 			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		}
 		else
 		{
 		
 			//Jumps the animontage to the fire section
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			//Added dynamic notify and triggers function if notify is received
-			GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Shoot::CallEndAbility);
 		}
 
 		ActivateEffects();
@@ -158,7 +158,9 @@ FHitResult UQRGA_Shoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::RandRange(-5.0f, 5.0f), CamCompLocation.Z + FMath::RandRange(-5.0f, 5.0f));
+	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
+	DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,true, 1.0f , 0, 5.0f );
 	return HitScanResult;
 }
 

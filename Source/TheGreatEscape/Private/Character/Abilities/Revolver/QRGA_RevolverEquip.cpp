@@ -1,4 +1,12 @@
-// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
+//// Bachelor of Software Engineering
+//// Media Design School
+//// Auckland
+//// New Zealand
+//// (c) 2022 Media Design School
+//// File Name   :
+//// Description :
+//// Author      :  Borderline Studios - (person(s) working on file)
+//// Mail        : 
 
 
 #include "Character/Abilities/Revolver/QRGA_RevolverEquip.h"
@@ -14,12 +22,9 @@ void UQRGA_RevolverEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	GetPlayerReference()->bRevolverEquipped = true;
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->Montage_JumpToSection("Activate", GetPlayerReference()->ShootMontage);
-
-	//Checks for an Animnotify then triggers function
-	GetPlayerReference()->Mesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+		GetPlayerReference()->bRifleEquipped = false;
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
 }
 
 void UQRGA_RevolverEquip::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -27,6 +32,7 @@ void UQRGA_RevolverEquip::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	GetPlayerReference()->bRevolverEquipped = true;
 }
 
 bool UQRGA_RevolverEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -52,5 +58,13 @@ void UQRGA_RevolverEquip::CallEndAbility(FName NotifyName,
 	{
 		//Ends ability when animation is finished
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	if (NotifyName == FName("DeactivateFinished"))
+	{
+		GetPlayerReference()->RifleMesh1P->SetVisibility(false);
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+		GetPlayerReference()->RevolverMesh1P->SetVisibility(true);
+		//Checks for an Animnotify then triggers function
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
 	}
 }
