@@ -174,7 +174,7 @@ public:
 	APlayerCharacter* GetPlayerReference();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void CreateDamageWidget(FHitResult HitResult, float Damage);
+	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetResources(int ValueToChange, int NewValue);
