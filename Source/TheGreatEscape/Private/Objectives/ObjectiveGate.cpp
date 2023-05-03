@@ -16,6 +16,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Objectives/ObjectiveGateBatterySlot.h"
 
 /**
  * @brief Sets Default Values
@@ -55,20 +56,11 @@ AObjectiveGate::AObjectiveGate()
 	TrainDetector->SetupAttachment(RootComponent);
 	TrainDetector->SetSphereRadius(1000.0f);
 	// TrainDetector->SetWorldLocation(GetActorLocation());
-	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
+	// The lines below assign the BeginSphereOverlap to act as its OnComponentBeginOverlap function delegate.
 	TrainDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginTrainDetectorOverlap);
-	TrainDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndTrainDetectorOverlap);
 	
-	BatteryDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Battery Detector"));
-	BatteryDetector->SetupAttachment(RootComponent);
-	BatteryDetector->SetSphereRadius(400.0f);
-	BatteryDetector->SetRelativeLocation(FVector(770.0f,-300.0f,310.0f));
-	// TrainDetector->SetWorldLocation(GetActorLocation());
-	// The lines below assign the BeginSphereOverlap and EndSphereOverlap function to act as its OnComponentBeginOverlap and OnComponentEndOverlap function delegates.
-	BatteryDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginBatteryDetectorOverlap);
-	BatteryDetector->OnComponentEndOverlap.AddDynamic(this, &AObjectiveGate::EndBatteryDetectorOverlap);
-
 	// Populating the soft class pointer so that proper assets can be spawned.
+	SlotClassRef = AObjectiveGateBatterySlot::StaticClass();
 	PickupItemClassRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Objectives/PickUp/BP_PickUpObjective.BP_PickUpObjective_C'"))).LoadSynchronous();
 
 	EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
@@ -81,7 +73,7 @@ void AObjectiveGate::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (PickupItems.IsEmpty())
+	if (SlotRefs.IsEmpty())
 	{
 		FixReferences();
 	}
@@ -90,14 +82,17 @@ void AObjectiveGate::BeginPlay()
 	{
 		EngineRef = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 	}
-
-	PickupItemPlacedCount = 0;
-	PickupItemsNum = PickupItems.Num();
+	
 	SetActorTickEnabled(false);
 
 	if (!PlayerRef)
 	{
 		PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(this, APlayerCharacter::StaticClass()));
+	}
+
+	for (int i = 0; i < SlotRefs.Num(); i++)
+	{
+		Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->InitialiseFromGate(this, PickupItemClassRef);
 	}
 }
 
@@ -217,10 +212,13 @@ void AObjectiveGate::SpawnPickup()
 {
 	CleanPickupsArray();
 	
-	AActor* NewPickup = GetWorld()->SpawnActor(PickupItemClassRef);
-	NewPickup->SetActorLocation((GetActorLocation() + (GateFrame->GetRightVector() * (-250.00 - (50 * PickupItems.Num())))) + FVector(0.0f, 0.0f, 100.0f));
-	NewPickup->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
-	PickupItems.Push(NewPickup);
+	AActor* NewSlot = GetWorld()->SpawnActor(SlotClassRef);
+	NewSlot->SetActorLocation((GetActorLocation() + (GateFrame->GetRightVector() * (-250.00 - (200 * SlotRefs.Num())))) + FVector(0.0f, 0.0f, 100.0f));
+	NewSlot->SetActorRotation(GetActorRotation());
+	NewSlot->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	Cast<AObjectiveGateBatterySlot>(NewSlot)->SpawnPickup(PickupItemClassRef);
+	
+	SlotRefs.Push(NewSlot);
 }
 
 /**
@@ -230,10 +228,10 @@ void AObjectiveGate::RemovePickup()
 {
 	if (CleanPickupsArray()) return;		
 
-	if (!PickupItems.IsEmpty() && IsValid(PickupItems.Last()))
+	if (!SlotRefs.IsEmpty() && IsValid(SlotRefs.Last()))
 	{
-		PickupItems.Last()->Destroy();
-		PickupItems.Pop();
+		SlotRefs.Last()->Destroy();
+		SlotRefs.Pop();
 	}
 }
 
@@ -242,15 +240,15 @@ void AObjectiveGate::RemovePickup()
  */
 void AObjectiveGate::ClearPickups()
 {
-	for (int i = 0; i < PickupItems.Num(); i++)
+	for (int i = 0; i < SlotRefs.Num(); i++)
 	{
-		if (PickupItems[i])
+		if (SlotRefs[i])
 		{
-			PickupItems[i]->Destroy();
+			SlotRefs[i]->Destroy();
 		}
 	}
 	
-	PickupItems.Empty();
+	SlotRefs.Empty();
 }
 #endif
 
@@ -263,9 +261,9 @@ void AObjectiveGate::FixReferences()
 	
 	for (int i = 0; i < AttachedActors.Num(); ++i)
 	{
-		if (AttachedActors[i]->GetClass() == PickupItemClassRef)
+		if (AttachedActors[i]->GetClass() == SlotClassRef)
 		{
-			PickupItems.Push(AttachedActors[i]);
+			SlotRefs.Push(Cast<AObjectiveGateBatterySlot>(AttachedActors[i]));
 		}
 	}
 }
@@ -274,11 +272,11 @@ bool AObjectiveGate::CleanPickupsArray()
 {
 	bool bCleanedUp = false;
 	
-	for (int i = PickupItems.Num() - 1; i >= 0; i--)
+	for (int i = SlotRefs.Num() - 1; i >= 0; i--)
 	{
-		if (!IsValid(PickupItems[i]))
+		if (!IsValid(SlotRefs[i]))
 		{
-			PickupItems.RemoveAt(i);
+			SlotRefs.RemoveAt(i);
 
 			if (!bCleanedUp)
 			{
@@ -288,6 +286,12 @@ bool AObjectiveGate::CleanPickupsArray()
 	}
 
 	return bCleanedUp;
+}
+
+bool AObjectiveGate::EverySlotFilled()
+{
+
+	return true;
 }
 
 /**
@@ -322,97 +326,29 @@ void AObjectiveGate::BeginTrainDetectorOverlap(
 			EngineRef->ToggleTrainStop();
 			EngineRef->DisableMovement();
 			FString ObjText = "Collect ";
-			ObjText.AppendInt(PickupItemsNum);
-			ObjText.Append(((PickupItemsNum == 1) ? " Battery." : " Batteries."));
+			ObjText.AppendInt(SlotRefs.Num());
+			ObjText.Append(((SlotRefs.Num() == 1) ? " Battery." : " Batteries."));
 			ObjText.Append(" Explore nearby!");
 			UpdateObjectiveText(ObjText);
 		}
 	}
 }
 
-/**
- * @brief 
- * @param OverlappedComponent 
- * @param OtherActor 
- * @param OtherComp 
- * @param OtherBodyIndex 
- */
-void AObjectiveGate::EndTrainDetectorOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
-{
-	// for (int i = 0; i < PickupItems.Num(); ++i)
-	// {
-	// 	if (OtherActor == PickupItems[i])
-	// 	{
-	// 		//PickupItemPlacedCount--;
-	// 	}
-	// }
-}
-
-void AObjectiveGate::BeginBatteryDetectorOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
+void AObjectiveGate::UpdateFromSlot()
 {
 	if (!bOpened)
 	{
-		// Check to see if the train is stopped
-		if (bTrainStopped && OtherActor == PlayerRef)
+		for (int i = 0; i < SlotRefs.Num(); i++)
 		{
-			// Check to see if the other actor that just collided is any of the pickup interactables that have been spawned
-			for (int i = 0; i < PickupItems.Num(); i++)
+			if (!Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->GetSlotFilled())
 			{
-				if (PlayerRef->bBatteryPickedUp)
-				{
-					PlayerRef->bBatteryPickedUp = false;
-				
-					PickupItemPlacedCount++;
-					AActor* PlacedBattery = GetWorld()->SpawnActor(PickupItemClassRef);
-					PlacedBattery->AttachToComponent(BatteryDetector, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-					PlacedBattery->SetActorEnableCollision(false);
-					PlacedBattery->Tags.Empty();
-				
-					UE_LOG(LogTemp, Warning, TEXT("Number of items Detected: %i"), PickupItemPlacedCount);
-					UE_LOG(LogTemp, Warning, TEXT("Number of items Required: %i"), PickupItems.Num());
-
-					PickupItems.RemoveAt(i);
-
-					if (PickupItems.Num() != 0)
-					{
-						const int RemainingPickupsToCollect = PickupItemsNum - PickupItemPlacedCount;
-						FString ObjectiveText;
-						ObjectiveText.AppendInt(RemainingPickupsToCollect);
-						ObjectiveText.Append(RemainingPickupsToCollect == 1 ? " battery" : " batteries");
-						ObjectiveText.Append(" left to collect!");
-						UpdateObjectiveText(ObjectiveText);
-					}
-				}
+				return;
 			}
 		}
 
-		// If the train has stopped and the other component has the tag "interactable" then
-		// Start the train and update the tracking variable.
-		if (PickupItemPlacedCount == PickupItemsNum)
-		{
-			bOpened = true;
-			SetActorTickEnabled(true);
-		
-			// Call sound for gate
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
-		}
-	}
-}
+		bOpened = true;
+		SetActorTickEnabled(true);
 
-void AObjectiveGate::EndBatteryDetectorOverlap(
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
-{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(), 1.0f);
+	}
 }
