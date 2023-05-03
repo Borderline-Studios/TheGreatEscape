@@ -29,13 +29,13 @@ ATrainControlls::ATrainControlls()
 
 	ControlBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
 	RootComponent = ControlBase;
-	ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("StaticMesh'/Game/Production/Train/Art/TrackSwitch/Lever_Lever_base.Lever_Lever_base'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Quantum_Train/Engine/Engine_Lever_Base.Engine_Lever_Base'"));
 	ControlBase->SetStaticMesh(BaseMesh.Object);
 	ControlBase->SetWorldScale3D(FVector(3.0f));
 
 	ControlHandle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Handle Mesh"));
 	ControlHandle->SetupAttachment(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleMesh(TEXT("StaticMesh'/Game/Production/Train/Art/TrackSwitch/Lever_Lever.Lever_Lever'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Quantum_Train/Engine/Engine_Lever_Handle.Engine_Lever_Handle'"));
 	ControlHandle->SetStaticMesh(HandleMesh.Object);
 	ControlHandle->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 	Tags.Push("Interactable");

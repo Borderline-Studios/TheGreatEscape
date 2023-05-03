@@ -19,7 +19,7 @@ ATrainCarParent::ATrainCarParent()
 
 	PlayerDetectionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("PlayerDetector"));
 	PlayerDetectionComponent->SetupAttachment(RootComponent);
-	PlayerDetectionComponent->SetHiddenInGame(false);
+	PlayerDetectionComponent->SetHiddenInGame(true);
 	PlayerDetectionComponent->SetVisibility(true);
 	// Player Detection Component sets its collision dynamics inside each of the children
 }

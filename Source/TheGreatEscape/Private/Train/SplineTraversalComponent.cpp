@@ -41,8 +41,8 @@ void USplineTraversalComponent::BeginPlay()
 			MovementTimeline.SetTimelineFinishedFunc(OnTimelineFinishedFunction);
 		
 			MovementTimeline.SetTimelineLengthMode(TL_LastKeyFrame);
-			const float floatToComplete = TimeToComplete;
-			MovementTimeline.SetPlayRate(1.0f/floatToComplete);
+			const float FloatToComplete = TimeToComplete;
+			MovementTimeline.SetPlayRate(1.0f/FloatToComplete);
 			MovementTimeline.SetLooping(bLoop);
 			MovementTimeline.Play();
 		}
