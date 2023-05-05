@@ -36,9 +36,9 @@ private:
 
 	// Delegate functions
 	void Laser(); // Boss' laser
-	void LaserReset(); // Resets laser pos & rot
-	void Fist(); // Boss' Fist attack
-	void FistReset(); // Resets fists pos & rot
+	void DoubleLaser(); // Resets laser pos & rot
+	void ObjDropAttack(); // Boss' Fist attack
+	void ObjDropAttackReset(); // Resets fists pos & rot
 	void Parkour(); // Parkour stage
 
 	// *** Variables *** //
