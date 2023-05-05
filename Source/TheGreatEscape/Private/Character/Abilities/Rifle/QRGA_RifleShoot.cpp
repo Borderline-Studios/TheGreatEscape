@@ -30,8 +30,6 @@ void UQRGA_RifleShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
 		InputRelaese->OnRelease.AddDynamic(this, &UQRGA_RifleShoot::ReleasedInput);
 		InputRelaese->ReadyForActivation();
-		//float TimerInRate = 60 / FireRate;
-		//GetWorld()->GetTimerManager().SetTimer(ShootTimerHandle, this, &UQRGA_RifleShoot::FireLoop, TimerInRate, true, -1);
 		FireLoop();
 	}
 	else
@@ -87,8 +85,6 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
-
-
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
 		if (HitResult.IsValidBlockingHit())
 		{
@@ -189,8 +185,18 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
 			}
-			//Uses the out going handle to deal damage
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value > 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, true);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, true);
+			}
 		}
 		else if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
 		{

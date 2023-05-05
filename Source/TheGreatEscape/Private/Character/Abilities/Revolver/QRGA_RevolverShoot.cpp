@@ -214,7 +214,6 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 					}
 	
 					Enemy->PostHitProcess();
-					GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 				}
 	
 				if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && GetPlayerReference()->VoiceLineTiggerNum == 0)
@@ -239,11 +238,17 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
 			else if (!bFound)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
 			}
 		}
 	}
