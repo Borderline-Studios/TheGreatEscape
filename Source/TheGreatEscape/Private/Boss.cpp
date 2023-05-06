@@ -20,6 +20,27 @@ ABoss::ABoss()
 	// Load the laser
 	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Laser.Laser_C'")));
 	LaserClassRef = LaserRef.LoadSynchronous();
+
+	// Load the tracker
+	TrackerRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Tracker.Tracker_C'")));
+	TrackerClassRef = TrackerRef.LoadSynchronous();
+
+	// Load the object to be spawned
+	ObjDroppedRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/ObjectDropped.ObjectDropped_C'")));
+	ObjDroppedClassRef = ObjDroppedRef.LoadSynchronous();
+	
+}
+
+void ABoss::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerRef = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!PlayerRef)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Reference failed to load... Boss.cpp"));
+	}
+
 }
 
 void ABoss::Tick(float DeltaTime)
@@ -27,13 +48,14 @@ void ABoss::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// INDEX IS UPDATED WHEN DAMAGED
-	StateMachines[currentStateMachineIndex].CurrentState.DelegateFunction.Execute();
+	StateMachines[currentStateMachineIndex].CurrentState.DelegateFunction.Execute(DeltaTime);
 
 	for (int i = 0; i < StateMachines[currentStateMachineIndex].CurrentState.Transitions.Num(); i++)
 	{
 		if (StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].ConditionDelegate.Execute())
 		{
-			//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].NextState;
+			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState.Transitions[i].NextState;
+			//UE_LOG(LogTemp, Warning, TEXT("") );
 		}
 		// if any condition returns true go to next state 
 	}
@@ -90,7 +112,7 @@ void ABoss::StateMachineSetUps()
 	// Starting Boot up Condition & NextState
 	StartingBootUpTransition.ConditionDelegate.BindLambda([&]()->bool
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StartingBootUpTransition lambda called")); // Condition
+		//UE_LOG(LogTemp, Warning, TEXT("StartingBootUpTransition lambda called")); // Condition
 
 		//temp = true;
 		return true;
@@ -110,7 +132,7 @@ void ABoss::StateMachineSetUps()
 	// Laser Condition & NextState
 	LaserSeq1Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
-		UE_LOG(LogTemp, Warning, TEXT("LaserSeq1Transition lambda called")); // Condition
+		//UE_LOG(LogTemp, Warning, TEXT("LaserSeq1Transition lambda called")); // Condition
 
 		//temp = true;
 		return true;
@@ -124,7 +146,7 @@ void ABoss::StateMachineSetUps()
 	// Shield up Condition & NextState
 	ShieldUpSeq2Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ShieldUpSeq2Transition lambda called")); // Condition
+		//UE_LOG(LogTemp, Warning, TEXT("ShieldUpSeq2Transition lambda called")); // Condition
 
 		//temp = true;
 		return true;
@@ -152,16 +174,16 @@ void ABoss::StateMachineSetUps()
 	// obj drop seq 2 Condition & next state
 	ObjDropSeq2Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Binded ObjDropSeq2Transition Condition lamda function")); // Condition
-		return true;
+		//UE_LOG(LogTemp, Warning, TEXT("Obj spawned, next state")); // Condition
+		return bObjSpawned;
 	});
 	ObjDropSeq2Transition.NextState = ObjDropResetSeq2State; // To obj drop reset (seq 2)
 
-	// Fist reset seq 2 condition & next state: Transition 1 -> Parkour
+	// Fist reset seq 2 condition & next state
 	ObjDropResetSeq2Transition.ConditionDelegate.BindLambda([&]()->bool
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Binded ObjDropResetSeq2Transition Condition lamda function")); // Condition
-		return true;
+		return false;
 	});
 	ObjDropResetSeq2Transition.NextState = IdleSeq2State; // To Idle (seq 2)
 	
@@ -232,11 +254,11 @@ void ABoss::StateMachineSetUps()
 	// STATES - Sequence 1
 	// Starting boot up - add transition(s) to array & bind delegate function
 	StartingBootUpState.Transitions.Add(StartingBootUpTransition);
-	//StartingBootUpState.DelegateFunction.Add();
+	StartingBootUpState.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 
 	// Idle seq 1 - add transition(s) to array & bind delegate function
 	IdleSeq1State.Transitions.Add(IdleSeq1Transition);
-	//IdleSeq1State.DelegateFunction.Add();
+	IdleSeq1State.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 	
 	// Laser seq 1 - add transition(s) to array & bind delegate function
 	LaserSeq1State.Transitions.Add(LaserSeq1Transition);
@@ -246,7 +268,7 @@ void ABoss::StateMachineSetUps()
 	// STATES - Sequence 2
 	// shield up seq 2 - add transition(s) to array & bind delegate function
 	ShieldUpSeq2.Transitions.Add(ShieldUpSeq2Transition);
-	//ShieldUpSeq2.DelegateFunction.BindUObject(this, &ABoss::Parkour);
+	ShieldUpSeq2.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 	
 	// parkour mode seq 2 - add transition(s) to array & bind delegate function
 	ParkourModeState.Transitions.Add(ParkourModeTransition);
@@ -254,7 +276,7 @@ void ABoss::StateMachineSetUps()
 
 	// Idle seq 2 - add transition(s) to array & bind delegate function
 	IdleSeq2State.Transitions.Add(IdleSeq2Transition);
-	//IdleSeq2State.DelegateFunction.Add();
+	IdleSeq2State.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 	
 	// ObjDrop seq 2 - add transition(s) to array & bind delegate function
 	ObjDropSeq2State.Transitions.Add(ObjDropSeq2Transition);
@@ -268,12 +290,12 @@ void ABoss::StateMachineSetUps()
 	// STATES - Sequence 3
 	// personal shield up seq 3 - add transition(s) to array & bind delegate function
 	PersonalShieldSeq3.Transitions.Add(PersonalShieldSeq3Transition);
-	//PersonalShieldSeq3.DelegateFunction.BindUObject(this, &ABoss::Parkour);
+	PersonalShieldSeq3.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 
 	// Idle seq 3 - add transition(s) to array & bind delegate function
 	IdleSeq3State.Transitions.Add(IdleSeq3Transition1);
 	IdleSeq3State.Transitions.Add(IdleSeq3Transition2);
-	//IdleSeq3State.DelegateFunction.Add();
+	IdleSeq3State.DelegateFunction.BindUObject(this, &ABoss::Tempfunction); // CHANGE
 	
 	// Laser seq 3 - add transition(s) to array & bind delegate function
 	DoubleLaserSeq3State.Transitions.Add(DoubleLaserSeq3Transition);
@@ -304,7 +326,7 @@ void ABoss::StateMachineSetUps()
 	Sequence2.States.Add(IdleSeq2State);
 	Sequence2.States.Add(ObjDropSeq2State);
 	Sequence2.States.Add(ObjDropResetSeq2State);
-	Sequence2.CurrentState = ShieldUpSeq2;
+	Sequence2.CurrentState = ObjDropSeq2State;
 
 	// Sequence 3 - Set States
 	Sequence3.States.Add(PersonalShieldSeq3);
@@ -317,12 +339,18 @@ void ABoss::StateMachineSetUps()
 	StateMachines.Add(Sequence1);
 	StateMachines.Add(Sequence2);
 	StateMachines.Add(Sequence3);
+	
+#pragma endregion
+}
+
+void ABoss::Tempfunction(float DeltaTime)
+{
 }
 
 /**
  * @brief Laser attack for the boss
  */
-void ABoss::Laser()
+void ABoss::Laser(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Laser pew pew"));
 }
@@ -330,7 +358,7 @@ void ABoss::Laser()
 /**
  * @brief Resets laser to original position & rotation
  */
- void ABoss::DoubleLaser()
+ void ABoss::DoubleLaser(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Resetting laser"));
 }
@@ -338,20 +366,69 @@ void ABoss::Laser()
 /**
  * @brief Fist attack for boss
  */
-void ABoss::ObjDropAttack()
+void ABoss::ObjDropAttack(float DeltaTime)
 {
+	FVector PlayerFeetLoc = FVector(PlayerRef->GetActorLocation().X, PlayerRef->GetActorLocation().Y, 0.0f);
+	
+	// If tracker hasnt spawned spawn it 
+	if (!bTrackerSpawned)
+	{
+		Tracker = GetWorld()->SpawnActor<AActor>(TrackerClassRef, PlayerFeetLoc, FRotator::ZeroRotator);
+		bTrackerSpawned = true;
+	}
+
+	if (Tracker != nullptr)
+	{
+		if (!GetWorldTimerManager().IsTimerActive(TrackerAttackHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(TrackerAttackHandle, FTimerDelegate::CreateLambda([&] { bTrackerAttackDone = true; UE_LOG(LogTemp, Warning, TEXT("timer done"));}), MaxTrackerTime, false);
+			UE_LOG(LogTemp, Warning, TEXT("timer set")); // Condition
+		}
+		
+		if (!bTrackerAttackDone)
+		{
+			Tracker->SetActorLocation(FMath::Lerp(Tracker->GetActorLocation(), PlayerFeetLoc, DeltaTime));
+		}
+		else
+		{
+			if (!bObjSpawned)
+			{
+				GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+				
+				AActor* HeavyObject = GetWorld()->SpawnActor<AActor>(ObjDroppedClassRef, FVector(Tracker->GetActorLocation().X, Tracker->GetActorLocation().Y, Tracker->GetActorLocation().Z + ObjectSpawnHeight), FRotator::ZeroRotator);
+
+				if (HeavyObject)
+				{
+					bObjSpawned = true;
+					UE_LOG(LogTemp, Warning, TEXT("Obj spawned")); // Condition
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Obj no spawn")); // Condition
+				}
+			}
+		}
+		// start timer
+		// follow player
+		// when timer over drop the obj
+		// move state
+	}
 }
 
 /**
  * @brief Resets fist to original position & rotation
  */
-void ABoss::ObjDropAttackReset()
+void ABoss::ObjDropAttackReset(float DeltaTime)
 {
+	// start buffer timer
+	// reset anim
+	// next state
+	UE_LOG(LogTemp, Warning, TEXT("attac reset :)"));
 }
 
 /**
  * @brief Parkour segment
  */
-void ABoss::Parkour()
+void ABoss::Parkour(float DeltaTime)
 {
 }

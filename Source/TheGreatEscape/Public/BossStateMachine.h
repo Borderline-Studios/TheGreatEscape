@@ -23,7 +23,8 @@ namespace StateMachine
 	struct FState
 	{
 		TArray<FTransition> Transitions;
-		FSimpleDelegate DelegateFunction;
+		DECLARE_DELEGATE_OneParam(FFunctionDelegate, float DeltaTime);
+		FFunctionDelegate DelegateFunction;
 	};
 
 	// Transition between states, holds the condition to go to next state & the next state
