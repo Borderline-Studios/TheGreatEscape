@@ -38,13 +38,25 @@ private:
 	void StateMachineSetUps();
 
 	// Delegate functions
-	void Tempfunction(float DeltaTime); // Boss' laser
-	void Laser(float DeltaTime); // Boss' laser
+	void Idle(float DeltaTime); // Idle for sequence 1 & 2
+	void Lasers(float DeltaTime); // Boss' laser
 	void DoubleLaser(float DeltaTime); // Resets laser pos & rot
 	void ObjDropAttack(float DeltaTime); // Boss' Fist attack
 	void ObjDropAttackReset(float DeltaTime); // Resets fists pos & rot
 	void Parkour(float DeltaTime); // Parkour stage
+	void StartBootUp(float DeltaTime); // Starting boot up 
+	void GenShieldUp(float DeltaTime); // Generated shield up
+	void PersonalShieldUp(float DeltaTime); // Personal Shield up
+	void IdleSeq3(float DeltaTime); // Idle for sequence 3
 
+
+	// Animation Delegate fucntions
+	UFUNCTION()
+	void LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+	UFUNCTION()
+	void DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
+	
 	// *** Variables *** //
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
 	int currentStateMachineIndex = 1; // Index to hold what state machine we are currently on
@@ -68,16 +80,44 @@ private:
 	float MaxTrackerTime = 4.0f; // max tracker time
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
-	float ObjectSpawnHeight = 300.0f; // max tracker time
+	float TrackerSpeed = 2.0f; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
+	float ObjectSpawnHeight = 1500.0f; // Object spawn height
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
+	float IdleTimer = 3.0f; // Object spawn height
 
 
+	// objects
 	AActor* Tracker = nullptr; // Tracker obj
+
+	AActor* Laser = nullptr; // Laser left Obj
+	
+	AActor* DoubleLaserL = nullptr; // Laser left Obj double lasers
+	AActor* DoubleLaserR = nullptr; // Laser left Obj double lasers
 	
 	// Timers
 	FTimerHandle TrackerAttackHandle;
+	FTimerHandle IdleHandle;
+	FTimerHandle IdleSeq3Handle;
 	
 	// Bools
+	// object drop
 	bool bTrackerSpawned = false;
 	bool bTrackerAttackDone = false;
 	bool bObjSpawned = false;
+
+	// laser
+	bool bLaserSpawned = false;
+	bool bLaserStarted = false;
+	bool bLeftLaser = true;
+
+	// double laser
+	bool bDoubleLaserSpawned = false;
+	bool bDoubleLaserStarted = false;
+
+	// idle
+	bool bIdleTimerStarted = false;
+	bool bIdleSeq3TimerStarted = false;
 };
