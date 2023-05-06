@@ -22,24 +22,15 @@ namespace StateMachine
 	// State, holds the transition for the state and a delegate to the function it performs
 	struct FState
 	{
-		TArray<FTransition> Transitions;
-		DECLARE_DELEGATE_OneParam(FFunctionDelegate, float DeltaTime);
-		FFunctionDelegate DelegateFunction;
-	};
-
-	// Transition between states, holds the condition to go to next state & the next state
-	struct FTransition
-	{
-		DECLARE_DELEGATE_RetVal(bool, FConditionDelegate);
-		FConditionDelegate ConditionDelegate;
-		FState NextState;
+		TArray<FState*> NextStates;
+		int index;
 	};
 
 	// State machine, holds all the states & the current state
 	struct FStateMachine
 	{
-		TArray<FState> States;
-		FState CurrentState;
+		TArray<FState*> States;
+		FState* CurrentState;
 	};
 	
 }
