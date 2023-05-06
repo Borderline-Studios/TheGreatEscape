@@ -51,6 +51,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category=VFX)
 	USphereComponent* MuzzleSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category=VFX)
+	USphereComponent* RifleMuzzleSphere;
 #pragma endregion
 
 #pragma region Animation
@@ -165,6 +168,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void EnemyKilled();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RocketTargetWidget(AActor* InActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RemoveRocketTargetWidget();
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;

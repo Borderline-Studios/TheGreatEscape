@@ -86,6 +86,7 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
 		{
 			HitEnemyCheck(HitResult);
@@ -126,6 +127,31 @@ FHitResult UQRGA_RifleShoot::HitScan(float MaxDistance)
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
+}
+
+void UQRGA_RifleShoot::ActivateEffects(FHitResult HitInput)
+{
+	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
+	int MaxShotRange = GetPlayerReference()->MaxShotRange;
+	
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	FVector MuzzleLocation = GetPlayerReference()->RifleMuzzleSphere->GetComponentLocation();
+	FRotator MuzzleRotRef = GetPlayerReference()->RifleMuzzleSphere->GetComponentRotation();
+	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->RifleMuzzleSphere, FName(GetPlayerReference()->RifleMuzzleSphere->GetName()),
+													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
+	
+	
+	float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
+	float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
+	float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
+	float AimPunchAmount = 2.1;
+				
+	//Add crosshair recoil (aim punch)
+	GetPlayerReference()->GetController()->SetControlRotation(FRotator(CamControlPitch + AimPunchAmount, CamControlYaw, CamControlRoll));
+	//Cam Shake
+	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
 }
 
 void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
