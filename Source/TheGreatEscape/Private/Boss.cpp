@@ -156,7 +156,7 @@ void ABoss::StateMachineSetUps()
 	Sequence2.States.Add(IdleSeq2State);
 	Sequence2.States.Add(ObjDropSeq2State);
 	Sequence2.States.Add(ObjDropResetSeq2State);
-	Sequence2.CurrentState = ObjDropSeq2State;
+	Sequence2.CurrentState = ShieldUpSeq2;
 
 	// Sequence 3 - Set States
 	Sequence3.States.Add(PersonalShieldSeq3);
@@ -191,15 +191,17 @@ void ABoss::Idle(float DeltaTime)
 	if (!bIdleTimerStarted)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Idle"));
-		
-		GetWorld()->GetTimerManager().SetTimer(IdleHandle, FTimerDelegate::CreateLambda([&]
-		{
-			GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
-			UE_LOG(LogTemp, Warning, TEXT("idle timer done"));
-			bIdleTimerStarted = false;
-			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
-		}), FMath::RandRange(1.5f, 3.0f), false);
 
+		if (!GetWorldTimerManager().IsTimerActive(IdleHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(IdleHandle, FTimerDelegate::CreateLambda([&]
+			{
+				GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+				UE_LOG(LogTemp, Warning, TEXT("idle timer done"));
+				bIdleTimerStarted = false;
+				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+			}), FMath::RandRange(1.5f, 3.0f), false);
+		}
 		bIdleTimerStarted = true;
 	}
 }
@@ -257,7 +259,7 @@ void ABoss::Lasers(float DeltaTime)
  */
 void ABoss::ObjDropAttack(float DeltaTime)
 {
-	FVector PlayerFeetLoc = FVector(PlayerRef->GetActorLocation().X, PlayerRef->GetActorLocation().Y, 0.0f);
+	FVector PlayerFeetLoc = FVector(PlayerRef->GetActorLocation().X, PlayerRef->GetActorLocation().Y, PlayerFeetZ);
 	
 	// If tracker hasnt spawned spawn it 
 	if (!bTrackerSpawned)
@@ -307,15 +309,29 @@ void ABoss::ObjDropAttack(float DeltaTime)
  */
 void ABoss::ObjDropAttackReset(float DeltaTime)
 {
-	// start buffer timer
-	// reset anim
-	// next state
-	bTrackerSpawned = false;
-	bTrackerAttackDone = false;
-	bObjSpawned = false;
-	
-	UE_LOG(LogTemp, Warning, TEXT("attac reset :)"));
-	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	if (!bObjDropResetStarted)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("attac reset :)"));
+
+		if (!GetWorldTimerManager().IsTimerActive(ObjDropResetHandle))
+		{
+			GetWorld()->GetTimerManager().SetTimer(ObjDropResetHandle, FTimerDelegate::CreateLambda([&]
+			{
+				GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+
+				bTrackerSpawned = false;
+				bTrackerAttackDone = false;
+				bObjSpawned = false;
+
+				Tracker = nullptr;
+				
+				UE_LOG(LogTemp, Warning, TEXT("objdropreset timer done"));
+				bObjDropResetStarted = false;
+				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+			}), 2.5f, false);
+		}
+		bObjDropResetStarted = true;
+	}
 }
 
 /**
@@ -323,6 +339,8 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
  */
 void ABoss::Parkour(float DeltaTime)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Boot up"));
+	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 }
 
 void ABoss::StartBootUp(float DeltaTime)
@@ -333,6 +351,8 @@ void ABoss::StartBootUp(float DeltaTime)
 
 void ABoss::GenShieldUp(float DeltaTime)
 {
+	UE_LOG(LogTemp, Warning, TEXT("GenShield up"));
+	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 }
 
 void ABoss::PersonalShieldUp(float DeltaTime)
@@ -346,16 +366,18 @@ void ABoss::IdleSeq3(float DeltaTime)
 	if (!bIdleSeq3TimerStarted)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Idle seq 3"));
-		
-		GetWorld()->GetTimerManager().SetTimer(IdleHandle, FTimerDelegate::CreateLambda([&]
+		if (!GetWorldTimerManager().IsTimerActive(IdleSeq3Handle))
 		{
-			GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
-			UE_LOG(LogTemp, Warning, TEXT("idle seq 3 timer done"));
-			bIdleSeq3TimerStarted = false;
-			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[FMath::RandRange(0,1)];
-		}), FMath::RandRange(2.5f, 4.0f), false);
+			GetWorld()->GetTimerManager().SetTimer(IdleSeq3Handle, FTimerDelegate::CreateLambda([&]
+			{
+				GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+				UE_LOG(LogTemp, Warning, TEXT("idle seq 3 timer done"));
+				bIdleSeq3TimerStarted = false;
+				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[FMath::RandRange(0,1)];
+			}), FMath::RandRange(2.5f, 4.0f), false);
 
-		bIdleSeq3TimerStarted = true;
+			bIdleSeq3TimerStarted = true;
+		}
 	}
 }
 

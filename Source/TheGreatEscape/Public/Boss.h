@@ -85,8 +85,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
 	float ObjectSpawnHeight = 1500.0f; // Object spawn height
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
+	float PlayerFeetZ = 9350.0f; // Z height of floor
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
 	float IdleTimer = 3.0f; // Object spawn height
+	
 
 
 	// objects
@@ -101,6 +105,7 @@ private:
 	FTimerHandle TrackerAttackHandle;
 	FTimerHandle IdleHandle;
 	FTimerHandle IdleSeq3Handle;
+	FTimerHandle ObjDropResetHandle;
 	
 	// Bools
 	// object drop
@@ -120,4 +125,5 @@ private:
 	// idle
 	bool bIdleTimerStarted = false;
 	bool bIdleSeq3TimerStarted = false;
+	bool bObjDropResetStarted = false;
 };
