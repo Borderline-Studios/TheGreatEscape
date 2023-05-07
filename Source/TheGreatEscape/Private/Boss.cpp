@@ -242,13 +242,13 @@ void ABoss::Lasers(float DeltaTime)
 		bDoubleLaserStarted = true;
 	}
 
-	if (bDoubleLaserStarted)
+	if (bDoubleLaserSpawned)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
+		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
+		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
 
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
+		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
+		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
 	}
 }
 
@@ -311,6 +311,7 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 	// reset anim
 	// next state
 	bTrackerSpawned = false;
+	bTrackerAttackDone = false;
 	bObjSpawned = false;
 	
 	UE_LOG(LogTemp, Warning, TEXT("attac reset :)"));
@@ -352,7 +353,7 @@ void ABoss::IdleSeq3(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("idle seq 3 timer done"));
 			bIdleSeq3TimerStarted = false;
 			StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[FMath::RandRange(0,1)];
-		}), FMath::RandRange(1.5f, 3.0f), false);
+		}), FMath::RandRange(2.5f, 4.0f), false);
 
 		bIdleSeq3TimerStarted = true;
 	}
@@ -420,7 +421,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 {
 	//DoubleLasersDone DeleteDoubleLaser SpawnDoubleLaser
 
-	if (NotifyName == "DoubleLasersDone")
+	if (NotifyName == "SpawnDoubleLaser")
 	{
 		if (!bLaserSpawned)
 		{
@@ -442,7 +443,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 	}
 	else if (NotifyName == "DeleteDoubleLaser")
 	{
-		if (Laser)
+		if (DoubleLaserL && DoubleLaserR)
 		{
 			bDoubleLaserSpawned = false;
 			UE_LOG(LogTemp, Warning, TEXT("double Laser bye bye")); // Condition
@@ -452,7 +453,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 			DoubleLaserR = nullptr;
 		}
 	}
-	else if (NotifyName == "SpawnDoubleLaser")
+	else if (NotifyName == "DoubleLasersDone")
 	{
 		UE_LOG(LogTemp, Warning, TEXT("double lasers done switched states"));
 		bDoubleLaserStarted = false;

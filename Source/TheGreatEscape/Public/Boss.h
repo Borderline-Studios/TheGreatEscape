@@ -59,7 +59,7 @@ private:
 	
 	// *** Variables *** //
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
-	int currentStateMachineIndex = 1; // Index to hold what state machine we are currently on
+	int currentStateMachineIndex = 2; // Index to hold what state machine we are currently on
 
 	TArray<void (ABoss::*)(float)> FunctionPtrs;
 
