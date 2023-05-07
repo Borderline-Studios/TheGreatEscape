@@ -55,6 +55,8 @@ private:
 	void LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 	UFUNCTION()
 	void DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+	UFUNCTION()
+	void StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 
 	
 	// *** Variables *** //
@@ -126,4 +128,8 @@ private:
 	bool bIdleTimerStarted = false;
 	bool bIdleSeq3TimerStarted = false;
 	bool bObjDropResetStarted = false;
+
+	bool bBootUpStarted = false;
+	bool bGenShieldUp = false;
+	bool bPersonalShieldUp = false;
 };
