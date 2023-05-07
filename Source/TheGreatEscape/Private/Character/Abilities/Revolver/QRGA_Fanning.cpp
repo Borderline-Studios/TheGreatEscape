@@ -221,8 +221,25 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 				}
 			}
 				
-			//Uses the out going handle to deal damage
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			// bool to check if it was found & the value the health equals
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value <= 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else if (!bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
+			}
 		}
 	}
 }

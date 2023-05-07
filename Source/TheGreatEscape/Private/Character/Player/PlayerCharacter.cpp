@@ -61,6 +61,11 @@ APlayerCharacter::APlayerCharacter()
 	MuzzleSphere->SetOnlyOwnerSee(true);
 	MuzzleSphere->SetupAttachment(GetCapsuleComponent());
 	MuzzleSphere->InitSphereRadius(50.0f);
+
+	RifleMuzzleSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RifleMuzzleSphere"));
+	RifleMuzzleSphere->SetOnlyOwnerSee(true);
+	RifleMuzzleSphere->SetupAttachment(GetCapsuleComponent());
+	RifleMuzzleSphere->InitSphereRadius(50.0f);
 }
 
 void APlayerCharacter::PostHitProcess()

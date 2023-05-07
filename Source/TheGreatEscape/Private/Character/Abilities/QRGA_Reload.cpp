@@ -66,7 +66,7 @@ void UQRGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 			//Jumps animontage ot the reload section to player reload animation
 			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("ADSReload");
 			//Checks for an Animnotify then triggers function
-			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Reload::CallEndAbility);
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Reload::CallEndAbility);
 
 		
 			//Plays reload sound at location
