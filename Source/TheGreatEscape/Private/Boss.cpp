@@ -237,6 +237,7 @@ void ABoss::Lasers(float DeltaTime)
  */
  void ABoss::DoubleLaser(float DeltaTime)
 {
+	
 	if (!bDoubleLaserStarted)
 	{
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection("DoubleLaser");
@@ -346,19 +347,39 @@ void ABoss::Parkour(float DeltaTime)
 void ABoss::StartBootUp(float DeltaTime)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Boot up"));
-	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+
+	if (!bBootUpStarted)
+	{
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection("BootUp");
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
+		bBootUpStarted = true;
+	}
 }
 
 void ABoss::GenShieldUp(float DeltaTime)
 {
 	UE_LOG(LogTemp, Warning, TEXT("GenShield up"));
+	
+	//if (!bGenShieldUp)
+	//{
+	//	GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldUp");
+	//	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
+	//	bGenShieldUp = true;
+	//}
+
 	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 }
 
 void ABoss::PersonalShieldUp(float DeltaTime)
 {
 	UE_LOG(LogTemp, Warning, TEXT("personal shield up"));
-	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	
+	if (!bPersonalShieldUp)
+	{
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection("PersonalShieldUp");
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
+		bPersonalShieldUp = true;
+	}
 }
 
 void ABoss::IdleSeq3(float DeltaTime)
@@ -479,6 +500,17 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 	{
 		UE_LOG(LogTemp, Warning, TEXT("double lasers done switched states"));
 		bDoubleLaserStarted = false;
+		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	}
+}
+
+void ABoss::StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
+	if (NotifyName == "AnimEnding")
+	{
+		bBootUpStarted = false;
+		//bGenShieldUp = false;
+		bPersonalShieldUp = false;
 		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
 }
