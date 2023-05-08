@@ -31,6 +31,36 @@ ABoss::ABoss()
 	
 }
 
+//ABoss::~ABoss()
+//{
+//	if (GetWorldTimerManager().IsTimerActive(TrackerAttackHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+//	}
+//	
+//	if (GetWorldTimerManager().IsTimerActive(IdleHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+//	}
+//
+//	if (GetWorldTimerManager().IsTimerActive(IdleSeq3Handle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+//	}
+//
+//	if (GetWorldTimerManager().IsTimerActive(ObjDropResetHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+//	}
+//	
+//	Tracker = nullptr; // Tracker obj
+//	Laser = nullptr; // Laser left Obj
+//	DoubleLaserL = nullptr; // Laser left Obj double lasers
+//	DoubleLaserR = nullptr; // Laser left Obj double lasers
+//	
+//	
+//}
+
 void ABoss::BeginPlay()
 {
 	Super::BeginPlay();

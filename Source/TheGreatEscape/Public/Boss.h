@@ -29,6 +29,7 @@ class THEGREATESCAPE_API ABoss : public AGASBASECharacter
 public:
 	// *** Functions *** ///
 	ABoss(); // constructor
+	//~ABoss(); // constructor
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
 	virtual void BeginPlay() override;
 	

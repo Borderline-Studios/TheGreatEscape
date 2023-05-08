@@ -33,10 +33,4 @@ private:
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	float MeleeRange = 300.0f; // Range the enemy can attack in
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float MoveRange = 2000.0f; // Range the enemy can go after player in
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	bool bMeleeRangeCheck = true; // checks if checking for melee range or move range
 };
