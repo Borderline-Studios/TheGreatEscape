@@ -31,6 +31,37 @@ ABoss::ABoss()
 	
 }
 
+//ABoss::~ABoss()
+//{
+
+//	if (GetWorldTimerManager().IsTimerActive(TrackerAttackHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+//	}
+//	
+//	if (GetWorldTimerManager().IsTimerActive(IdleHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+//	}
+//
+//	if (GetWorldTimerManager().IsTimerActive(IdleSeq3Handle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+//	}
+//
+//	if (GetWorldTimerManager().IsTimerActive(ObjDropResetHandle))
+//	{
+//		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+//	}
+//	
+//	Tracker = nullptr; // Tracker obj
+//	Laser = nullptr; // Laser left Obj
+//	DoubleLaserL = nullptr; // Laser left Obj double lasers
+//	DoubleLaserR = nullptr; // Laser left Obj double lasers
+//	
+//	
+//}
+
 void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
@@ -41,6 +72,24 @@ void ABoss::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Player Reference failed to load... Boss.cpp"));
 	}
 
+}
+
+void ABoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	
+		GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+
+		GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+	
+		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+
+		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+	
+	Tracker = nullptr; // Tracker obj
+	Laser = nullptr; // Laser left Obj
+	DoubleLaserL = nullptr; // Laser left Obj double lasers
+	DoubleLaserR = nullptr; // Laser left Obj double lasers
 }
 
 void ABoss::Tick(float DeltaTime)
@@ -196,10 +245,10 @@ void ABoss::Idle(float DeltaTime)
 		{
 			GetWorld()->GetTimerManager().SetTimer(IdleHandle, FTimerDelegate::CreateLambda([&]
 			{
-				GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
 				UE_LOG(LogTemp, Warning, TEXT("idle timer done"));
 				bIdleTimerStarted = false;
 				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+				GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
 			}), FMath::RandRange(1.5f, 3.0f), false);
 		}
 		bIdleTimerStarted = true;
@@ -391,10 +440,10 @@ void ABoss::IdleSeq3(float DeltaTime)
 		{
 			GetWorld()->GetTimerManager().SetTimer(IdleSeq3Handle, FTimerDelegate::CreateLambda([&]
 			{
-				GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
 				UE_LOG(LogTemp, Warning, TEXT("idle seq 3 timer done"));
 				bIdleSeq3TimerStarted = false;
 				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[FMath::RandRange(0,1)];
+				GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
 			}), FMath::RandRange(2.5f, 4.0f), false);
 
 			bIdleSeq3TimerStarted = true;

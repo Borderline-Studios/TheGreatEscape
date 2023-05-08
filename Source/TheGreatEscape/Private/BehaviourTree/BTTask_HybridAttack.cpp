@@ -62,8 +62,8 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     LeftTurretLoc = Enemy->GetMesh()->GetSocketLocation("L_WristSocket");
     RightTurretLoc = Enemy->GetMesh()->GetSocketLocation("R_WristSocket");
 
-    LeftTurretRot = FRotator(Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, 90.0f);
-    RightTurretRot = FRotator(Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, 90.0f);
+    LeftTurretRot = FRotator(0.0f, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Roll);
+    RightTurretRot = FRotator(0.0f, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Roll);
     
     // SET ANIM CALL
      Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
