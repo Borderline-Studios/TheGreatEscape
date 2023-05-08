@@ -58,7 +58,6 @@ public:
 	
 	FTimerHandle ShootForceEndTimer;
 	
-
 	//Function that animation nofity will call 
 	UFUNCTION()
 	void CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
@@ -81,5 +80,4 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void ActivateTraceParticle(FHitResult HitInput);
-	
 };

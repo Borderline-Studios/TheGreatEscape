@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "QRGameplayAbility.h"
+#include "NiagaraFunctionLibrary.h"
 #include "QRGA_RifleShoot.generated.h"
 class APlayerCharacter;
 /**
@@ -41,7 +42,7 @@ public:
 	//Function to return a reference to the player for access persistence player values.
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
-
+	
 	UFUNCTION()
 	void ReleasedInput(float TimePressed);
 
@@ -56,9 +57,20 @@ public:
 	FHitResult HitScan(float MaxDistance);
 
 	UFUNCTION()
+	void ActivateEffects(FHitResult HitInput);
+
+	UFUNCTION()
 	void HitEnemyCheck(FHitResult HitInput);
 
 	//Declearation of effect to apply when enemy is hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* MuzzleVFX;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* TraceVFX;
 };
