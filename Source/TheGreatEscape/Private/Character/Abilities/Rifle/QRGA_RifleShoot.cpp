@@ -30,8 +30,6 @@ void UQRGA_RifleShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
 		InputRelaese->OnRelease.AddDynamic(this, &UQRGA_RifleShoot::ReleasedInput);
 		InputRelaese->ReadyForActivation();
-		//float TimerInRate = 60 / FireRate;
-		//GetWorld()->GetTimerManager().SetTimer(ShootTimerHandle, this, &UQRGA_RifleShoot::FireLoop, TimerInRate, true, -1);
 		FireLoop();
 	}
 	else
@@ -87,9 +85,8 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
-
-
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
 		{
 			HitEnemyCheck(HitResult);
@@ -130,6 +127,31 @@ FHitResult UQRGA_RifleShoot::HitScan(float MaxDistance)
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
+}
+
+void UQRGA_RifleShoot::ActivateEffects(FHitResult HitInput)
+{
+	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
+	int MaxShotRange = GetPlayerReference()->MaxShotRange;
+	
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	FVector MuzzleLocation = GetPlayerReference()->RifleMuzzleSphere->GetComponentLocation();
+	FRotator MuzzleRotRef = GetPlayerReference()->RifleMuzzleSphere->GetComponentRotation();
+	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->RifleMuzzleSphere, FName(GetPlayerReference()->RifleMuzzleSphere->GetName()),
+													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
+	
+	
+	float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
+	float CamControlYaw = GetPlayerReference()->GetController()->GetControlRotation().Yaw;
+	float CamControlRoll = GetPlayerReference()->GetController()->GetControlRotation().Roll;
+	float AimPunchAmount = 2.1;
+				
+	//Add crosshair recoil (aim punch)
+	GetPlayerReference()->GetController()->SetControlRotation(FRotator(CamControlPitch + AimPunchAmount, CamControlYaw, CamControlRoll));
+	//Cam Shake
+	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(GetPlayerReference()->CamShake, 1.0f);
 }
 
 void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
@@ -189,8 +211,18 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
 			}
-			//Uses the out going handle to deal damage
-			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value > 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, true);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, true);
+			}
 		}
 		else if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
 		{
