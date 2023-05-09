@@ -87,6 +87,7 @@ void UQRGA_RifleShoot::FireLoop()
 		}
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
 		ActivateEffects(HitResult);
+		ActivateTraceParticle(HitResult);
 		if (HitResult.IsValidBlockingHit())
 		{
 			HitEnemyCheck(HitResult);
