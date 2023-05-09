@@ -251,11 +251,11 @@ void AObjectiveGate::FixReferences()
 
 	CleanPickupsArray();
 	
-	for (int i = 0; i < AttachedActors.Num(); ++i)
+	for (int i = 0; i < AttachedActors.Num(); i++)
 	{
-		if (AttachedActors[i]->GetClass() == SlotClassRef)
+		if (AObjectiveGateBatterySlot* CastActor = Cast<AObjectiveGateBatterySlot>(AttachedActors[i]))
 		{
-			SlotRefs.Push(Cast<AObjectiveGateBatterySlot>(AttachedActors[i]));
+			SlotRefs.AddUnique(CastActor);
 		}
 	}
 }

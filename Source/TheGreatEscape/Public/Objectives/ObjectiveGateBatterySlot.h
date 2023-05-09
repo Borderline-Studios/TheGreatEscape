@@ -40,7 +40,7 @@ private:
 		const FHitResult &SweepResult
 	);
 	
-virtual void Destroyed() override;
+	virtual void Destroyed() override;
 	
 	// VARIABLES
 	bool bSlotFilled = false;
@@ -70,7 +70,7 @@ protected:
 	// VARIABLES
 
 
-public:
+	public:
 	// FUNCTIONS
 	bool GetSlotFilled();
 	void SpawnPickup(UClass* NewPickupItemClass);
