@@ -159,14 +159,6 @@ void AObjectiveGate::PostEditMove(bool bFinished)
 	// Calls the parent's version of this function. Was present during function generation
 	Super::PostEditMove(bFinished);
 
-	// Checks to see if the PickupItem is still connected to the RootComponent which should only be when this is first dragged into scene.
-	// Provided these conditions are met, it disconnects the PickupItem from the rest of the actor so that it doesn't move or rotate with the RootComponent
-	// if (PickupItem->GetAttachParent() == RootComponent && bFinished)
-	// {
-	// 	PickupItem->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	// 	PickupItem->SetWorldScale3D(FVector(1.0f));
-	// }
-
 	// Checks to see if the spline ref is populated and if we want to snap to the track.
 	// If both are true (if the spline ref is populated and we want to snap to track) then the mesh will snap to the nearest point on the spline from where it's located in scene.
 	if (SplineRef && bSnapToTrack)
