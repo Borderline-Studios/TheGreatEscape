@@ -59,6 +59,9 @@ public:
 	UFUNCTION()
 	void ActivateEffects(FHitResult HitInput);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateTraceParticle(FHitResult HitInput);
+
 	UFUNCTION()
 	void HitEnemyCheck(FHitResult HitInput);
 
