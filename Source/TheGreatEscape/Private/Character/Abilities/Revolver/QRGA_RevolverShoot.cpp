@@ -16,6 +16,7 @@
 #include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Objectives/ShieldGenerator.h"
 
 UQRGA_RevolverShoot::UQRGA_RevolverShoot()
 {
@@ -270,6 +271,13 @@ void UQRGA_RevolverShoot::HitTagCheck(FHitResult HitInput)
 						{
 							WorldInteractTrigger->MoveActorOnTrigger(); 
 						}
+					}
+				}
+				if (HitInput.GetActor()->ActorHasTag("Generator"))
+				{
+					if (AShieldGenerator* ShieldGenerator = Cast<AShieldGenerator>(HitInput.GetActor()))
+					{
+						ShieldGenerator->PostHitProcess();
 					}
 				}
 			}

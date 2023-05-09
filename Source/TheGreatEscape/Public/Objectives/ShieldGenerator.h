@@ -4,16 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ObjectiveShield.generated.h"
+#include "ShieldGenerator.generated.h"
 
 UCLASS()
-class THEGREATESCAPE_API AObjectiveShield : public AActor
+class THEGREATESCAPE_API AShieldGenerator : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AObjectiveShield();
+	AShieldGenerator();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DamageToDo = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Health = 20;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PostHitProcess();
+
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,18 +33,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int DamageToBreak = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int ShieldHealth = 50;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ResetTime = 30;
-
-
-	void PostHitProcess();
-	void PostDestroyProcess();
 
 };
