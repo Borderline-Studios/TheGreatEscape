@@ -68,6 +68,8 @@ private:
 
 	bool CleanPickupsArray();
 
+	bool EverySlotFilled();
+
 	UFUNCTION()
 	void BeginTrainDetectorOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -76,29 +78,6 @@ private:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult &SweepResult
-	);
-	UFUNCTION()
-	void EndTrainDetectorOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-	);
-	UFUNCTION()
-	void BeginBatteryDetectorOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult &SweepResult
-	);
-	UFUNCTION()
-	void EndBatteryDetectorOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
 	);
 
 	// VARIABLES
@@ -126,29 +105,27 @@ private:
 	USoundBase* GateSFX;
 
 	USphereComponent* TrainDetector;
-	USphereComponent* BatteryDetector;
 
 	ATrainEngine* EngineRef;
 
-	int DistanceAlongSpline = 0;
+	UPROPERTY(VisibleInstanceOnly)
+	TArray<AActor*> SlotRefs;
+
 	bool bTrainStopped = false;
 
+	UClass* SlotClassRef;
 	UClass* PickupItemClassRef;
-	UPROPERTY(VisibleInstanceOnly, Category = "Functionality")
-	TArray<AActor*> PickupItems;
-	int PickupItemPlacedCount = 0;
-	int PickupItemsNum = 0;
-	
-protected:
-	// FUNCTIONS
-
-
-	// VARIABLES
 
 public:
-	// FUNCTIONS
-
-
-	// VARIABLES
-
+	void UpdateFromSlot();
 };
+
+// If the train has stopped and the other component has the tag "interactable" then
+// Start the train and update the tracking variable.
+/*
+bOpened = true;
+SetActorTickEnabled(true);
+	
+// Call sound for gate
+UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
+*/
