@@ -367,7 +367,6 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 		{
 			GetWorld()->GetTimerManager().SetTimer(ObjDropResetHandle, FTimerDelegate::CreateLambda([&]
 			{
-				GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 
 				bTrackerSpawned = false;
 				bTrackerAttackDone = false;
@@ -378,6 +377,7 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 				UE_LOG(LogTemp, Warning, TEXT("objdropreset timer done"));
 				bObjDropResetStarted = false;
 				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+				GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 			}), 2.5f, false);
 		}
 		bObjDropResetStarted = true;
