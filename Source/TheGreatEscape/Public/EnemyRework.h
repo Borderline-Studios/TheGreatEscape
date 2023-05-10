@@ -15,6 +15,7 @@
 #include "CoreMinimal.h"
 #include "NiagaraEmitter.h"
 #include "Character/Player/PlayerCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "EnemyRework.generated.h"
 
 UCLASS()
@@ -51,10 +52,15 @@ public:
 	// *** Variables *** ///
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
+
+
 	
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector TrainTargetPointOffset;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShieldBrakeChangeMaterial();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bAttacking = false;
 

@@ -86,8 +86,8 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
 		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
-		ActivateEffects(HitResult);
 		ActivateTraceParticle(HitResult);
+		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
 		{
 			HitEnemyCheck(HitResult);
@@ -139,9 +139,9 @@ void UQRGA_RifleShoot::ActivateEffects(FHitResult HitInput)
 	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
 	FVector MuzzleLocation = GetPlayerReference()->RifleMuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->RifleMuzzleSphere->GetComponentRotation();
-	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
+	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw, MuzzleRotRef.Roll);
 	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->RifleMuzzleSphere, FName(GetPlayerReference()->RifleMuzzleSphere->GetName()),
-													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
+													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, true, true);
 	
 	
 	float CamControlPitch = GetPlayerReference()->GetController()->GetControlRotation().Pitch;
@@ -166,6 +166,9 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 		{
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+
+			//Actiavte hit VFX on hit object/actor
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitInput.Location, HitInput.GetActor()->GetActorRotation());
 			
 			//play animation
 			if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitInput.GetActor()))

@@ -43,7 +43,6 @@ AEnemyRework::AEnemyRework()
 		DeathEffects = TSoftClassPtr<AEnemyRework>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Rework/BP_EnemyReworkDeath.BP_EnemyReworkDeath_C'")));
 		DeathEffectReference = DeathEffects.LoadSynchronous();
 	}
-	
 }
 
 /**
@@ -138,6 +137,13 @@ void AEnemyRework::PostHitProcess()
 		FirstDeath = false;
 		PostDeathProcess();
 		Destroy();
+	}
+
+	bool bFound;
+	float Value = GetAbilitySystemComponent()->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+	if (Value <= 0 && bFound)
+	{
+		ShieldBrakeChangeMaterial();
 	}
 }
 

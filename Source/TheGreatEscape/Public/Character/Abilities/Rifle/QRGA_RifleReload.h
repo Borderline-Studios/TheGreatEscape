@@ -27,6 +27,9 @@ public:
 	//Function to return a reference to the player for access persistence player values.
 	APlayerCharacter* GetPlayerReferance();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<USoundBase*> ReloadSFX;
+
 	
 	//Function that animation nofity will call 
 	UFUNCTION()
