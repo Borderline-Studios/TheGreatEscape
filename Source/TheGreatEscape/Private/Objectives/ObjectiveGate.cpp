@@ -16,7 +16,9 @@
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Objectives/ObjectiveGateBatterySlot.h"
+#include "Objectives/ObjectiveElevator.h"
 
 /**
  * @brief Sets Default Values
@@ -72,11 +74,8 @@ AObjectiveGate::AObjectiveGate()
 void AObjectiveGate::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (SlotRefs.IsEmpty())
-	{
-		FixReferences();
-	}
+	
+	FixReferences();
 
 	if (!EngineRef)
 	{
@@ -246,10 +245,10 @@ void AObjectiveGate::ClearPickups()
 
 void AObjectiveGate::FixReferences()
 {
+	CleanPickupsArray();
+	
 	TArray<AActor*> AttachedActors;
 	GetAttachedActors(AttachedActors);
-
-	CleanPickupsArray();
 	
 	for (int i = 0; i < AttachedActors.Num(); i++)
 	{
@@ -258,6 +257,24 @@ void AObjectiveGate::FixReferences()
 			SlotRefs.AddUnique(CastActor);
 		}
 	}
+}
+
+int AObjectiveGate::ElevatorInformationCheck(int RequirementToAdjust)
+{
+	FixReferences();
+
+	const bool bValueInRange = UKismetMathLibrary::InRange_IntInt(RequirementToAdjust, 0, SlotRefs.Num(), true, false);
+
+	if (!bValueInRange && SlotRefs.Num() >= 2)
+	{
+		RequirementToAdjust = SlotRefs.Num() - 1;
+	}
+	else
+	{
+		RequirementToAdjust = 0;
+	}
+
+	return RequirementToAdjust;
 }
 
 bool AObjectiveGate::CleanPickupsArray()
@@ -278,12 +295,6 @@ bool AObjectiveGate::CleanPickupsArray()
 	}
 
 	return bCleanedUp;
-}
-
-bool AObjectiveGate::EverySlotFilled()
-{
-
-	return true;
 }
 
 /**
@@ -330,12 +341,24 @@ void AObjectiveGate::UpdateFromSlot()
 {
 	if (!bOpened)
 	{
+		int SlotsFilled = 0;
+		
 		for (int i = 0; i < SlotRefs.Num(); i++)
 		{
-			if (!Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->GetSlotFilled())
+			if (Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->GetSlotFilled())
 			{
-				return;
+				SlotsFilled++;
 			}
+		}
+
+		if (ElevatorRef)
+		{
+			ElevatorRef->EnableElevator(SlotsFilled);
+		}
+
+		if (SlotsFilled != (SlotRefs.Num()))
+		{
+			return;
 		}
 
 		bOpened = true;
