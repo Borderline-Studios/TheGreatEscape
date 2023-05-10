@@ -14,6 +14,7 @@
 #include "GameFramework/Actor.h"
 #include "ObjectiveGate.generated.h"
 
+class AObjectiveElevator;
 class USphereComponent;
 class ATrainEngine;
 class ASplineTrack;
@@ -35,6 +36,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+#if WITH_EDITOR
+	
+#endif
 
 public:	
 	// Called every frame
@@ -65,11 +70,9 @@ private:
 
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void FixReferences();
-
+	
 	bool CleanPickupsArray();
-
-	bool EverySlotFilled();
-
+	
 	UFUNCTION()
 	void BeginTrainDetectorOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -108,6 +111,9 @@ private:
 
 	ATrainEngine* EngineRef;
 
+	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = "true"))
+	AObjectiveElevator* ElevatorRef;
+	
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<AActor*> SlotRefs;
 
@@ -117,15 +123,9 @@ private:
 	UClass* PickupItemClassRef;
 
 public:
+	// FUNCTIONS
+	UFUNCTION(BlueprintCallable)
+	int ElevatorInformationCheck(int RequirementToAdjust);
+	
 	void UpdateFromSlot();
 };
-
-// If the train has stopped and the other component has the tag "interactable" then
-// Start the train and update the tracking variable.
-/*
-bOpened = true;
-SetActorTickEnabled(true);
-	
-// Call sound for gate
-UGameplayStatics::PlaySoundAtLocation(GetWorld(), GateSFX, GetActorLocation(), FRotator(0,0,0), 1.0f);
-*/
