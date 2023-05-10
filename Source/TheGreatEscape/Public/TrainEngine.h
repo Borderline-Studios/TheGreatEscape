@@ -23,7 +23,6 @@
 #include "TrainEngine.generated.h"
 
 class ATrainControlls;
-class ATrainStopButton;
 class ASplineTrack;
 class UQRGameplayAbility;
 class UQRAbilitySystemComponent;
@@ -105,6 +104,8 @@ public:
     void DisableMovement();
     void EnableMovement();
 
+    bool GetTrainMoving() const;
+
 protected:
 
 private:    
@@ -120,7 +121,6 @@ private:
     float TrainSpeedModifier = 1.0f;
     
     // Extra controls that have additional functionality
-    ATrainStopButton* EngineStopButton;
     ATrainControlls* TrainControls;
 
     //
