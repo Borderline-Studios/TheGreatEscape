@@ -14,7 +14,6 @@
 #include "SplineTrack.h"
 
 #include "TrainControlls.h"
-#include "TrainStopButton.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -126,11 +125,7 @@ void ATrainEngine::BeginPlay()
 	{
 		AddStartupGameplayAbilities();
 	}
-
-	EngineStopButton = Cast<ATrainStopButton>(GetWorld()->SpawnActor(ATrainStopButton::StaticClass()));
-	EngineStopButton->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	EngineStopButton->SetActorRelativeLocation(FVector(0.0f, -610.0f, 422.0f));
-
+	
 	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	TrainControls->SetActorRelativeLocation(FVector(-150.0f, -740.0f, 240.0f));
@@ -204,6 +199,11 @@ void ATrainEngine::ToggleTrainStop()
 	if (!bObjectiveLocked)
 	{
 		bTrainMoving = !bTrainMoving;
+		
+		if (TrainControls)
+		{
+			TrainControls->UpdateHandleRotation(bTrainMoving);
+		}
 	}
 }
 
@@ -235,6 +235,11 @@ void ATrainEngine::DisableMovement()
 void ATrainEngine::EnableMovement()
 {
 	bObjectiveLocked = false;
+}
+
+bool ATrainEngine::GetTrainMoving() const
+{
+	return bTrainMoving;
 }
 
 void ATrainEngine::BeginCarOverlap(
