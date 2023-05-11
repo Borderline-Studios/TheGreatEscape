@@ -3,6 +3,7 @@
 
 #include "Character/Abilities/Revolver/QRGA_RevolverShoot.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Boss.h"
 #include "EnemyRework.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
@@ -234,6 +235,11 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
+			}
+
+			if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
+			{
+				Boss->PostHitProcess();
 			}
 			// bool to check if it was found & the value the health equals
 			bool bFound;

@@ -12,6 +12,9 @@
 
 #include "Boss.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "QRGameplayAbility.h"
+
 ABoss::ABoss()
 {
 	// Set Up the state machines & their states
@@ -452,6 +455,53 @@ void ABoss::IdleSeq3(float DeltaTime)
 			bIdleSeq3TimerStarted = true;
 		}
 	}
+}
+
+void ABoss::NewSequenceEffect(int NewSequenceNum)
+{
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+	if (ASC)
+	{
+		if (currentStateMachineIndex == 0)
+		{
+			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[0].GetDefaultObject(), ASC);
+		}
+		if (currentStateMachineIndex == 0)
+		{
+			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
+		}
+		if (currentStateMachineIndex == 0)
+		{
+			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[2].GetDefaultObject(), ASC);
+		}
+	}
+
+}
+
+void ABoss::PostHitProcess()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Boss Hit"));
+	// get ability system component
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+
+	// bool to check if it was found & the value the health equals
+	bool bFound;
+	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), bFound);
+
+	if (Value <= 0 && currentStateMachineIndex != 2)
+	{
+		if (currentStateMachineIndex == 2)
+		{
+			currentStateMachineIndex = 2;
+		}
+		else
+		{
+			currentStateMachineIndex++;
+			NewSequenceEffect(currentStateMachineIndex);
+		}
+
+	}
+	
 }
 
 void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
