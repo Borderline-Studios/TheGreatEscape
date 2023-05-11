@@ -78,13 +78,13 @@ void ABoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	
-		GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
 
-		GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+	GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
 	
-		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+	GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
 
-		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+	GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 	
 	Tracker = nullptr; // Tracker obj
 	Laser = nullptr; // Laser left Obj
@@ -97,7 +97,10 @@ void ABoss::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// INDEX IS UPDATED WHEN DAMAGED
-	(this->*(FunctionPtrs[StateMachines[currentStateMachineIndex].CurrentState->index]))(DeltaTime);
+	if (FunctionPtrs.Num() > 0 && StateMachines.Num() > 0)
+	{
+		(this->*(FunctionPtrs[StateMachines[currentStateMachineIndex].CurrentState->index]))(DeltaTime);
+	}
 	//UE_LOG(LogTemp, Warning, TEXT("index %d"), StateMachines[currentStateMachineIndex].CurrentState->index);
 
 }
@@ -367,7 +370,6 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 		{
 			GetWorld()->GetTimerManager().SetTimer(ObjDropResetHandle, FTimerDelegate::CreateLambda([&]
 			{
-				GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 
 				bTrackerSpawned = false;
 				bTrackerAttackDone = false;
@@ -378,6 +380,7 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 				UE_LOG(LogTemp, Warning, TEXT("objdropreset timer done"));
 				bObjDropResetStarted = false;
 				StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+				GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 			}), 2.5f, false);
 		}
 		bObjDropResetStarted = true;

@@ -180,11 +180,15 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 			{
 				if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 				{
-	
+					enemyDrone->PostHitProcess();
 				}
 				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
 				{
 					// hybrid tins
+					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
+					// audio
+					// hybrid tins
+					enemyHybrid->PostHitProcess();
 				}
 				else
 				{

@@ -35,7 +35,7 @@ private:
 	void SetCanAttack(); // reset attack bool & timer
 
 	// *** Variables *** ///
-	FTimerHandle AttackDelayHandle; // Timer handle to handle the attack delay
+	FTimerHandle AttackDelayHandleDrone; // Timer handle to handle the attack delay
 	bool bCanAttack = true; // bool to check if drone can attack
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))

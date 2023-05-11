@@ -14,6 +14,7 @@
 #include "BehaviourTree/BTTask_LookAtPlayer.h"
 
 #include "EnemyReworkController.h"
+#include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
 #include "NPC.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -45,18 +46,20 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 		// Get players location
 		FVector const PlayerLocation = Player->GetActorLocation();
 
-		if (bNPC)
+		if (bDrone)
 		{
 			// get npc
-			ANPC* const NPC = Cast<ANPC>(AIController->GetPawn());
+			AEnemyReworkDrone* const Drone = Cast<AEnemyReworkDrone>(AIController->GetPawn());
 
-			FVector Forward = PlayerLocation - NPC->GetActorLocation();
+			FVector Forward = PlayerLocation - Drone->GetActorLocation();
 			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
 
-			//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
+			Drone->SetActorRotation(FRotator(0.0f, Rot.Yaw, 0.0f));
+			
+			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Drone->GetActorLocation(), PlayerLocation);
 
-			// set rotation of the actor
-			NPC->SetActorRotation(Rot);
+			Drone->TurretBaseRef->SetWorldRotation(newTurretBaseRot);
+
 		}
 		else
 		{
@@ -71,6 +74,7 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 			// set rotation of the actor
 			Enemy->SetActorRotation(Rot);
 		}
+
 		
 
 		// Finish task

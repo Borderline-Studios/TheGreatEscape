@@ -50,13 +50,15 @@ void UQRGA_DroneEnemyAttack::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 		if(ASC)
 		{
-			//ATrainEngine* Train = Cast<ATrainEngine>(HitResult.GetActor())
-			// APlayerCharacter* Player = Cast<APlayerCharacter>(HitResult.GetAc
-			if (APlayerCharacter* Player = Cast<APlayerCharacter>(HitResult.GetActor()))
+			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+			ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+			APlayerCharacter* PlayerRef = Cast<APlayerCharacter>(HitResult.GetActor());
+			if(PlayerRef)
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("Damage train boi %s"), *HitResult.GetActor()->GetName());
-				FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
-				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				if(HitResult.GetActor() == Cast<APlayerCharacter>(HitResult.GetActor()))
+				{
+					PlayerRef->PostHitProcess();
+				}
 			}
 			
 		}

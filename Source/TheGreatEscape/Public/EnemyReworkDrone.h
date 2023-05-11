@@ -30,6 +30,9 @@ public:
 	AEnemyReworkDrone(); // constructor
 	virtual void PossessedBy(AController* NewController) override; // possessed by
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
+
+	virtual void PostDeathProcess() override;
+	virtual void PostHitProcess() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Mesh")
 	UStaticMeshComponent* TurretBaseRef; // ref to turret base
