@@ -76,4 +76,10 @@ public:
 	//Niagara VFX declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
 	UNiagaraSystem* TraceVFX;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* HitVFX;
+
+	
 };

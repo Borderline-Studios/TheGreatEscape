@@ -37,6 +37,13 @@ void AMapConnector::BeginPlay()
 	}
 }
 
+void AMapConnector::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorldTimerManager().ClearTimer(LoadLevelHandle);
+}
+
 // Called every frame
 void AMapConnector::Tick(float DeltaTime)
 {
@@ -79,7 +86,6 @@ void AMapConnector::BeginFrontOverlap(
 		//
 		
 		// Load the next level
-		FTimerHandle LoadLevelHandle;
 		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, [&]()
 		{
 			UGameplayStatics::OpenLevelBySoftObjectPtr(this, NextWorldRef);

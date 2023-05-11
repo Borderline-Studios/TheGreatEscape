@@ -14,9 +14,22 @@ void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	GetPlayerReferance()->bRevolverEquipped = false;
-	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
-	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
+	if (GetPlayerReferance()->bRifleEquipped)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	else if (GetPlayerReferance()->bRiflePickedUp)
+	{
+		GetPlayerReferance()->bRevolverEquipped = false;
+		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
+		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
+	}
+
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+
 }
 
 void UQRGA_RifleEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

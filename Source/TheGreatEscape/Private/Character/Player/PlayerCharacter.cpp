@@ -141,10 +141,4 @@ APlayerCharacter* APlayerCharacter::GetPlayerReference()
 	return PlayerCharacter;
 }
 
-void APlayerCharacter::SetResources(int ValueToChange, int NewValue)
-{
-	ValueToChange = NewValue;
-	NumScrap = ValueToChange;
-}
-
 
