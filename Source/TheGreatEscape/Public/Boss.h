@@ -33,6 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
 	virtual void BeginPlay() override;
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void PostHitProcess();
 	
 
 private:
@@ -51,6 +52,8 @@ private:
 	void PersonalShieldUp(float DeltaTime); // Personal Shield up
 	void IdleSeq3(float DeltaTime); // Idle for sequence 3
 
+	void NewSequenceEffect(int NewSequenceNum);
+
 
 	// Animation Delegate fucntions
 	UFUNCTION()
@@ -63,7 +66,7 @@ private:
 	
 	// *** Variables *** //
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
-	int currentStateMachineIndex = 2; // Index to hold what state machine we are currently on
+	int currentStateMachineIndex = 0; // Index to hold what state machine we are currently on
 
 	TArray<void (ABoss::*)(float)> FunctionPtrs;
 
@@ -95,7 +98,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
 	float IdleTimer = 3.0f; // Object spawn height
 	
-
 
 	// objects
 	AActor* Tracker = nullptr; // Tracker obj

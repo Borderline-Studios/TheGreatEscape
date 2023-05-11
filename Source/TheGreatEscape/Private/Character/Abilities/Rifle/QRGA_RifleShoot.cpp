@@ -4,6 +4,7 @@
 #include "Character/Abilities/Rifle/QRGA_RifleShoot.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Boss.h"
 #include "EnemyRework.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
@@ -215,6 +216,11 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
 			}
+			if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
+			{
+				Boss->PostHitProcess();
+			}
+			
 			bool bFound;
 			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
 			if (Value > 0 && bFound)
