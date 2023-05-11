@@ -35,6 +35,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// void UpdateEngineSpeed();
+	void ControlsInteraction();
+	// Function to update the rotation of the train controls
+	void UpdateHandleRotation(bool bTrainMoving);
 
 	// ETrainSpeed ControlSetting = ETrainSpeed::Standard;
 
@@ -45,7 +48,7 @@ public:
 private:
 	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
-	
-	// Function to update the rotation of the train controls
-	void UpdateControls();
+
+	const FRotator ForwardRotation = FRotator(0.0f, 0.0f, 80.0f);
+	const FRotator BackwardRotation = FRotator(0.0f, 0.0f, 0.0f);
 };
