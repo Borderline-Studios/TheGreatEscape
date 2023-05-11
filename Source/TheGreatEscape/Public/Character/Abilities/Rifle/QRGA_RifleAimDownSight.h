@@ -19,6 +19,12 @@ public:
 	
 	UQRGA_RifleAimDownSight();
 
+	FTimerHandle ForceEndTimerHandle;
+
+	void CallForceEndTimer(FTimerHandle InputHandle);
+	UFUNCTION()
+	void CallForceEndAbility();
+
 	//GAS functions for adding Logic to abilities
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
