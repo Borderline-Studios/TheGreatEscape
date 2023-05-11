@@ -93,7 +93,7 @@ private:
 	float ObjectSpawnHeight = 1500.0f; // Object spawn height
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
-	float PlayerFeetZ = 9350.0f; // Z height of floor
+	float PlayerFeetZ = 9174.7f; // Z height of floor
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
 	float IdleTimer = 3.0f; // Object spawn height
