@@ -46,8 +46,6 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 			// if drone can attack
 			if (bCanAttack)
 			{
-				// Get train
-				ATrainEngine* Train = Cast<ATrainEngine>(UGameplayStatics::GetActorOfClass(this, ATrainEngine::StaticClass()));
 
 				// Get player character
 				ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
@@ -61,14 +59,14 @@ EBTNodeResult::Type UBTTask_DroneAttack::ExecuteTask(UBehaviorTreeComponent& Own
 					// call attack
 					Enemy->GetAbilitySystemComponent()->TryActivateAbilityByClass(Enemy->QRGAAttack, true);
 
-					UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->DronePewPew, Enemy->GetActorLocation(), FRotator(0,0,0), 0.5f);
+					UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->DronePewPew, Enemy->GetActorLocation(), Enemy->GetActorRotation(), 0.8f);
 					
 					bCanAttack = false;
-					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_DroneAttack::SetCanAttack, AttackDelay, false);
+					GetWorld()->GetTimerManager().SetTimer(AttackDelayHandleDrone, this, &UBTTask_DroneAttack::SetCanAttack, AttackDelay, false);
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("notrain"));
+					UE_LOG(LogTemp, Warning, TEXT("no player *drone*"));
 				}
 			}
 			
@@ -94,5 +92,5 @@ void UBTTask_DroneAttack::SetCanAttack()
 	bCanAttack = true;
 
 	// clear timer
-	GetWorld()->GetTimerManager().ClearTimer(AttackDelayHandle);
+	GetWorld()->GetTimerManager().ClearTimer(AttackDelayHandleDrone);
 }

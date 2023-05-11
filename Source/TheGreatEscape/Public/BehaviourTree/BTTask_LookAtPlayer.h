@@ -36,5 +36,5 @@ private:
 	float RotationSpeed = 5.0f; // speed of rotation
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone", meta = (AllowPrivateAccess = "true"))
-	bool bNPC = false; 
+	bool bDrone = false;
 };

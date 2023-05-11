@@ -47,6 +47,7 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
  {
    // Get enemy
    AEnemyReworkHybrid* const Enemy = Cast<AEnemyReworkHybrid>(AIController->GetPawn());
+  
    // if drone can attack
    if (bCanAttack)
    {
@@ -54,28 +55,49 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
     //UE_LOG(LogTemp, Warning, TEXT("Hybrid attack"));
 
     // set attacking bool for animation
-    Enemy->bAttacking = true;
 
+    UE_LOG(LogTemp, Warning, TEXT("%s"), *Enemy->GetName());
+    
     // Spawn Parameters
     SpawnParams.Owner = Enemy;
-
-    LeftTurretLoc = Enemy->GetMesh()->GetSocketLocation("L_WristSocket");
-    RightTurretLoc = Enemy->GetMesh()->GetSocketLocation("R_WristSocket");
-
-    LeftTurretRot = FRotator(0.0f, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Roll);
-    RightTurretRot = FRotator(0.0f, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Roll);
     
     // SET ANIM CALL
      Enemy->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
-   
      Enemy->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UBTTask_HybridAttack::ShootGun);
-    
+
+  
+     gameUpTime = GetWorld()->GetTimeSeconds();
    
      bCanAttack = false;
-     Enemy->bAttacking = false;
     
-     GetWorld()->GetTimerManager().SetTimer(AttackDelayHandle, this, &UBTTask_HybridAttack::SetCanAttack, AttackDelay, false);
    }
+  
+   if (gameUpTime + AttackDelay <= GetWorld()->GetTimeSeconds())
+   {
+     bCanAttack = true;
+     //bTimerStarted = false;
+   }
+
+  if (bSpawnLeft)
+  {
+   LeftTurretLoc = Enemy->GetMesh()->GetSocketLocation("L_WristSocket");
+   LeftTurretRot = FRotator(Enemy->GetActorRotation().Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Roll);
+   
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRot, SpawnParams);
+    
+   bSpawnLeft = false;
+  }
+
+  if (bSpawnRight)
+  {
+   RightTurretLoc = Enemy->GetMesh()->GetSocketLocation("R_WristSocket");
+   RightTurretRot = FRotator(Enemy->GetActorRotation().Pitch, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Roll);
+
+   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
+   
+   bSpawnRight = false;
+  }
+  
   // Finish task
   FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
   return EBTNodeResult::Succeeded;
@@ -88,54 +110,22 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
  
 }
 
-/**
- * @brief Sets the attack bool to true and clears the timer
- */
-void UBTTask_HybridAttack::SetCanAttack()
-{
- // can attack
- bCanAttack = true;
-
- // clear timer
- GetWorld()->GetTimerManager().ClearTimer(AttackDelayHandle);
-}
-
 void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
  
  if (LoadedBpProjectile)
  {
 		
-		
   if (NotifyName == FName("LeftTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRot, SpawnParams);
-
-   if (!Projectile)
-   {
-    UE_LOG(LogTemp, Warning, TEXT("Projectile class not found LEFT"));
-   }
-   else
-   {
-    UE_LOG(LogTemp, Warning, TEXT("SPAWNED PROJ"))
-   }
+   bSpawnLeft = true;
   }
   if (NotifyName == FName("RightTurretShot"))
   {
    // SPawn projectile
-   AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
-
-   if (!Projectile)
-   {
-    UE_LOG(LogTemp, Warning, TEXT("Projectile class not found RIGHT"));
-   }
-   else
-   {
-    UE_LOG(LogTemp, Warning, TEXT("SPAWNED PROJ"))
-   }
+   bSpawnRight = true;
+   
   }
-			
-		
  }
 }

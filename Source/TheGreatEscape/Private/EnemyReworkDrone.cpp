@@ -12,6 +12,7 @@
 
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkController.h"
+#include "NiagaraFunctionLibrary.h"
 
 /**
  * @brief Constructor
@@ -47,5 +48,16 @@ void AEnemyReworkDrone::PossessedBy(AController* NewController)
 void AEnemyReworkDrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AEnemyReworkDrone::PostDeathProcess()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSFX, this->GetActorLocation(), this->GetActorRotation(), 0.5, FMath::RandRange(0.7, 1.4));
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(0.5,0.5,0.5), true);
+}
+
+void AEnemyReworkDrone::PostHitProcess()
+{
+	Super::PostHitProcess();
 }
 

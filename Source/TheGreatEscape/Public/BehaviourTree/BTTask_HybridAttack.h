@@ -33,8 +33,6 @@ public:
 
 	private:
 	// *** Functions *** ///
-	UFUNCTION() 
-	void SetCanAttack(); // reset attack bool & timer
 
 	UFUNCTION()
 	void ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
@@ -61,4 +59,9 @@ public:
 
 	bool bDelegateBound = false;
 
+	bool bSpawnLeft = false;
+	bool bSpawnRight = false;
+
+	bool bTimerStarted = false;
+	float gameUpTime = 0.0f;
 };
