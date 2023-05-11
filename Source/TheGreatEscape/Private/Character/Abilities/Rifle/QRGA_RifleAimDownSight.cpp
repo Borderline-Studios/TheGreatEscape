@@ -11,9 +11,19 @@ UQRGA_RifleAimDownSight::UQRGA_RifleAimDownSight()
 	AbilityInputID = EGASAbilityInputID::AimDownSights;
 }
 
+void UQRGA_RifleAimDownSight::CallForceEndTimer(FTimerHandle InputHandle)
+{
+	GetWorld()->GetTimerManager().SetTimer(InputHandle, this, &UQRGA_RifleAimDownSight::CallForceEndAbility, 10.0f);
+}
+
+void UQRGA_RifleAimDownSight::CallForceEndAbility()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
 void UQRGA_RifleAimDownSight::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                              const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                              const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	if(GetPlayerReference()->bRifleEquipped)
@@ -59,6 +69,7 @@ void UQRGA_RifleAimDownSight::ReleasedInput(float TimePressed)
 	GetPlayerReference()->bADS = false;
 	GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("AimOut");
 	GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleAimDownSight::CallEndAbility);
+	CallForceEndTimer(ForceEndTimerHandle);
 }
 
 void UQRGA_RifleAimDownSight::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)

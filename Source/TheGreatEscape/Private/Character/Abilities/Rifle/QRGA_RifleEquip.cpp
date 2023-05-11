@@ -9,14 +9,37 @@ UQRGA_RifleEquip::UQRGA_RifleEquip()
 	AbilityInputID = EGASAbilityInputID::EquipRifle;
 }
 
+void UQRGA_RifleEquip::CallForceEndTimer(FTimerHandle InputHandle)
+{
+	GetWorld()->GetTimerManager().SetTimer(InputHandle, this, &UQRGA_RifleEquip::CallForceEndAbility, 10.0f);
+}
+
+void UQRGA_RifleEquip::CallForceEndAbility()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
 void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                       const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	GetPlayerReferance()->bRevolverEquipped = false;
-	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
-	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
+	if (GetPlayerReferance()->bRifleEquipped)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	else if (GetPlayerReferance()->bRiflePickedUp)
+	{
+		GetPlayerReferance()->bRevolverEquipped = false;
+		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
+		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
+	}
+
+	else
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+
 }
 
 void UQRGA_RifleEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

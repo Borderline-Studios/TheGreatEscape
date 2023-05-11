@@ -184,7 +184,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ActivateRocket();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void DeactivateRocket();
 	
-	UFUNCTION(BlueprintCallable)
-	void SetResources(int ValueToChange, int NewValue);
 };

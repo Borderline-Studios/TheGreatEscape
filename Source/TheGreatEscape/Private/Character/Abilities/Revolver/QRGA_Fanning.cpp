@@ -132,7 +132,7 @@ void UQRGA_Fanning::ActivateEffects()
 	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
-	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw + 90, MuzzleRotRef.Roll - 90.0f);
+	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw, MuzzleRotRef.Roll);
 	UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleVFX, GetPlayerReference()->MuzzleSphere, FName(GetPlayerReference()->MuzzleSphere->GetName()),
 													MuzzleLocation, MuzzleRotation, EAttachLocation::KeepWorldPosition, false, true);
 

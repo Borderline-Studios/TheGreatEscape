@@ -201,7 +201,7 @@ void AObjectiveGate::SnapRotation() const
  */
 void AObjectiveGate::SpawnPickup()
 {
-	CleanPickupsArray();
+	FixReferences();
 	
 	AActor* NewSlot = GetWorld()->SpawnActor(SlotClassRef);
 	NewSlot->SetActorLocation((GetActorLocation() + (GateFrame->GetRightVector() * (-250.00 - (200 * SlotRefs.Num())))) + FVector(0.0f, 0.0f, 100.0f));
