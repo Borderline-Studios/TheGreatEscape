@@ -11,9 +11,19 @@ UQRGA_RifleReload::UQRGA_RifleReload()
 	AbilityInputID = EGASAbilityInputID::Reload;
 }
 
+void UQRGA_RifleReload::CallForceEndTimer(FTimerHandle InputHandle)
+{
+	GetWorld()->GetTimerManager().SetTimer(InputHandle, this, &UQRGA_RifleReload::CallForceEndAbility, 10.0f);
+}
+
+void UQRGA_RifleReload::CallForceEndAbility()
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
+
 void UQRGA_RifleReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                        const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	if (GetPlayerReferance()->bRifleEquipped && GetPlayerReferance()->CurrentRifleAmmo != GetPlayerReferance()->RifleAmmo)
@@ -22,6 +32,7 @@ void UQRGA_RifleReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
 		GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleReload::CallEndAbility);
 		UGameplayStatics::PlaySoundAtLocation(this,ReloadSFX[0],GetPlayerReferance()->GetFirstPersonCameraComponent()->GetComponentLocation());
+		CallForceEndTimer(ForceEndTimerHandle);
 	}
 	else
 	{

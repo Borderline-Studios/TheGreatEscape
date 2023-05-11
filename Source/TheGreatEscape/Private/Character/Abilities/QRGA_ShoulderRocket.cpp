@@ -21,6 +21,7 @@ void UQRGA_ShoulderRocket::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
 	InputRelaese->OnRelease.AddDynamic(this, &UQRGA_ShoulderRocket::ReleasedInput);
 	InputRelaese->ReadyForActivation();
+	GetPlayerReference()->ActivateRocket();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyRework::StaticClass(), FoundActors);
 	ClosestActor = UGameplayStatics::FindNearestActor(GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(), FoundActors, RocketDistance);
@@ -66,6 +67,7 @@ void UQRGA_ShoulderRocket::ReleasedInput(float TimePressed)
 	EnemyCast->PostDeathProcess();
 	EnemyCast->Destroy();
 	GetPlayerReference()->RemoveRocketTargetWidget();
+	GetPlayerReference()->DeactivateRocket();
 }
 
 void UQRGA_ShoulderRocket::CallEndAbility()
