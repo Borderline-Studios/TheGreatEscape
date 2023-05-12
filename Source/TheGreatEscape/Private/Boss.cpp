@@ -492,11 +492,11 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[0].GetDefaultObject(), ASC);
 		}
-		if (currentStateMachineIndex == 0)
+		if (currentStateMachineIndex == 1)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
 		}
-		if (currentStateMachineIndex == 0)
+		if (currentStateMachineIndex == 2)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[2].GetDefaultObject(), ASC);
 		}
@@ -506,7 +506,6 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 
 void ABoss::PostHitProcess()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Boss Hit"));
 	// get ability system component
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
 
@@ -516,18 +515,13 @@ void ABoss::PostHitProcess()
 
 	if (Value <= 0 && currentStateMachineIndex != 2)
 	{
-		if (currentStateMachineIndex == 2)
-		{
-			currentStateMachineIndex = 2;
-		}
-		else
-		{
 			currentStateMachineIndex++;
 			NewSequenceEffect(currentStateMachineIndex);
-		}
-
 	}
-	
+	else if (Value <= 0 && currentStateMachineIndex == 2)
+	{
+		EndGame();
+	}
 }
 
 void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)

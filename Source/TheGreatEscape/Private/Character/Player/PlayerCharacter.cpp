@@ -77,7 +77,11 @@ void APlayerCharacter::PostHitProcess()
 	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
 	if (Found)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.3);
+		if (!HitSFX.IsEmpty())
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.3);
+		}
+
 		
 		if (Value <= 30.0f)
 		{

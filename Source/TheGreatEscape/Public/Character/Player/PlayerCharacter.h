@@ -72,6 +72,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bADS = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bBossLevel = false; 
 	
 	bool bFirstDeathCall = true;
 	

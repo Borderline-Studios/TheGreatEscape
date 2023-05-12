@@ -40,6 +40,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void DeactivatePlatforms();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void EndGame();
+
 private:
 	// *** Functions *** ///
 	void StateMachineSetUps();
@@ -70,7 +73,7 @@ private:
 	
 	// *** Variables *** //
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
-	int currentStateMachineIndex = 1; // Index to hold what state machine we are currently on
+	int currentStateMachineIndex = 0; // Index to hold what state machine we are currently on
 
 	TArray<void (ABoss::*)(float)> FunctionPtrs;
 

@@ -24,7 +24,7 @@ void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if (GetPlayerReferance()->bRiflePickedUp && GetPlayerReferance()->bRifleEquipped)
+	if (GetPlayerReferance()->bRiflePickedUp && !GetPlayerReferance()->bRifleEquipped)
 	{
 		GetPlayerReferance()->bRevolverEquipped = false;
 		GetPlayerReferance()->bRifleEquipped = true;
