@@ -35,6 +35,10 @@ public:
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void PostHitProcess();
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivatePlatforms();
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeactivatePlatforms();
 
 private:
 	// *** Functions *** ///
@@ -66,7 +70,7 @@ private:
 	
 	// *** Variables *** //
 	TArray<StateMachine::FStateMachine> StateMachines; // List of all the state machines
-	int currentStateMachineIndex = 0; // Index to hold what state machine we are currently on
+	int currentStateMachineIndex = 1; // Index to hold what state machine we are currently on
 
 	TArray<void (ABoss::*)(float)> FunctionPtrs;
 
@@ -82,6 +86,9 @@ private:
 
 	TSoftClassPtr<AActor> ObjDroppedRef; // weak pointer to object dropped class
 	UClass* ObjDroppedClassRef; // Reference to Object dropped
+
+	TSoftClassPtr<AActor> GenShieldRef; // Gen shield
+	UClass* GenShieldClassRef; // Reference to generated shield
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
 	float MaxTrackerTime = 4.0f; // max tracker time
@@ -106,6 +113,8 @@ private:
 	
 	AActor* DoubleLaserL = nullptr; // Laser left Obj double lasers
 	AActor* DoubleLaserR = nullptr; // Laser left Obj double lasers
+
+	TArray<AActor*> FoundGens; // found shield gens
 	
 	// Timers
 	FTimerHandle TrackerAttackHandle;
@@ -136,4 +145,6 @@ private:
 	bool bBootUpStarted = false;
 	bool bGenShieldUp = false;
 	bool bPersonalShieldUp = false;
+
+	bool bGenShieldAnim = false;
 };
