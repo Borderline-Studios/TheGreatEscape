@@ -17,7 +17,7 @@ void AObjectiveElevator::BeginPlay()
     Super::BeginPlay();
 
     StartPos = GetActorLocation();
-    EndPos = StartPos + FVector(0.0f, 0.0f, 7000.0);
+    EndPos = StartPos + FVector(0.0f, 0.0f, 5560.0);
 
     if (MovementCurve)
     {
