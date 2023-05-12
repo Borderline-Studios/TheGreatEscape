@@ -82,6 +82,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					//Checks for an Animnotify then triggers function
 					GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Interact::CallEndAbility);
 					ActorToDestory = HitResult.GetActor();
+					AddRifleEquipAbility();
 				}
 				
 				//Checks if its a pick upable
