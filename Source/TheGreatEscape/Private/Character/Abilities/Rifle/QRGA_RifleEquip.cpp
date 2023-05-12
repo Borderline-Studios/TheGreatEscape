@@ -24,17 +24,13 @@ void UQRGA_RifleEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if (GetPlayerReferance()->bRifleEquipped)
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-	else if (GetPlayerReferance()->bRiflePickedUp)
+	if (GetPlayerReferance()->bRiflePickedUp && GetPlayerReferance()->bRifleEquipped)
 	{
 		GetPlayerReferance()->bRevolverEquipped = false;
+		GetPlayerReferance()->bRifleEquipped = true;
 		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
 		GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleEquip::CallEndAbility);
 	}
-
 	else
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
@@ -46,7 +42,6 @@ void UQRGA_RifleEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	GetPlayerReferance()->bRifleEquipped = true;
 }
 
 bool UQRGA_RifleEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

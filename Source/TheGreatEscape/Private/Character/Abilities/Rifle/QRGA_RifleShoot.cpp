@@ -37,7 +37,6 @@ void UQRGA_RifleShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-
 }
 
 void UQRGA_RifleShoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

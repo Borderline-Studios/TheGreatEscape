@@ -18,15 +18,14 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
-#include "NiagaraCommon.h"
-#include "ParticleHelper.h"
-#include "Chaos/ImplicitObject.h"
 
 
 
 
 APlayerCharacter::APlayerCharacter()
 {
+	bRifleEquipped = false;
+	bRiflePickedUp = false;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(40.f, 96.0f);
 
@@ -101,11 +100,12 @@ void APlayerCharacter::PostDeathProcess()
 {
 	//Displables the player input
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->StopMovement();
+	GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()/4);
 	FVector ActorLoc = GetActorLocation();
 	FRotator ActorRot = GetActorRotation();
 	
-	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z - 100), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 5.0f));
+	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 75.0f));
 
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, true, true);
 
@@ -127,7 +127,7 @@ UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 
 void APlayerCharacter::LoadLevel()
 {
-	UGameplayStatics::OpenLevel(this, FName("MainMenu_01"));
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 }
 
 

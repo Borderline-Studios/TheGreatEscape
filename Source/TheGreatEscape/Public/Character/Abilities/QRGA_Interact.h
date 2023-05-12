@@ -33,6 +33,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> HealingEffectClass;
 	
+	
 	//GAS back end function for added logic to the fucntions
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
@@ -46,6 +47,9 @@ public:
 
 	UFUNCTION()
 	void ForceEndAbility();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AddRifleEquipAbility();
 
 	
 	void FirstRifleEqiup();
