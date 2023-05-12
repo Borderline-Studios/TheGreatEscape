@@ -14,6 +14,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "QRGameplayAbility.h"
+#include "Components/CapsuleComponent.h"
 
 ABoss::ABoss()
 {
@@ -31,6 +32,10 @@ ABoss::ABoss()
 	// Load the object to be spawned
 	ObjDroppedRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/ObjectDropped.ObjectDropped_C'")));
 	ObjDroppedClassRef = ObjDroppedRef.LoadSynchronous();
+
+	// Load the object to be checked
+	GenShieldRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Interactables/BossRoom/BP_ShieldGenerator.BP_ShieldGenerator_C'")));
+	GenShieldClassRef = GenShieldRef.LoadSynchronous();
 	
 }
 
@@ -73,6 +78,8 @@ void ABoss::BeginPlay()
 	if (!PlayerRef)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Reference failed to load... Boss.cpp"));
+		
+		PlayerFeetZ = PlayerRef->GetActorLocation().Z - (PlayerRef->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 1.5);
 	}
 
 }
@@ -315,6 +322,7 @@ void ABoss::Lasers(float DeltaTime)
  */
 void ABoss::ObjDropAttack(float DeltaTime)
 {
+	PlayerFeetZ = PlayerRef->GetActorLocation().Z - (PlayerRef->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 1.5);
 	FVector PlayerFeetLoc = FVector(PlayerRef->GetActorLocation().X, PlayerRef->GetActorLocation().Y, PlayerFeetZ);
 	
 	// If tracker hasnt spawned spawn it 
@@ -395,8 +403,26 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
  */
 void ABoss::Parkour(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Boot up"));
-	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	UE_LOG(LogTemp, Warning, TEXT("Parkour"));
+
+	//GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldIdle");
+	ActivatePlatforms();
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), GenShieldClassRef, FoundGens);
+
+	UE_LOG(LogTemp, Warning, TEXT("%d"), FoundGens.Num());
+	
+	if (FoundGens.Num() == 0 && !bGenShieldAnim)
+	{
+		// no more gens
+		UE_LOG(LogTemp, Warning, TEXT("No more gens switching"));
+		DeactivatePlatforms();
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldDown");
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
+		bGenShieldAnim = true;
+		//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	}
+	
 }
 
 void ABoss::StartBootUp(float DeltaTime)
@@ -415,14 +441,14 @@ void ABoss::GenShieldUp(float DeltaTime)
 {
 	UE_LOG(LogTemp, Warning, TEXT("GenShield up"));
 	
-	//if (!bGenShieldUp)
-	//{
-	//	GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldUp");
-	//	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
-	//	bGenShieldUp = true;
-	//}
+	if (!bGenShieldUp)
+	{
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldUp");
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
+		bGenShieldUp = true;
+	}
 
-	StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 }
 
 void ABoss::PersonalShieldUp(float DeltaTime)
@@ -610,9 +636,15 @@ void ABoss::StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayl
 {
 	if (NotifyName == "AnimEnding")
 	{
+		UE_LOG(LogTemp, Warning, TEXT("anim end"));
 		bBootUpStarted = false;
-		//bGenShieldUp = false;
+		bGenShieldUp = false;
 		bPersonalShieldUp = false;
+		bGenShieldAnim = false;
+		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
+	}
+	else if (NotifyName == "GenShieldUp")
+	{
 		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
 }
