@@ -2,13 +2,11 @@
 // Media Design School
 // Auckland
 // New Zealand
-// 
-// (c) 2023 Media Design School
-//
-// File Name   :	SplineTrack.h
-// Description :	Contains the declarations for the SplineTrack object
-// Author      :	Borderline Studios - Jake Laird
-// Mail        :	jake.laird@mds.ac.nz
+// (c) 2022 Media Design School
+// File Name   : SplineTrack.h
+// Description : Contains the declarations and definitions for the SplineTrack c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -17,6 +15,7 @@
 #include "GameFramework/Actor.h"
 #include "SplineTrack.generated.h"
 
+// Forward declared class
 class ATrainEngine;
 
 UCLASS()
@@ -36,28 +35,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// VARIABLES
-	
 	// FUNCTIONS
+	// Train Reference Population
 	void PopulateTrainRef(ATrainEngine* NewTrainRef);
+	// Spline Functions
 	USplineComponent* GetSpline() const;
 	ASplineTrack* GetNextSpline();
-
-protected:
-
-
+	
+	// VARIABLES
+	
 private:
 	// VARIABLES
 	UPROPERTY(VisibleAnywhere)
 	USplineComponent* Spline;
 
+	// Detection Components
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Start;
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Final;
 
+	// Train reference
 	ATrainEngine* TrainRef;
+	// Reference to Next Spline
 	ASplineTrack* NextSpline;
 
 	// FUNCTIONS
@@ -66,7 +67,6 @@ private:
 	UBoxComponent* GetStartBoxCollider() const;
 
 #if WITH_EDITOR
-	// Overrides for code that runs specifically when changes are made in the editor
 	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
 #endif

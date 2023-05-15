@@ -1,8 +1,14 @@
-// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// (c) 2022 Media Design School
+// File Name   : ObjectiveSecure.cpp
+// Description : Contains the implementation of the ObjectiveSecure c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 
 #include "Objectives/ObjectiveSecure.h"
-
 #include "Components/BoxComponent.h"
 
 /**
@@ -50,7 +56,7 @@ void AObjectiveSecure::EndAreaOverlap(
 }
 
 /**
- * @brief Default Constructor
+ * @brief Sets default values
  */
 AObjectiveSecure::AObjectiveSecure()
 {
@@ -69,14 +75,17 @@ AObjectiveSecure::AObjectiveSecure()
 }
 
 /**
- * @brief 
- * @param DeltaSeconds 
+ * @brief Called every frame
+ * @param DeltaSeconds Time between frames
  */
 void AObjectiveSecure::Tick(float DeltaSeconds)
 {
 	// Bypasses the parent Tick() and calls the AActor Tick() directly
 	Super::Super::Tick(DeltaSeconds);
 
+	// Check to see if the player has met the conditions for success on this objective
+	// The conditions being that they've protected for long enough
+	// And that they have not already succeeded.
 	if (TimeSinceEntered >= SecondsRequired && !bPlayerSucceeded)
 	{
 		bPlayerSucceeded = true;

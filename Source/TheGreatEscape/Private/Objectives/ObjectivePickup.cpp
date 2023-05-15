@@ -3,21 +3,36 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
-// Author      :  Borderline Studios - (person(s) working on file)
-// Mail        : 
+// File Name   : ObjectivePickup.cpp
+// Description : Contains the implementation of the ObjectivePickup c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 
 #include "Objectives/ObjectivePickup.h"
-
 #include "Components/BoxComponent.h"
-#include "Components/SplineComponent.h"
 
-void AObjectivePickup::BeginAreaOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+/**
+ * @brief OnComponentBeginOverlap delegate function.
+ * @param OverlappedComponent 
+ * @param OtherActor 
+ * @param OtherComp 
+ * @param OtherBodyIndex 
+ * @param bFromSweep 
+ * @param SweepResult 
+ */
+void AObjectivePickup::BeginAreaOverlap(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
 {
 }
 
+/**
+ * @brief Sets default values
+ */
 AObjectivePickup::AObjectivePickup()
 {
 	// Creates the object, gives it an offset relative to the root component then sets its world rotation to 0 on all axes
@@ -47,6 +62,10 @@ AObjectivePickup::AObjectivePickup()
 	// }
 }
 
+/**
+ * @brief Called every frame
+ * @param DeltaSeconds Time between two frames
+ */
 void AObjectivePickup::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

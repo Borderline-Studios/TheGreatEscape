@@ -17,11 +17,13 @@
 
 #include "TrainCarriage.generated.h"
 
+// Forward declared classes
 class APlayerCharacter;
 class ATrainEngine;
 class UBoxComponent;
 class USplineComponent;
 class ALight;
+
 UCLASS()
 class THEGREATESCAPE_API ATrainCarriage : public ATrainCarParent
 {
@@ -36,6 +38,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	// Called after components are initialised
 	virtual void PostInitializeComponents() override;
 
 public:	
@@ -50,12 +53,6 @@ public:
 	UBoxComponent* GetPlayerDetectionComponent() const;
 	
 private:
-	// VARIABLES
-	int CarriageNumber;
-	float DistanceFromFront = 0;	
-	TStaticArray<ALight*, 2> LightRefs;
-	static ATrainEngine* EngineRef;
-
 	// FUNCTIONS
 	virtual void BeginCarOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -71,4 +68,11 @@ private:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 		) override;
+	
+	// VARIABLES
+	int CarriageNumber;
+	float DistanceFromFront = 0;	
+	TStaticArray<ALight*, 2> LightRefs;
+	static ATrainEngine* EngineRef;
+	
 };

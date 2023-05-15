@@ -1,5 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// (c) 2022 Media Design School
+// File Name   : MapConnector.h
+// Description : Contains the declarations and definitions for the MapConnector c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -22,6 +29,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	// Called when the game ends or lifetime of the instance is coming to an end
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
@@ -46,21 +54,26 @@ private:
 #endif
 
 	// VARIABLES
+	// Player Detection Component
 	UBoxComponent* CollisionDetection;
 
+	// Spline Reference
 	UPROPERTY(EditInstanceOnly)
 	ASplineTrack* SplineRef;
+
+	// Next World Reference
+	UPROPERTY(EditInstanceOnly)
+	TSoftObjectPtr<UWorld> NextWorldRef;
+	FTimerHandle LoadLevelHandle;
+
+	// Player Reference
+	AActor* PlayerRef;
 	
+	// Camera Variables
 	UPROPERTY(EditInstanceOnly)
 	float BlendTime = 1.0f;
 
-	UPROPERTY(EditInstanceOnly)
-	TSoftObjectPtr<UWorld> NextWorldRef;
-
-	AActor* PlayerRef;
 	UCameraComponent* PlayerCamRef;
-
-	FTimerHandle LoadLevelHandle;
 	
 	// UPROPERTY(EditInstanceOnly)
 	float ZHeight = 100.0f;

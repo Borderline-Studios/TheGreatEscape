@@ -3,10 +3,10 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
-// Author      :  Borderline Studios - (person(s) working on file)
-// Mail        : 
+// File Name   : ObjectivePickup.h
+// Description : Contains the declarations and definitions for the ObjectivePickup c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -34,8 +34,10 @@ private:
 	);
 
 	// VARIABLES
+	// Drop-off zone
 	UPROPERTY(EditInstanceOnly)
 	UBoxComponent* CollectionZone;
+	// Pickup Item
 	UPROPERTY(EditInstanceOnly)
 	AActor* ObjectToPickup;
 

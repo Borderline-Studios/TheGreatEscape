@@ -3,17 +3,17 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
-// Author      :  Borderline Studios - (person(s) working on file)
-// Mail        : 
-
+// File Name   : ObjectiveGate.h
+// Description : Contains the definitions and declarations for the ObjectiveGate class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ObjectiveGate.generated.h"
 
+// Forward Declared classes
 class AObjectiveElevator;
 class USphereComponent;
 class ATrainEngine;
@@ -36,25 +36,24 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-#if WITH_EDITOR
 	
-#endif
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void UpdateObjectiveText(FString NewText = "") const;
-
 private:
 	// FUNCTIONS
+// This means that these functions only exist and apply while in the editor.
+// These do not apply to packages
 #if WITH_EDITOR
+	// Unreal standard functions
 	virtual void Destroyed() override;
 
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
-	
+
+	// Custom functions
+	// Allow for editor functionality when setting up the gate
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void SnapRotation() const;
 
@@ -68,10 +67,10 @@ private:
 	void ClearPickups();
 #endif
 
+	// Fixing Broken References
 	UFUNCTION(CallInEditor, Category = "Functionality")
 	void FixReferences();
-	
-	bool CleanPickupsArray();
+	bool CleanSlotsArray();
 	
 	UFUNCTION()
 	void BeginTrainDetectorOverlap(
@@ -84,41 +83,56 @@ private:
 	);
 
 	// VARIABLES
+	// Object Root
 	USceneComponent* Root;
 
+	// Player reference
     APlayerCharacter* PlayerRef;
-	
+
+	// Static mesh components
 	UStaticMeshComponent* GateFrame;
 	UStaticMeshComponent* GateLeft;
 	UStaticMeshComponent* GateRight;
+	
+	// Movement setup variables
 	float TimeSinceEnabled = 0;
 	const int DoorMoveDistance = 650;
 	bool bOpened = false;
 
+	// Gate door positions
 	FVector LeftGateRelativeLocation;
 	FVector RightGateRelativeLocation;
 
+	// Spline reference
 	UPROPERTY(EditInstanceOnly, Category = "Functionality")
 	ASplineTrack* SplineRef;
 
+	// Editor variable for gate positioning
 	UPROPERTY(EditInstanceOnly, Category = Functionality)
 	bool bSnapToTrack = true;
 
+	// Gate sound
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX",  meta = (AllowPrivateAccess = "true"))
 	USoundBase* GateSFX;
 
+	// Train Detection Component
 	USphereComponent* TrainDetector;
 
+	// Reference to the train engine
 	ATrainEngine* EngineRef;
 
+	// Elevator reference. Populated in editor only if a relevant elevator is required.
 	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = "true"))
 	AObjectiveElevator* ElevatorRef;
-	
+
+	// Array of references to battery slots
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<AActor*> SlotRefs;
 
+	// Bool for whether the train has been stopped
 	bool bTrainStopped = false;
 
+	// Class references for spawning actors
 	UClass* SlotClassRef;
 	UClass* PickupItemClassRef;
 
@@ -128,4 +142,6 @@ public:
 	int ElevatorInformationCheck(int RequirementToAdjust);
 	
 	void UpdateFromSlot();
+	
+	void UpdateObjectiveText(FString NewText = "") const;
 };
