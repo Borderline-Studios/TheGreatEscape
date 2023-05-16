@@ -185,6 +185,26 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 		{
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+			// bool to check if it was found & the value the health equals
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value <= 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else if (!bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
+			}
+
 			
 			//Actiavte hit VFX on hit object/actor
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitInput.Location, HitInput.GetActor()->GetActorRotation());
@@ -240,25 +260,6 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 			if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
 			{
 				Boss->PostHitProcess();
-			}
-			// bool to check if it was found & the value the health equals
-			bool bFound;
-			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
-			if (Value <= 0 && bFound)
-			{
-				//Uses the out going handle to deal damage
-				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
-			}
-			else if (!bFound)
-			{
-				//Uses the out going handle to deal damage
-				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
-			}
-			else
-			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
 			}
 		}
 	}

@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void EndGame();
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void AdjustUIValue();
+
 private:
 	// *** Functions *** ///
 	void StateMachineSetUps();
@@ -60,6 +63,8 @@ private:
 	void IdleSeq3(float DeltaTime); // Idle for sequence 3
 
 	void NewSequenceEffect(int NewSequenceNum);
+
+
 
 
 	// Animation Delegate fucntions

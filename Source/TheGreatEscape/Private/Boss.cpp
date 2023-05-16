@@ -508,6 +508,7 @@ void ABoss::PostHitProcess()
 {
 	// get ability system component
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
+	AdjustUIValue();
 
 	// bool to check if it was found & the value the health equals
 	bool bFound;
