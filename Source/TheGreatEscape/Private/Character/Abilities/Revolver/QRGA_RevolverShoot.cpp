@@ -259,6 +259,16 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 
 			if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
 			{
+				Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+				if (Value <= 0 && bFound)
+				{
+					Boss->AdjustUIValue(false);
+				}
+				else
+				{
+					Boss->AdjustUIValue(true);
+				}
+				
 				Boss->PostHitProcess();
 			}
 		}

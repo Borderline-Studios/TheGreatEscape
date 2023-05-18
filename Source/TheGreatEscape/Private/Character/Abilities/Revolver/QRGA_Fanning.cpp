@@ -248,6 +248,16 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 			}
 			else if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
 			{
+				Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+				if (Value <= 0 && bFound)
+				{
+					Boss->AdjustUIValue(false);
+				}
+				else
+				{
+					Boss->AdjustUIValue(true);
+				}
+				
 				Boss->PostHitProcess();
 			}
 		}
