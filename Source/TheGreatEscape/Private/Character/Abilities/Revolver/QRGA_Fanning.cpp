@@ -4,6 +4,7 @@
 #include "Character/Abilities/Revolver/QRGA_Fanning.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Boss.h"
 #include "EnemyRework.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
@@ -163,7 +164,7 @@ FHitResult UQRGA_Fanning::HitScan(float MaxDistance)
 
 void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 {
-		if (HitInput.GetActor())
+	if (HitInput.GetActor())
 	{
 		//Getting the ability system component from the hit actor
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitInput.GetActor());
@@ -172,6 +173,27 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 		{
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+							
+			// bool to check if it was found & the value the health equals
+			bool bFound;
+			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+			if (Value <= 0 && bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else if (!bFound)
+			{
+				//Uses the out going handle to deal damage
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
+				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
+			}
+			else
+			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
+			}
+
 			
 			//Actiavte hit VFX on hit object/actor
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitInput.Location, HitInput.GetActor()->GetActorRotation());
@@ -224,25 +246,19 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 					GetPlayerReference()->VoiceLineTiggerNum--;
 				}
 			}
+			else if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
+			{
+				Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
+				if (Value <= 0 && bFound)
+				{
+					Boss->AdjustUIValue(false);
+				}
+				else
+				{
+					Boss->AdjustUIValue(true);
+				}
 				
-			// bool to check if it was found & the value the health equals
-			bool bFound;
-			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
-			if (Value <= 0 && bFound)
-			{
-				//Uses the out going handle to deal damage
-				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
-			}
-			else if (!bFound)
-			{
-				//Uses the out going handle to deal damage
-				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
-			}
-			else
-			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
+				Boss->PostHitProcess();
 			}
 		}
 	}

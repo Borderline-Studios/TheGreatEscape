@@ -496,6 +496,7 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		if (currentStateMachineIndex == 1)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
+			Seq2ShieldSetup();
 		}
 		if (currentStateMachineIndex == 2)
 		{
@@ -509,7 +510,6 @@ void ABoss::PostHitProcess()
 {
 	// get ability system component
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
-	AdjustUIValue();
 
 	// bool to check if it was found & the value the health equals
 	bool bFound;
