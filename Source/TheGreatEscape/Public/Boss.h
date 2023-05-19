@@ -44,7 +44,10 @@ public:
 	void EndGame();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void AdjustUIValue();
+	void AdjustUIValue(bool Shield);
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void Seq2ShieldSetup();
 
 private:
 	// *** Functions *** ///
