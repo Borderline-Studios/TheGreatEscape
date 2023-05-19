@@ -20,22 +20,6 @@ ABoss::ABoss()
 {
 	// Set Up the state machines & their states
 	StateMachineSetUps();
-
-	// Load the laser
-	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Laser.Laser_C'")));
-	LaserClassRef = LaserRef.LoadSynchronous();
-
-	// Load the tracker
-	TrackerRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Tracker.Tracker_C'")));
-	TrackerClassRef = TrackerRef.LoadSynchronous();
-
-	// Load the object to be spawned
-	ObjDroppedRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/ObjectDropped.ObjectDropped_C'")));
-	ObjDroppedClassRef = ObjDroppedRef.LoadSynchronous();
-
-	// Load the object to be checked
-	GenShieldRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Interactables/BossRoom/BP_ShieldGenerator.BP_ShieldGenerator_C'")));
-	GenShieldClassRef = GenShieldRef.LoadSynchronous();
 	
 }
 
@@ -81,6 +65,23 @@ void ABoss::BeginPlay()
 		
 		PlayerFeetZ = PlayerRef->GetActorLocation().Z - (PlayerRef->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 1.5);
 	}
+
+	// Load the laser
+	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Laser.Laser_C'")));
+	LaserClassRef = LaserRef.LoadSynchronous();
+
+	// Load the tracker
+	TrackerRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Tracker.Tracker_C'")));
+	TrackerClassRef = TrackerRef.LoadSynchronous();
+
+	// Load the object to be spawned
+	ObjDroppedRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/ObjectDropped.ObjectDropped_C'")));
+	ObjDroppedClassRef = ObjDroppedRef.LoadSynchronous();
+
+	
+	// Load the object to be checked
+	GenShieldRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Interactables/BossRoom/BP_ShieldGenerator.BP_ShieldGenerator_C'")));
+	GenShieldClassRef = GenShieldRef.LoadSynchronous();
 
 }
 
@@ -495,6 +496,7 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		if (currentStateMachineIndex == 1)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
+			Seq2ShieldSetup();
 		}
 		if (currentStateMachineIndex == 2)
 		{
@@ -508,7 +510,6 @@ void ABoss::PostHitProcess()
 {
 	// get ability system component
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
-	AdjustUIValue();
 
 	// bool to check if it was found & the value the health equals
 	bool bFound;
