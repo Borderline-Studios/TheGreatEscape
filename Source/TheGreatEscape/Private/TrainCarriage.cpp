@@ -30,12 +30,14 @@ ATrainEngine* ATrainCarriage::EngineRef;
 ATrainCarriage::ATrainCarriage()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	PlayerDetectionComponent->InitBoxExtent(FVector(200.0f, 900.0f, 350.0f));
 	PlayerDetectionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
 	PlayerDetectionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATrainCarriage::BeginCarOverlap);
 	PlayerDetectionComponent->OnComponentEndOverlap.AddDynamic(this, &ATrainCarriage::EndCarOverlap);
+
+	SetActorTickEnabled(false);
 }
 
 /**
