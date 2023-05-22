@@ -1,4 +1,0 @@
-Begin Object Class=/Script/Engine.Font Name="Kirsty_key"
-   FontCacheType=Runtime
-   CompositeFont=(DefaultTypeface=(Fonts=((Name="Default",Font=(FontFaceAsset=FontFace'"/Game/Production/UI/Fonts/FontFaces/kirsty_rg_font.kirsty_rg_font"')),(Name="Regular Italic",Font=(FontFaceAsset=FontFace'"/Game/Production/UI/Fonts/FontFaces/kirsty_rg_it_font.kirsty_rg_it_font"')),(Name="Bold",Font=(FontFaceAsset=FontFace'"/Game/Production/UI/Fonts/FontFaces/kirsty_bd_font.kirsty_bd_font"')),(Name="Bold Italic",Font=(FontFaceAsset=FontFace'"/Game/Production/UI/Fonts/FontFaces/kirsty_bd_it_font.kirsty_bd_it_font"')))))
-End Object
