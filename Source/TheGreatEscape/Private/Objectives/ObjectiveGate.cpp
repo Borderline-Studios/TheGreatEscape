@@ -19,6 +19,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Objectives/ObjectiveGateBatterySlot.h"
 #include "Objectives/ObjectiveElevator.h"
+#include "Objectives/GateSphereComponent.h"
 
 /**
  * @brief Sets default values
@@ -55,11 +56,16 @@ AObjectiveGate::AObjectiveGate()
 
 	// Populate and set up the Sphere Collision Component. Includes function delegate setup.
 	// Also sets the radius of the sphere.
-	TrainDetector = CreateDefaultSubobject<USphereComponent>(TEXT("Train Detector"));
+	TrainDetector = CreateDefaultSubobject<UGateSphereComponent>(TEXT("Train Detector"));
 	TrainDetector->SetupAttachment(RootComponent);
-	TrainDetector->SetSphereRadius(1000.0f);
+	TrainDetector->SetSphereRadius(50.0f);
 	// TrainDetector->SetWorldLocation(GetActorLocation());
 	TrainDetector->OnComponentBeginOverlap.AddDynamic(this, &AObjectiveGate::BeginTrainDetectorOverlap);
+	
+	if (SplineRef && TrainDetector)
+	{
+		TrainDetector->InitialiseFromGate(SplineRef);
+	}
 	
 	// Populate the class references so that proper assets can be spawned.
 	SlotClassRef = AObjectiveGateBatterySlot::StaticClass();
@@ -203,6 +209,33 @@ void AObjectiveGate::PostEditUndo()
 }
 
 /**
+ * @brief This Unreal function is called after a property is changed in this class.
+ *		  Currently sets the gate to move to the nearest position on the spline if snapping is enabled
+ * @param PropertyChangedEvent 
+ */
+void AObjectiveGate::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// Get the name of the property that changed
+	const FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	// Check if the property name that was changed matches the property we're looking for,
+	// in this case the Spline Reference
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AObjectiveGate, SplineRef))
+	{
+		if (SplineRef && bSnapToTrack)
+		{
+			Root->SetWorldLocation(SplineRef->GetSpline()->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World));
+		}
+		if (SplineRef && TrainDetector)
+		{
+			TrainDetector->InitialiseFromGate(SplineRef);
+		}
+	}
+}
+
+/**
  * @brief This custom function is only to exist in editor because that is the only place it will be used.
  *		  Sets the Location and Rotation of the spline to that of the point nearest it's location at the time of this function being called.
  *		  Only occurs if the conditions of the Spline reference being populated and the boolean being set to true in editor
@@ -302,6 +335,11 @@ void AObjectiveGate::FixReferences()
 		{
 			SlotRefs.AddUnique(CastActor);
 		}
+	}
+	
+	if (SplineRef && TrainDetector)
+	{
+		TrainDetector->InitialiseFromGate(SplineRef);
 	}
 }
 

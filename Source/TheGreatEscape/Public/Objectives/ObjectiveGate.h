@@ -13,6 +13,7 @@
 #include "GameFramework/Actor.h"
 #include "ObjectiveGate.generated.h"
 
+class UGateSphereComponent;
 // Forward Declared classes
 class AObjectiveElevator;
 class USphereComponent;
@@ -51,6 +52,7 @@ private:
 
   	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditUndo() override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Custom functions
 	// Allow for editor functionality when setting up the gate
@@ -116,7 +118,8 @@ private:
 	USoundBase* GateSFX;
 
 	// Train Detection Component
-	USphereComponent* TrainDetector;
+	UPROPERTY(VisibleInstanceOnly)
+	UGateSphereComponent* TrainDetector;
 
 	// Reference to the train engine
 	ATrainEngine* EngineRef;
