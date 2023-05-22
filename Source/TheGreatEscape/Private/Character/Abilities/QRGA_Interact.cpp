@@ -47,8 +47,6 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				if (ATrainControlls* ControlsRef = Cast<ATrainControlls>(HitResult.GetActor()))
 				{
 					ControlsRef->ControlsInteraction();
-					// play sound
-					UGameplayStatics::PlaySoundAtLocation(GetWorld(),GetPlayerReferance()->LeverSFX[FMath::RandRange(0,2)], ControlsRef->GetActorLocation(), FRotator(0,0,0), 1.0f);
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Horn"))
 				{

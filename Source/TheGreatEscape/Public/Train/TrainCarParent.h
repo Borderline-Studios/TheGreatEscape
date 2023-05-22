@@ -11,6 +11,8 @@
 
 #include "TrainCarParent.generated.h"
 
+class ATrainEngine;
+
 UCLASS(Abstract)
 class THEGREATESCAPE_API ATrainCarParent : public AActor
 {
@@ -72,6 +74,7 @@ protected:
 	// Shared / Static variables
 	inline static APlayerCharacter* PlayerRef = nullptr;
 	inline static USplineComponent* SplineRef = nullptr;
+	inline static ATrainEngine* EngineRef = nullptr;
 
 	// Individual Variables
 	USceneComponent* SceneRoot = nullptr;

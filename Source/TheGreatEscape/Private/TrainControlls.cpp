@@ -68,6 +68,8 @@ void ATrainControlls::ControlsInteraction()
 	if (EngineRef)
 	{
 		EngineRef->ToggleTrainStop();
+
+		PlayLeverSound();
 		UpdateHandleRotation(EngineRef->GetTrainMoving());
 	}
 }
@@ -81,6 +83,15 @@ void ATrainControlls::UpdateHandleRotation(bool bTrainMoving)
 	else
 	{
 		ControlHandle->SetRelativeRotation(BackwardRotation);
+	}
+}
+
+void ATrainControlls::PlayLeverSound()
+{
+	if (!LeverSFX.IsEmpty())
+	{
+		const int RandIndex = FMath::RandRange(0,LeverSFX.Num() - 1);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeverSFX[RandIndex], GetActorLocation(), FRotator(), 0.6f);
 	}
 }
 

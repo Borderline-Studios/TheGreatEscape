@@ -2,7 +2,7 @@
 
 
 #include "Train/TrainCarParent.h"
-
+#include "TrainEngine.h"
 
 // PUBLIC
 // Sets default values
@@ -44,7 +44,10 @@ void ATrainCarParent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 	// Clear individual variables
-	
+	if (EngineRef)
+	{
+		EngineRef = nullptr;
+	}
 
 
 	// FINAL (MUST BE LAST)
@@ -169,6 +172,10 @@ void ATrainCarParent::DisableTrainMovementTimer() const
 		if (!CheckTrainForPlayer())
 		{
 			bPlayerOnTrain = false;
+			if (EngineRef && EngineRef->GetTrainMoving())
+			{
+				EngineRef->ToggleTrainStop();
+			}
 			GetWorldTimerManager().ClearTimer(PlayerDetectionTimerHandle);
 		}
 	}, 2.0f, true);

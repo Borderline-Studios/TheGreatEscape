@@ -109,7 +109,7 @@ void ATrainEngine::BeginPlay()
 		SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 
 		bStartedMoving = true;
-		bTrainMoving = true;
+		// bTrainMoving = true;
 	}
 	
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
@@ -126,7 +126,7 @@ void ATrainEngine::BeginPlay()
 		AddStartupGameplayAbilities();
 	}
 	
-	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(ATrainControlls::StaticClass()));
+	TrainControls = Cast<ATrainControlls>(GetWorld()->SpawnActor(TrainControlsClass));
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	TrainControls->SetActorRelativeLocation(FVector(-150.0f, -740.0f, 240.0f));
 
@@ -140,6 +140,11 @@ void ATrainEngine::BeginPlay()
 	if (EngineMesh)
 	{
 		CarMesh->SetStaticMesh(EngineMesh);
+	}
+	
+	if (!EngineRef)
+	{
+		EngineRef = this;
 	}
 
 	EnableTrainMovementTimer();
@@ -163,10 +168,9 @@ void ATrainEngine::Tick(float DeltaTime)
 	// Standard Tick Operation
     if (bStartedMoving && GetPlayerOnTrain() && !bObjectiveLocked)
     {
-    	if (bTrainMoving)
-    	{
-    		TimeSinceStart += (DeltaTime * TrainSpeedModifier);
-    	}
+    	if (!bTrainMoving) return;
+    	
+    	TimeSinceStart += (DeltaTime * TrainSpeedModifier);
     	
 	    const float TimerTrack = TimeSinceStart / TimeToComplete;
 
@@ -202,6 +206,7 @@ void ATrainEngine::ToggleTrainStop()
 		
 		if (TrainControls)
 		{
+			TrainControls->PlayLeverSound();
 			TrainControls->UpdateHandleRotation(bTrainMoving);
 		}
 	}
