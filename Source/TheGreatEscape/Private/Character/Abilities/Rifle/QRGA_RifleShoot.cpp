@@ -243,6 +243,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			else
 			{
 				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, true);
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}
 		}
 		else if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
