@@ -27,6 +27,9 @@ void USplineTraversalComponent::BeginPlay()
 		SplineRef = SplineParent->GetSpline();
 		SplineLength = SplineRef->GetSplineLength();
 
+		SplineOffset = SplineOffset % SplineLength;
+		NormalisedOffset = static_cast<float>(SplineOffset) / static_cast<float>(SplineLength);
+
 		// Timeline
 		if (MovementCurve)
 		{
@@ -70,9 +73,15 @@ void USplineTraversalComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 void USplineTraversalComponent::ProcessMovement(const float TimelineProgress) const
 {
 	if (!SplineRef) return;
+
+	int OffsetProgress = (NormalisedOffset + TimelineProgress) * SplineLength;
 	
-	const FVector CurrentSplineLoc = SplineRef->GetLocationAtDistanceAlongSpline(TimelineProgress * SplineLength, ESplineCoordinateSpace::World);
-	FRotator CurrentSplineRot = SplineRef->GetRotationAtDistanceAlongSpline(TimelineProgress * SplineLength, ESplineCoordinateSpace::World);
+	if (OffsetProgress > SplineLength) OffsetProgress -= SplineLength;
+	else if (OffsetProgress < 0) OffsetProgress += SplineLength;
+	
+	const FVector CurrentSplineLoc = SplineRef->GetLocationAtDistanceAlongSpline(OffsetProgress, ESplineCoordinateSpace::World);
+	FRotator CurrentSplineRot = SplineRef->GetRotationAtDistanceAlongSpline(OffsetProgress, ESplineCoordinateSpace::World);
+	CurrentSplineRot -= FRotator(0.0f, 90.0f, 0.0f);
 	CurrentSplineRot.Roll = 0;
 	
 	OwnerRef->SetActorLocationAndRotation(CurrentSplineLoc, CurrentSplineRot);
@@ -82,3 +91,37 @@ void USplineTraversalComponent::OnEndMovementTimeline()
 {
 }
 
+#if WITH_EDITOR
+void USplineTraversalComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	// Get the name of the property that changed
+	const FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	// Check if the property name that was changed matches the property we're looking for,
+	// in this case the Spline Reference
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(USplineTraversalComponent, SplineParent))
+	{
+		// Check the Spline Parent is populated
+		if (SplineParent)
+		{
+			SplineRef = SplineParent->GetSpline();
+			SplineLength = SplineRef->GetSplineLength();
+			SplineOffset = 0;
+			
+			ProcessMovement(0);
+		}
+	}
+	else if (PropertyName == GET_MEMBER_NAME_CHECKED(USplineTraversalComponent, SplineOffset))
+	{
+		// Check the Spline Reference is populated
+		if (SplineRef)
+		{
+			SplineOffset = SplineOffset % SplineLength;
+			NormalisedOffset = static_cast<float>(SplineOffset) / static_cast<float>(SplineLength);
+			ProcessMovement(0);
+		}
+	}
+}
+#endif

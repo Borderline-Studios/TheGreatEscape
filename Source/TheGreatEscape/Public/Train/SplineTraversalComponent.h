@@ -35,6 +35,10 @@ private:
 	UFUNCTION()
 	void OnEndMovementTimeline();
 
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
 	// VARIABLES
 	// Timeline
 	FTimeline MovementTimeline;
@@ -46,6 +50,7 @@ private:
 	ASplineTrack* SplineParent;
 	UPROPERTY()
 	USplineComponent* SplineRef = nullptr;
+	UPROPERTY(VisibleInstanceOnly)
 	int SplineLength = 0;
 
 	// Parent Details
@@ -57,7 +62,10 @@ private:
 	int TimeToComplete = 30;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess), Category = "Editable")
 	bool bLoop = false;
-
+	// Offset variables
+	UPROPERTY(EditInstanceOnly, meta = (ClampMin = 0))
+	int SplineOffset = 0;
+	float NormalisedOffset = 0;
 public:
 	// FUNCTIONS
 
