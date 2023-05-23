@@ -14,8 +14,18 @@ AEnemy_Drone::AEnemy_Drone()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
-	RootComponent = StaticMesh;
+	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
+	RootComponent = BodyMesh;
+
+	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>("GunMesh");
+	GunMesh->SetupAttachment(RootComponent);
+
+	GunBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>("GunBaseMesh");
+	GunBaseMesh->SetupAttachment(RootComponent);
+
+	RotorMesh = CreateDefaultSubobject<UStaticMeshComponent>("RotorMesh");
+	RotorMesh->SetupAttachment(RootComponent);
+	
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>("DetectionSphere");
 	DetectionSphere->SetupAttachment(RootComponent);
@@ -66,7 +76,7 @@ void AEnemy_Drone::TrackPlayer()
 	NumTracks++;
 	if (NumTracks >= TracksNeeded)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, TEXT("DroneHasFired"));
+		GetPlayerReference()->PostDeathProcess();
 		NumTracks = 0;
 	}
 }
@@ -93,6 +103,7 @@ void AEnemy_Drone::Tick(float DeltaTime)
 	if (bInRange)
 	{
 		LookAtPlayer(false);
+		LazerTracePlayer();
 	}
 
 }
