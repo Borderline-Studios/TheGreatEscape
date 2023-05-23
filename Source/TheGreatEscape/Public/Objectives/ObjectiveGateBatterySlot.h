@@ -1,11 +1,19 @@
-// // Bachelor of Software Engineering// Media Design School// Auckland// New Zealand// // (c) 2022 Media Design School//// File Name   : // Description : // Author      :  Borderline Studios - (person(s) working on file)// Mail        : 
-
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// (c) 2022 Media Design School
+// File Name   : ObjectiveGate.h
+// Description : Contains the definitions and declarations for the ObjectiveGate class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ObjectiveGateBatterySlot.generated.h"
 
+// Forward declared classes
 class USphereComponent;
 class AObjectiveGate;
 class APlayerCharacter;
@@ -22,6 +30,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	// Called when the game ends or lifetime of the instance is coming to an end
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
@@ -45,10 +54,10 @@ private:
 	// VARIABLES
 	bool bSlotFilled = false;
 
-	// reference to player
+	// Reference to player
 	inline static APlayerCharacter* PlayerRef;
 
-	// reference to gate
+	// Reference to gate
 	AObjectiveGate* GateRef;
 
 	// Pickup Item Class
@@ -63,14 +72,7 @@ private:
 	// Static Mesh Component
 	UStaticMeshComponent* SlotMesh;
 	
-protected:
-	// FUNCTIONS
-
-
-	// VARIABLES
-
-
-	public:
+public:
 	// FUNCTIONS
 	bool GetSlotFilled();
 	void SpawnPickup(UClass* NewPickupItemClass);

@@ -6,7 +6,7 @@
 // File Name   :
 // Description :
 // Author      :  Borderline Studios - (person(s) working on file)
-// Mail        :
+// Mail        : 
 
 #pragma once
 
@@ -117,10 +117,12 @@ private:
     
     float TimeSinceStart;
     bool bStartedMoving = false;
-    bool bTrainMoving = true;
+    bool bTrainMoving = false;
     float TrainSpeedModifier = 1.0f;
     
     // Extra controls that have additional functionality
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ATrainControlls> TrainControlsClass;
     ATrainControlls* TrainControls;
 
     //

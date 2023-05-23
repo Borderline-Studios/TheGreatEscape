@@ -2,37 +2,37 @@
 // Media Design School
 // Auckland
 // New Zealand
-// 
-// (c) 2023 Media Design School
-//
-// File Name   :	SplineTrack.cpp
-// Description :	Contains implementation of Spline Track functionality
-// Author      :	Borderline Studios - Jake Laird
-// Mail        :	jake.laird@mds.ac.nz
+// (c) 2022 Media Design School
+// File Name   : SplineTrack.cpp
+// Description : Contains the implementation of the SplineTrack c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 
 #include "SplineTrack.h"
 #include "TrainEngine.h"
 #include "Kismet/KismetMathLibrary.h"
 
 /**
- * @brief
- * Default constructor for the SplineTrack. 
+ * @brief Sets default values 
  */
 ASplineTrack::ASplineTrack()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
+	// Populate and set up the Spline Component
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Comp"));
 	Spline->SetupAttachment(RootComponent);
 	Spline->SetUnselectedSplineSegmentColor(FLinearColor(FColor::Blue));
 	Spline->SetSelectedSplineSegmentColor(FLinearColor(FColor::Magenta));
 	Spline->SetTangentColor(FLinearColor(0.718f, 0.589f, 0.921f, 1.0f));
-	
+
+	// Populate and set up the start collision component
 	Start = CreateDefaultSubobject<UBoxComponent>(TEXT("Start TriggerBox"));
 	Start->SetupAttachment(Spline);
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::Local));
 
+	// Populate and set up the end collision component
 	Final = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox #2"));
 	Final->SetupAttachment(Spline);
 	Final->SetWorldScale3D(FVector(0.1f));
@@ -173,11 +173,15 @@ void ASplineTrack::BeginPlay()
 	const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
 }
 
-// Called every frame
+/**
+ * @brief Called every frame
+ * @param DeltaTime Time between frames
+ */
 void ASplineTrack::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Check if final is not the same as the location of the 
 	if (Final->GetComponentLocation() != Spline->GetLocationAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World))
 	{
 		const FTransform FinalSplinePoint = Spline->GetTransformAtSplinePoint(Spline->GetNumberOfSplinePoints() - 1, ESplineCoordinateSpace::World);
@@ -212,21 +216,21 @@ void ASplineTrack::Tick(float DeltaTime)
 }
 
 /**
- * @brief
- * Allows for the train reference to be populated externally but only once. If a new reference is attempted after the first, it will not apply.
+ * @brief Allows for the train reference to be populated externally but only once. If a new reference is attempted after the first, it will not apply.
  * @param NewTrainRef The train engine for the spline to reference.
  */
 void ASplineTrack::PopulateTrainRef(ATrainEngine* NewTrainRef)
 {
-	if (TrainRef == nullptr)
+	// Check for if the train reference has not been populated 
+	if (!TrainRef)
 	{
+		// Populate the train reference
 		TrainRef = NewTrainRef;
 	}
 }
 
 /**
- * @brief
- * Exposes the GetSplineComponent Function to code.
+ * @brief Exposes the GetSplineComponent Function to code.
  * @return 
  */
 USplineComponent* ASplineTrack::GetSpline() const
@@ -235,8 +239,7 @@ USplineComponent* ASplineTrack::GetSpline() const
 }
 
 /**
- * @brief
- * Allows external access to the segment after this spline's segment.
+ * @brief Allows external access to the segment after this spline's segment.
  * @return Will return the next spline if populated or a nullptr if not.
  */
 ASplineTrack* ASplineTrack::GetNextSpline()
@@ -245,8 +248,7 @@ ASplineTrack* ASplineTrack::GetNextSpline()
 }
 
 /**
- * @brief
- * Allows external access to this segment's spline component through blueprints only
+ * @brief Allows external access to this segment's spline component through blueprints only
  * @return This segment's spline component
  */
 USplineComponent* ASplineTrack::GetSplineComponent() const
@@ -255,8 +257,7 @@ USplineComponent* ASplineTrack::GetSplineComponent() const
 }
 
 /**
- * @brief
- * Allows external access to the Box Collision component at the beginning of the spline segment.
+ * @brief Allows external access to the Box Collision component at the beginning of the spline segment.
  * @return The box collider at the start of the spline segment
  */
 UBoxComponent* ASplineTrack::GetStartBoxCollider() const
@@ -266,8 +267,7 @@ UBoxComponent* ASplineTrack::GetStartBoxCollider() const
 
 #if WITH_EDITOR
 /**
- * @brief
- * Editor Function that allows for certain actions to be performed at certain stages during movement.
+ * @brief Editor Function that allows for certain actions to be performed at certain stages during movement.
  * This function sets the WorldLocation of both Box Collision components so that they move with the start and end of the spline respectively.
  * @param bFinished Whether the movement has finished or not. Can be used to make things happen only while moving or not moving.
  */
@@ -275,30 +275,20 @@ void ASplineTrack::PostEditMove(bool bFinished)
 {
 	Super::PostEditMove(bFinished);
 
-	// Code that runs during the move action as well as one more time at the end of that action:
+	// Set the location of the start and end components to the current position of the start and end of the spline
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::World));
-
-	// Code only runs here during specific stages of the Editor Move
-	if (!bFinished)	// Only runs during the actual moving of the item
-	{
-		
-	}
-	else			// Only runs at the end of the Move action
-	{
-		
-	}
 }
 
 /**
- * @brief
- * Editor function that allows for certain actions to be performed when undo-ing an editor action involving this object
+ * @brief Editor function that allows for certain actions to be performed when undo-ing an editor action involving this object
  * This function sets the location of both Box Colliders to the start and end of the spline component respectively.
  */
 void ASplineTrack::PostEditUndo()
 {
 	Super::PostEditUndo();
 
+	// Set the location of the start and end components to the current position of the start and end of the spline
 	Start->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
 	Final->SetWorldLocation(Spline->GetLocationAtDistanceAlongSpline(Spline->GetSplineLength(), ESplineCoordinateSpace::World));
 }

@@ -34,21 +34,29 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// FUNCTIONS
 	// void UpdateEngineSpeed();
 	void ControlsInteraction();
 	// Function to update the rotation of the train controls
 	void UpdateHandleRotation(bool bTrainMoving);
+	// Allows external classes to play a lever sound
+	void PlayLeverSound();
 
-	// ETrainSpeed ControlSetting = ETrainSpeed::Standard;
-
+	// VARIABLES
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* ControlHandle;
 	UStaticMeshComponent* ControlBase;
 
 private:
+	// FUNCTIONS
+	
+	// VARIABLES
 	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
 
 	const FRotator ForwardRotation = FRotator(0.0f, 0.0f, 80.0f);
 	const FRotator BackwardRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
+	TArray<USoundBase*> LeverSFX;
 };

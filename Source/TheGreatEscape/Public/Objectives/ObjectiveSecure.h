@@ -3,10 +3,10 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
-// Author      :  Borderline Studios - (person(s) working on file)
-// Mail        : 
+// File Name   : ObjectiveSecure.h
+// Description : Contains the declarations and definitions for the ObjectiveSecure c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -49,12 +49,6 @@ private:
 	int TimeSinceEntered = 0;
 
 	bool bPlayerInZone = false;
-
-protected:
-	// FUNCTIONS
-
-
-	// VARIABLES
 
 public:
 	// FUNCTIONS

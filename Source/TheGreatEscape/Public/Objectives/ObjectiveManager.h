@@ -3,11 +3,10 @@
 // Auckland
 // New Zealand
 // (c) 2022 Media Design School
-// File Name   :
-// Description :
-// Author      :  Borderline Studios - (person(s) working on file)
-// Mail        :
-
+// File Name   : ObjectiveManager.h
+// Description : Contains the declarations and definitions for the ObjectiveManager c++ class.
+// Author      : Borderline Studios - Jake Laird
+// Mail        : jake.laird@mds.ac.nz
 #pragma once
 
 #include "CoreMinimal.h"
@@ -34,21 +33,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-protected:
-
-
 private:
-	// VARIABLES
-	UPROPERTY()
-	UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(EditInstanceOnly)
-	ASplineTrack* SplineRef;
-
-	UPROPERTY(VisibleInstanceOnly)
-	TArray<AObjectiveParent*> ObjectiveRefs;
-
 	// FUNCTIONS
+	// Editor callable functions that interact with objectives
 	UFUNCTION(CallInEditor)
 	void AddPickupObjective();
 	
@@ -64,8 +51,9 @@ private:
 	UFUNCTION(CallInEditor)
 	void ClearObjectives();
 
+	// Non-Editor Callable functions
 	void UpdateArray();
-
+	
 	bool ReachedCap() const
 	{
 		return ObjectiveRefs.Num() > 4;
@@ -75,4 +63,14 @@ private:
 	virtual void PostTransacted(const FTransactionObjectEvent& TransactionEvent) override;
 	// virtual void PostEditUndo() override;
 #endif
+	
+	// VARIABLES
+	UStaticMeshComponent* StaticMesh;
+
+	// References
+	UPROPERTY(EditInstanceOnly)
+	ASplineTrack* SplineRef;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TArray<AObjectiveParent*> ObjectiveRefs;
 };
