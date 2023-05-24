@@ -5,10 +5,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Boss.h"
 #include "EnemyRework.h"
+#include "EnemyReworkController.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "EnemyReworkHybridTank.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "BehaviourTree/Utils.h"
 #include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -230,12 +234,17 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					enemyDrone->PostHitProcess();
 				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+				else if (AEnemyReworkHybrid* enemyHybrid = Cast<AEnemyReworkHybrid>(Enemy))
 				{
 					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
 					// audio
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
+					
+					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
+					{
+						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
+					}
 				}
 				else
 				{
