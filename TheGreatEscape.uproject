@@ -35,6 +35,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "ElectraPlayer",
+			"Enabled": true
 		}
 	]
 }
