@@ -39,6 +39,10 @@ public:
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
 	TArray<USoundBase*> ShootSFX;
+	//Sound effect declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)
+	USoundBase* ReloadSFX;
+	
 
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = SFX)

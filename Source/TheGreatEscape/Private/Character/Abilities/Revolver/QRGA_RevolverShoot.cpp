@@ -5,10 +5,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Boss.h"
 #include "EnemyRework.h"
+#include "EnemyReworkController.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "EnemyReworkHybridTank.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "BehaviourTree/Utils.h"
 #include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -41,8 +45,19 @@ void UQRGA_RevolverShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		{
 			//Plays the sound at the player
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), EmptySFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.7,0.9));
-			//If ammo is 0 end ability
-			EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+
+			//Sets ammo to zero to avoid any issues (Probably not nessessary)
+			GetPlayerReference()->PlayerAmmo = 0;
+			//Sets ammo to full
+			GetPlayerReference()->PlayerAmmo = 6;
+
+			//Jumps animontage ot the reload section to player reload animation
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+			//Checks for an Animnotify then triggers function
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverShoot::CallEndAbility);
+
+			//Plays reload sound at location
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX, CamCompLocation,FRotator(0,0,0), 0.3, 1.0);
 		}
 		else if (!GetPlayerReference()->bTransADS)
 		{
@@ -124,6 +139,10 @@ void UQRGA_RevolverShoot::CallEndAbility(FName NotifyName,
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 	if (NotifyName == FName("ADSFireFinish"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	if(NotifyName == FName("FinishedReload"))
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
@@ -215,12 +234,17 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					enemyDrone->PostHitProcess();
 				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+				else if (AEnemyReworkHybrid* enemyHybrid = Cast<AEnemyReworkHybrid>(Enemy))
 				{
 					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
 					// audio
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
+					
+					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
+					{
+						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
+					}
 				}
 				else
 				{

@@ -33,7 +33,6 @@ void UQRGA_ShoulderRocket::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	else
 	{
 		bActorFound = false;
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 
 }
@@ -64,8 +63,7 @@ void UQRGA_ShoulderRocket::ReleasedInput(float TimePressed)
 {
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle ,this,&UQRGA_ShoulderRocket::CallEndAbility, CooldownTime, false);
 	AEnemyRework* EnemyCast = Cast<AEnemyRework>(ClosestActor);
-	EnemyCast->PostDeathProcess();
-	EnemyCast->Destroy();
+	CreateCheckProjectile(ClosestActor);
 	GetPlayerReference()->RemoveRocketTargetWidget();
 	GetPlayerReference()->DeactivateRocket();
 }

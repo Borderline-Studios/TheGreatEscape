@@ -29,7 +29,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override; // Possessed by
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
     void Attack(); // attack function
-	void CalcRandomAttackPos(); // Function for train attacking enemies to use so they do not go after same point
+	// Function for train attacking enemies to use so they do not go after same point
+	void CalcRandomAttackPos();
+	UFUNCTION(BlueprintCallable)
 	virtual void PostDeathProcess();
 	UFUNCTION(BlueprintCallable)
 	virtual void PostHitProcess();
