@@ -74,16 +74,16 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					if (Health < MaxHealth)
 					{
 						GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
-						if (IsValid(HealSFX))
+						if (IsValid(HealSFX[0]))
 						{
-							UGameplayStatics::PlaySoundAtLocation(GetWorld(), HealSFX, HitResult.Location);
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), HealSFX[0], HitResult.Location);
 						}
 					}
 					else if (Health >= MaxHealth)
 					{
-						if (IsValid(FullHealSFX))
+						if (IsValid(FullHealSFX[0]))
 						{
-							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX, HitResult.Location);
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX[0], HitResult.Location);
 						}
 				
 					}

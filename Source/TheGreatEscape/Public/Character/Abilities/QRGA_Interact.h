@@ -33,11 +33,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> HealingEffectClass;
 
-	UPROPERTY(BlueprintReadWrite)
-	USoundBase* HealSFX;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<USoundBase*> HealSFX;
 
-	UPROPERTY(BlueprintReadWrite)
-	USoundBase* FullHealSFX;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<USoundBase*> FullHealSFX;
 	
 	
 	
