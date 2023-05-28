@@ -32,6 +32,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> HealingEffectClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	USoundBase* HealSFX;
+
+	UPROPERTY(BlueprintReadWrite)
+	USoundBase* FullHealSFX;
+	
 	
 	
 	//GAS back end function for added logic to the fucntions
@@ -48,11 +55,11 @@ public:
 	UFUNCTION()
 	void ForceEndAbility();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void AddRifleEquipAbility();
-
 	
 	void FirstRifleEqiup();
+
+	UFUNCTION(BlueprintCallable)
+	void FirstRevovlerEqiup();
 
 	AActor* ActorToDestory;
 

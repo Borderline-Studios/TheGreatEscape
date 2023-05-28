@@ -3,6 +3,7 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "SAdvancedRotationInputBox.h"
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
@@ -64,11 +65,30 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				else if (HitResult.GetActor()->ActorHasTag("MedKit"))
 				{
-					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(HealingEffectClass);
-
-					GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
 					bool Found;
 					float Health = GetPlayerReferance()->GetAbilitySystemComponent()->GetGameplayAttributeValue(GetPlayerReferance()->Attributes->GetHealthAttribute(), Found);
+					bool MHFound;
+					float MaxHealth = GetPlayerReferance()->GetAbilitySystemComponent()->GetGameplayAttributeValue(GetPlayerReferance()->Attributes->GetMaxHealthAttribute(),MHFound);
+					FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(HealingEffectClass);
+
+					if (Health < MaxHealth)
+					{
+						GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
+						if (IsValid(HealSFX))
+						{
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), HealSFX, HitResult.Location);
+						}
+					}
+					else if (Health >= MaxHealth)
+					{
+						if (IsValid(FullHealSFX))
+						{
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX, HitResult.Location);
+						}
+				
+					}
+		
+					
 					if (Health > 30.0f && Found)
 					{
 						GetPlayerReferance()->DisableVignette();
@@ -80,7 +100,12 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					//Checks for an Animnotify then triggers function
 					GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_Interact::CallEndAbility);
 					ActorToDestory = HitResult.GetActor();
-					AddRifleEquipAbility();
+				}
+				else if (HitResult.GetActor()->ActorHasTag("Revolver"))
+				{
+					ActorToDestory = HitResult.GetActor();
+					FirstRevovlerEqiup();
+					ActorToDestory->Destroy();
 				}
 				
 				//Checks if its a pick upable
@@ -163,6 +188,10 @@ void UQRGA_Interact::CallEndAbility(FName NotifyName, const FBranchingPointNotif
 		//Ends ability is the animation is done
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
+	if (NotifyName == FName("FinishedGather"))
+	{
+		GetPlayerReferance()->bRevolverEquipped = true;
+	}
 }
 
 void UQRGA_Interact::ForceEndAbility()
@@ -175,4 +204,11 @@ void UQRGA_Interact::FirstRifleEqiup()
 {
 	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
 	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
+}
+
+void UQRGA_Interact::FirstRevovlerEqiup()
+{
+	GetPlayerReferance()->RevolverMesh1P->SetVisibility(true);
+	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
 }

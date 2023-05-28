@@ -211,19 +211,12 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
 			else if (!bFound)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
-			else
-			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
-			}
-
 			
 			//Actiavte hit VFX on hit object/actor
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitInput.Location, HitInput.GetActor()->GetActorRotation());
