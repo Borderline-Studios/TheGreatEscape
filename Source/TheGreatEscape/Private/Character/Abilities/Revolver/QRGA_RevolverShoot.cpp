@@ -5,10 +5,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Boss.h"
 #include "EnemyRework.h"
+#include "EnemyReworkController.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "EnemyReworkHybridTank.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "BehaviourTree/Utils.h"
 #include "Chaos/ChaosPerfTest.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -207,19 +211,12 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
 			else if (!bFound)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
-			else
-			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
-			}
-
 			
 			//Actiavte hit VFX on hit object/actor
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVFX, HitInput.Location, HitInput.GetActor()->GetActorRotation());
@@ -230,12 +227,17 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					enemyDrone->PostHitProcess();
 				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
+				else if (AEnemyReworkHybrid* enemyHybrid = Cast<AEnemyReworkHybrid>(Enemy))
 				{
 					enemyHybrid->GetMesh()->GetAnimInstance()->Montage_JumpToSection("Hit");
 					// audio
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
+					
+					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
+					{
+						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
+					}
 				}
 				else
 				{

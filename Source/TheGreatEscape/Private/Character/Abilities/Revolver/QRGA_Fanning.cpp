@@ -6,8 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Boss.h"
 #include "EnemyRework.h"
+#include "EnemyReworkController.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
@@ -211,6 +213,11 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 					// audio
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
+
+					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
+					{
+						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
+					}
 				}
 				else
 				{

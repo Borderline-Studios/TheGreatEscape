@@ -33,7 +33,8 @@ namespace BbKeys
 	TCHAR const * const stationaryHybrid = TEXT("StationaryHybrid");
 	TCHAR const * const playerInMoveRange = TEXT("PlayerInMoveRange");
 	TCHAR const * const hasHeardNoise = TEXT("HasHeardNoise");
-	TCHAR const * const playerPathExists = TEXT("PlayerPathExists");
+	TCHAR const * const playerPathExists = TEXT("PlayerPathExists"); 
+	TCHAR const * const hybirdHit = TEXT("HybridHit");
 }
 
 /**
