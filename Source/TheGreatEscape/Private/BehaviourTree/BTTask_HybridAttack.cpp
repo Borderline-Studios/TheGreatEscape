@@ -14,6 +14,7 @@
 
 #include "EnemyReworkController.h"
 #include "EnemyReworkHybrid.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 /**
@@ -96,6 +97,15 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
    AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
    
    bSpawnRight = false;
+
+   Enemy->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UBTTask_HybridAttack::EndAnimTP);
+
+  }
+  
+  if (bCanTp)
+  {
+    AIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
+    bCanTp = false;
   }
   
   // Finish task
@@ -128,4 +138,15 @@ void UBTTask_HybridAttack::ShootGun(FName NotifyName, const FBranchingPointNotif
    
   }
  }
+}
+
+void UBTTask_HybridAttack::EndAnimTP(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{		
+  if (NotifyName == FName("EndAnim"))
+  {
+   // SPawn projectile
+   bCanTp = true;
+  }
+
+ 
 }

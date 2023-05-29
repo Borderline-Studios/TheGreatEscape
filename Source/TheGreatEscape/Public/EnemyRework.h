@@ -52,8 +52,13 @@ public:
 	USoundBase* DronePewPew;
 	
 	// *** Variables *** ///
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    //TArray<TSubclassOf<UGameplayAbility>> QRGAWreckerAttacks; // Gameplay ability type (set in bp)
+
+	int AttackIndex = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)
 
 
 	

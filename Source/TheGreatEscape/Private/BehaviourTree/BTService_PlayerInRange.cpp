@@ -38,13 +38,14 @@ void UBTService_PlayerInRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerCom
 {
 	// call super
 	Super::OnBecomeRelevant(OwnerComp, NodeMemory);
-	
-	// get Ai controller
-	const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner());
 
 	// If AIController is not a nullptr
-	if (AIController)
+	if (const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
+
+		// Set attack range
+		AIController->GetBlackboard()->SetValueAsFloat(BbKeys::wreckerAttackRange, MeleeRange);
+		
 		// Get Enemy
 		APawn* const Enemy = AIController->GetPawn();
 
