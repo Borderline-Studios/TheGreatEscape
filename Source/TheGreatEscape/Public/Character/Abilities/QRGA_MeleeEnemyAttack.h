@@ -39,7 +39,7 @@ public:
 
 	// *** Variables *** ///
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<UGameplayEffect> GameplayEffectClass; // What effect it is
+	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsClass; // What effect it is
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LineTrace")

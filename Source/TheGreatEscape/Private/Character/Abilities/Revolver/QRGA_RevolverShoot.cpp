@@ -22,6 +22,7 @@
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Objectives/ShieldGenerator.h"
+#include "Perception/AISenseConfig_Hearing.h"
 
 UQRGA_RevolverShoot::UQRGA_RevolverShoot()
 {
@@ -161,6 +162,7 @@ void UQRGA_RevolverShoot::ActivateEffects(FHitResult HitInput)
 	int MaxShotRange = GetPlayerReference()->MaxShotRange;
 	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShootSFX[FMath::RandRange(0,3)], CamCompLocation,FRotator(0,0,0), 0.3, FMath::RandRange(0.9,1.1));
+	UAISense_Hearing::ReportNoiseEvent(GetWorld(), CamCompLocation, 1.0f, GetPlayerReference(), 0.0f, AiTags::noiseTag); // Let AI know sound was played
 	FVector MuzzleLocation = GetPlayerReference()->MuzzleSphere->GetComponentLocation();
 	FRotator MuzzleRotRef = GetPlayerReference()->MuzzleSphere->GetComponentRotation();
 	FRotator MuzzleRotation = FRotator(MuzzleRotRef.Pitch, MuzzleRotRef.Yaw , MuzzleRotRef.Roll);
@@ -240,11 +242,7 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 					// audio
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
-					
-					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
-					{
-						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
-					}
+				
 				}
 				else
 				{

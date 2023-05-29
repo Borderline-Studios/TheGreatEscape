@@ -214,10 +214,6 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 					// hybrid tins
 					enemyHybrid->PostHitProcess();
 
-					if (const AEnemyReworkController* HybridAIController = Cast<AEnemyReworkController>(enemyHybrid->GetController()))
-					{
-						HybridAIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, true);
-					}
 				}
 				else
 				{
