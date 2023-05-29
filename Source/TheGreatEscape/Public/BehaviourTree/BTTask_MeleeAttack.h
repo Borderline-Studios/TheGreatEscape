@@ -36,11 +36,19 @@ private:
 	UFUNCTION()
 	void SetCanAttack(); // reset attack bool & timer
 
+	UFUNCTION()
+	void WreckerAttack(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
 	// *** Variables *** ///
 	FTimerHandle AttackDelayHandle; // Timer handle to handle the attack delay
 	bool bCanAttack = true; // bool to check if drone can attack
+	bool bCanHit = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float AttackDelay = 3.0f; // Delay between attacks
+
+	// Rand num
+	
+	int RandNum = 0;
 	
 };

@@ -22,6 +22,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "DSP/MidiNoteQuantizer.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
 /**
@@ -73,6 +74,13 @@ void AEnemyRework::BeginPlay()
 {
 	// call super
 	Super::BeginPlay();
+
+	// set is melee variant
+	if (const AEnemyReworkController* AIController = Cast<AEnemyReworkController>(GetController()))
+	{
+		AIController->GetBlackboard()->SetValueAsBool(BbKeys::isMelee, true);
+	}
+	
 }
 
 /**
@@ -83,9 +91,6 @@ void AEnemyRework::Tick(float DeltaTime)
 {
 	// call super
 	Super::Tick(DeltaTime);
-	
-
-	
 }
 
 /**

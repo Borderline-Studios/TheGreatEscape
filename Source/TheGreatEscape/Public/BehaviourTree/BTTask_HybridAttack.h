@@ -36,6 +36,8 @@ public:
 
 	UFUNCTION()
 	void ShootGun(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+	UFUNCTION()
+	void EndAnimTP(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
 	
 	// *** Variables *** ///
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
@@ -61,6 +63,8 @@ public:
 
 	bool bSpawnLeft = false;
 	bool bSpawnRight = false;
+
+	bool bCanTp = false;
 
 	bool bTimerStarted = false;
 	float gameUpTime = 0.0f;
