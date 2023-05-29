@@ -227,8 +227,6 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					Boss->AdjustUIValue(true);
 				}
-				
-				
 				Boss->PostHitProcess();
 			}
 			
@@ -238,11 +236,9 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, true);
 			}
 			else
 			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, true);
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}
 		}

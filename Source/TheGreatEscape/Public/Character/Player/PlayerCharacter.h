@@ -82,7 +82,7 @@ public:
 	bool bBatteryPickedUp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bRevolverEquipped = true;
+	bool bRevolverEquipped = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRifleEquipped = false;
@@ -168,9 +168,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PostDeathProcess();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void EnemyKilled();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void RocketTargetWidget(AActor* InActor);
