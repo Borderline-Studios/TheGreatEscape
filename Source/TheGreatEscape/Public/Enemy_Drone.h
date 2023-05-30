@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void LazerTracePlayer();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CheckLineToPlayer();
+
 	UPROPERTY()
 	bool bKeepTracking = true;
 

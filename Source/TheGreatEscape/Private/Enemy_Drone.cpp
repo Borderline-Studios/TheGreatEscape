@@ -76,7 +76,7 @@ void AEnemy_Drone::TrackPlayer()
 	NumTracks++;
 	if (NumTracks >= TracksNeeded)
 	{
-		GetPlayerReference()->PostDeathProcess();
+		CheckLineToPlayer();
 		NumTracks = 0;
 	}
 }

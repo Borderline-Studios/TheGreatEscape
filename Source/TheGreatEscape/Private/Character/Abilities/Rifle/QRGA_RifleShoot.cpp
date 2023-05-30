@@ -15,6 +15,7 @@
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/ObjectiveShield.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Objectives/DestroyableTarget.h"
 
 UQRGA_RifleShoot::UQRGA_RifleShoot()
 {
@@ -159,6 +160,18 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
+		if (HitInput.GetActor()->ActorHasTag("Target"))
+		{
+			if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
+			{
+				DestroyableTarget->DestoryTarget();
+			}
+		}
+		if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
+		{
+			ObjectiveShield->PostHitProcess();
+		}
+		
 		//Getting the ability system component from the hit actor
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitInput.GetActor());
 		//Check if ASC is vaild
@@ -241,10 +254,6 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			{
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
 			}
-		}
-		else if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
-		{
-			ObjectiveShield->PostHitProcess();
 		}
 	}
 }
