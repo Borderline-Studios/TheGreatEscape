@@ -132,6 +132,10 @@ private:
     // CARRIAGE HANDLING SECTION
     UPROPERTY(EditDefaultsOnly)
     TArray<UStaticMesh*> StaticMeshRefs;
+
+    // Carriage Class
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ATrainCarriage> TrainCarriageClass = nullptr;
     
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
