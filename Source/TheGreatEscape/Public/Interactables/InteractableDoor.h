@@ -15,12 +15,17 @@ public:
 	// Sets default values for this actor's properties
 	AInteractableDoor();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OpenDoor();
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UStaticMeshComponent* DoorMesh;
+	UStaticMeshComponent* FrameMesh;
 
 public:	
 	// Called every frame

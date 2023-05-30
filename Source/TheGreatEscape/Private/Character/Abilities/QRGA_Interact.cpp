@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
+#include "Interactables/InteractableDoor.h"
 #include "Interactables/TrainHorn.h"
 #include "Objectives/DestroyableTarget.h"
 #include "Objectives/ObjectiveGate.h"
@@ -92,6 +93,13 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					if (Health > 30.0f && Found)
 					{
 						GetPlayerReferance()->DisableVignette();
+					}
+				}
+				else if (HitResult.GetActor()->ActorHasTag("Door"))
+				{
+					if (AInteractableDoor* IDoor = Cast<AInteractableDoor>(HitResult.GetActor()))
+					{
+						IDoor->OpenDoor();
 					}
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Rifle"))
