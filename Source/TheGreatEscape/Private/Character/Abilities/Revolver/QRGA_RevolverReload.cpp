@@ -2,8 +2,11 @@
 
 
 #include "Character/Abilities/Revolver/QRGA_RevolverReload.h"
+
+#include "BehaviourTree/Utils.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
+#include "Perception/AISense_Hearing.h"
 
 UQRGA_RevolverReload::UQRGA_RevolverReload()
 {
@@ -45,6 +48,7 @@ void UQRGA_RevolverReload::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX ,
 													  GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
 													  FRotator(0,0,0), 0.3, 1);
+				UAISense_Hearing::ReportNoiseEvent(GetWorld(), GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(), 1.0f, GetPlayerReference(), 0.0f, AiTags::noiseTag); // Let AI know sound was played
 			}
 		}
 

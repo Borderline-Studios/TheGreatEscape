@@ -69,6 +69,7 @@ void AEnemyReworkHybridTank::Tick(float DeltaTime)
  {    
   // Spawn Parameters
   SpawnParams.Owner = this;
+  SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     
   // SET ANIM CALL
   GetMesh()->GetAnimInstance()->Montage_JumpToSection("Shoot");
@@ -89,28 +90,43 @@ void AEnemyReworkHybridTank::ShootGun(FName NotifyName, const FBranchingPointNot
   {
     // SPawn projectile
     FVector LeftTurretLoc = GetMesh()->GetSocketLocation("L_WristSocket");
-    FRotator LeftTurretRotMid = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
-    FRotator LeftTurretRotSide1 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw + 5.0f, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
-    FRotator LeftTurretRotSide2 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw - 5.0f, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
+    //FRotator LeftTurretRot2 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
+    //FRotator LeftTurretRotSide1 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw + 5.0f, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
+
+    float Angle = 15.0f;
+    FRotator LeftTurretRot = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("L_WristSocket").Yaw - Angle, GetMesh()->GetSocketRotation("L_WristSocket").Roll);
    
-    AHybridEnemyProjectile* Projectile1 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRotMid, SpawnParams);
-    AHybridEnemyProjectile* Projectile2 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRotSide1, SpawnParams);
-    AHybridEnemyProjectile* Projectile3 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRotSide2, SpawnParams);
+    for (int i = 0; i < 10; i++)
+    {
+       GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRot, SpawnParams);
+       LeftTurretRot.Add(0.0f, Angle, 0.0f);
+       UE_LOG(LogTemp, Warning, TEXT("left shoot"));
+       
+    }
+   
+    
+    //GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRotSide1, SpawnParams);
+    //GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRotSide2, SpawnParams);
 
   }
   if (NotifyName == FName("RightTurretShot"))
   {
     // SPawn projectile
     FVector RightTurretLoc = GetMesh()->GetSocketLocation("R_WristSocket");
-    FRotator RightTurretRotMid = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
-    FRotator RightTurretRotSide1 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw + 5.0f, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
-    FRotator RightTurretRotSide2 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw - 5.0f, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
+    //FRotator RightTurretRotMid = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
+    //FRotator RightTurretRotSide1 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw + 15.0f, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
+    //FRotator RightTurretRotSide2 = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw - 15.0f, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
 
-    AHybridEnemyProjectile* Projectile1 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRotMid, SpawnParams);
-    AHybridEnemyProjectile* Projectile2 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRotSide1, SpawnParams);
-    AHybridEnemyProjectile* Projectile3 = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRotSide2, SpawnParams);
+   float Angle = 15.0f;
+   FRotator RightTurretRot = FRotator(GetActorRotation().Pitch, GetMesh()->GetSocketRotation("R_WristSocket").Yaw - Angle, GetMesh()->GetSocketRotation("R_WristSocket").Roll);
    
-   
+   for (int i = 0; i < 3; i++)
+   {
+     GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
+     RightTurretRot.Add(0.0f, Angle, 0.0f);
+     UE_LOG(LogTemp, Warning, TEXT("right shoot"));
+       
+   }
   }
  }
 }

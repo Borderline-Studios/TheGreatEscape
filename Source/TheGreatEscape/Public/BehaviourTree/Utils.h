@@ -35,6 +35,8 @@ namespace BbKeys
 	TCHAR const * const hasHeardNoise = TEXT("HasHeardNoise");
 	TCHAR const * const playerPathExists = TEXT("PlayerPathExists"); 
 	TCHAR const * const hybirdHit = TEXT("HybridHit");
+	TCHAR const * const wreckerAttackRange = TEXT("WreckerAttackRange");
+	TCHAR const * const isMelee = TEXT("IsMelee");
 }
 
 /**
