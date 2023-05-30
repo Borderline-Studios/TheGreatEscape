@@ -115,7 +115,7 @@ void ATrainEngine::BeginPlay()
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
 	for (int i = 0; i < CarriageCount; i++)
 	{
-		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
+		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(TrainCarriageClass));
 		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i % StaticMeshRefs.Num()], SplineRef, this);
 		
 		CarriageRefs.Push(TempRef);

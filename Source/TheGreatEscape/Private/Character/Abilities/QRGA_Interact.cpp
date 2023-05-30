@@ -3,7 +3,7 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "SAdvancedRotationInputBox.h"
+//#include "SAdvancedRotationInputBox.h"
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
