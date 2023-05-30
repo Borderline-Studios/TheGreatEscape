@@ -19,7 +19,16 @@ public:
 	AEnemy_Drone();
 
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMeshComponent* StaticMesh;
+	UStaticMeshComponent* BodyMesh;
+	
+    UPROPERTY(EditDefaultsOnly)
+    UStaticMeshComponent* GunMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent* GunBaseMesh;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	UStaticMeshComponent* RotorMesh;
 
 	UPROPERTY(EditDefaultsOnly)
 	USphereComponent* DetectionSphere;
@@ -41,6 +50,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopTrackPlayer();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void LazerTracePlayer();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CheckLineToPlayer();
 
 	UPROPERTY()
 	bool bKeepTracking = true;

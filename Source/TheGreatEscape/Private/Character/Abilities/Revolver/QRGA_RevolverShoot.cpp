@@ -21,6 +21,7 @@
 #include "Components/SphereComponent.h"
 #include "Interactables/WorldInteractTrigger.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Objectives/DestroyableTarget.h"
 #include "Objectives/ShieldGenerator.h"
 #include "Perception/AISenseConfig_Hearing.h"
 
@@ -313,6 +314,13 @@ void UQRGA_RevolverShoot::HitTagCheck(FHitResult HitInput)
 					if (AShieldGenerator* ShieldGenerator = Cast<AShieldGenerator>(HitInput.GetActor()))
 					{
 						ShieldGenerator->PostHitProcess();
+					}
+				}
+				if (HitInput.GetActor()->ActorHasTag("Target"))
+				{
+					if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
+					{
+						DestroyableTarget->DestoryTarget();
 					}
 				}
 			}
