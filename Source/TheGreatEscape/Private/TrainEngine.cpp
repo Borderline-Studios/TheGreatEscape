@@ -5,7 +5,7 @@
 // (c) 2022 Media Design School
 // File Name   : TrainEngine.cpp
 // Description : Contains the implementation of the 
-// Author      :  Borderline Studios - (person(s) working on file)
+// Author      : Borderline Studios - (person(s) working on file)
 // Mail        :
 
 #include "TrainEngine.h"
@@ -202,6 +202,7 @@ void ATrainEngine::ToggleTrainStop()
 {
 	if (!bObjectiveLocked)
 	{
+		MovePlatforms(bTrainMoving);
 		bTrainMoving = !bTrainMoving;
 		
 		if (TrainControls)
