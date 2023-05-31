@@ -46,11 +46,9 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 		// Get players location
 		FVector const PlayerLocation = Player->GetActorLocation();
 
-		if (bDrone)
+		if (AEnemyReworkDrone* const Drone = Cast<AEnemyReworkDrone>(AIController->GetPawn()))
 		{
 			// get npc
-			AEnemyReworkDrone* const Drone = Cast<AEnemyReworkDrone>(AIController->GetPawn());
-
 			FVector Forward = PlayerLocation - Drone->GetActorLocation();
 			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
 
@@ -61,10 +59,10 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 			Drone->TurretBaseRef->SetWorldRotation(newTurretBaseRot);
 
 		}
-		else
+		else if (AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn()))
 		{
 			// get npc
-			AEnemyReworkHybrid* const Enemy = Cast<AEnemyReworkHybrid>(AIController->GetPawn());
+			
 
 			FVector Forward = PlayerLocation - Enemy->GetActorLocation();
 			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
