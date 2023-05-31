@@ -5,7 +5,7 @@
 // (c) 2022 Media Design School
 // File Name   : TrainEngine.cpp
 // Description : Contains the implementation of the 
-// Author      :  Borderline Studios - (person(s) working on file)
+// Author      : Borderline Studios - (person(s) working on file)
 // Mail        :
 
 #include "TrainEngine.h"
@@ -115,7 +115,7 @@ void ATrainEngine::BeginPlay()
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
 	for (int i = 0; i < CarriageCount; i++)
 	{
-		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(ATrainCarriage::StaticClass()));
+		ATrainCarriage* TempRef = Cast<ATrainCarriage>(GetWorld()->SpawnActor(TrainCarriageClass));
 		TempRef->InitialiseFromEngine(i, DistanceFromFront + DistanceBetweenCarriages * i, StaticMeshRefs[i % StaticMeshRefs.Num()], SplineRef, this);
 		
 		CarriageRefs.Push(TempRef);
@@ -202,6 +202,7 @@ void ATrainEngine::ToggleTrainStop()
 {
 	if (!bObjectiveLocked)
 	{
+		MovePlatforms(bTrainMoving);
 		bTrainMoving = !bTrainMoving;
 		
 		if (TrainControls)

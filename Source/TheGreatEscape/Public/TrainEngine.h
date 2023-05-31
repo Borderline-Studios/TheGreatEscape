@@ -90,7 +90,7 @@ public:
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite)        // The actor passed in from the editor
     ASplineTrack* WorldSplineRef;
 
-    // Functions
+    // FUNCTIONS
     UFUNCTION(BlueprintCallable)
     void ToggleTrainStop();
     
@@ -106,10 +106,13 @@ public:
 
     bool GetTrainMoving() const;
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void MovePlatforms(bool bExtending);
+
 protected:
 
 private:    
-    // Variables
+    // VARIABLES
     // Obtaining the spline for the train to follow
     UPROPERTY(EditInstanceOnly)
     int TimeToComplete = 30;
@@ -132,6 +135,10 @@ private:
     // CARRIAGE HANDLING SECTION
     UPROPERTY(EditDefaultsOnly)
     TArray<UStaticMesh*> StaticMeshRefs;
+
+    // Carriage Class
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<ATrainCarriage> TrainCarriageClass = nullptr;
     
     TArray<ATrainCarriage*> CarriageRefs;
     UPROPERTY(EditInstanceOnly)
@@ -147,7 +154,7 @@ private:
     // Objective Movement Prevention
     bool bObjectiveLocked = false;
     
-    // Functions
+    // FUNCTIONS
     virtual void BeginCarOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
