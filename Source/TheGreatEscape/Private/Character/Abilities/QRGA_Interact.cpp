@@ -3,13 +3,14 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
-//#include "SAdvancedRotationInputBox.h"
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Interactables/BatteryInteractable.h"
+#include "Interactables/InteractableDoor.h"
 #include "Interactables/TrainHorn.h"
+#include "Objectives/DestroyableTarget.h"
 #include "Objectives/ObjectiveGate.h"
 
 UQRGA_Interact::UQRGA_Interact()
@@ -74,14 +75,14 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					if (Health < MaxHealth)
 					{
 						GetPlayerReferance()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(),GetPlayerReferance()->GetAbilitySystemComponent());
-						if (IsValid(HealSFX[0]))
+						if (!HealSFX.IsEmpty())
 						{
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(), HealSFX[0], HitResult.Location);
 						}
 					}
 					else if (Health >= MaxHealth)
 					{
-						if (IsValid(FullHealSFX[0]))
+						if (!FullHealSFX.IsEmpty())
 						{
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX[0], HitResult.Location);
 						}
@@ -92,6 +93,13 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					if (Health > 30.0f && Found)
 					{
 						GetPlayerReferance()->DisableVignette();
+					}
+				}
+				else if (HitResult.GetActor()->ActorHasTag("Door"))
+				{
+					if (AInteractableDoor* IDoor = Cast<AInteractableDoor>(HitResult.GetActor()))
+					{
+						IDoor->OpenDoor();
 					}
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Rifle"))
@@ -107,7 +115,6 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					FirstRevovlerEqiup();
 					ActorToDestory->Destroy();
 				}
-				
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
 				else
