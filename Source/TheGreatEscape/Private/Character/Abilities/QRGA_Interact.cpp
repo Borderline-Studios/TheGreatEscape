@@ -211,6 +211,7 @@ void UQRGA_Interact::FirstRifleEqiup()
 {
 	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
 	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickUpRifleSFX, GetPlayerReferance()->GetActorLocation());
 }
 
 void UQRGA_Interact::FirstRevovlerEqiup()

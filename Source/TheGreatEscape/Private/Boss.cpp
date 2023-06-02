@@ -497,10 +497,12 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
 			Seq2ShieldSetup();
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), Phase2StartSFX, PlayerRef->GetActorLocation());
 		}
 		if (currentStateMachineIndex == 2)
 		{
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[2].GetDefaultObject(), ASC);
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), Phase3StartSFX, PlayerRef->GetActorLocation());
 		}
 	}
 

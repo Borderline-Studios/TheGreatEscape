@@ -9,6 +9,8 @@
 #include "EnemyReworkController.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "Enemy_Drone.h"
+#include "Enemy_Drone_Bomber.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
@@ -263,6 +265,14 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 				
 				Boss->PostHitProcess();
 			}
+		}
+		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
+		{
+			Drone->PostHitProcess();
+		}
+		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
+		{
+			Bomber->PostHitProcress();
 		}
 	}
 }

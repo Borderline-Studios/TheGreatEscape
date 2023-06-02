@@ -49,6 +49,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void Seq2ShieldSetup();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* Phase2StartSFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* Phase3StartSFX;
+
 private:
 	// *** Functions *** ///
 	void StateMachineSetUps();
@@ -114,8 +120,7 @@ private:
 	float PlayerFeetZ = 9174.7f; // Z height of floor
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
-	float IdleTimer = 3.0f; // Object spawn height
-	
+	float IdleTimer = 3.0f;// Object spawn height
 
 	// objects
 	AActor* Tracker = nullptr; // Tracker obj
