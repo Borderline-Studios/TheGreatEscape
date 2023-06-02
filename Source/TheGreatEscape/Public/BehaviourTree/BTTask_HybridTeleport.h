@@ -12,6 +12,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 #include "BTTask_HybridTeleport.generated.h"
 
@@ -32,4 +33,8 @@ private:
 	// *** Variables *** ///
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	float TeleportRadius = 300.0f; // Radius to search
+	
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "VFX", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* TeleportVfx;
 };
