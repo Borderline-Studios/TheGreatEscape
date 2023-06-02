@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "Enemy_Drone.generated.h"
@@ -57,16 +58,33 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckLineToPlayer();
 
+	UFUNCTION()
+	void PostHitProcess();
+
+	UFUNCTION(BlueprintCallable)
+	void ChargeSystemTimer();
+
 	UPROPERTY()
 	bool bKeepTracking = true;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int NumTracks = 0;
 
 	UPROPERTY()
-	int TracksNeeded = 3;
+	int TracksNeeded = 4;
+
+	UPROPERTY(BlueprintReadWrite)
+	float PitchMod = 1.0f;
+
+	FTimerHandle ChargeTimer;
+
+	UPROPERTY(BlueprintReadWrite)
+	float Health = 10.0f;
 
 	FTimerHandle TrackTimerHandle;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = VFX)
+	UNiagaraSystem* ExplodeSystem;
 
 	
 

@@ -106,12 +106,7 @@ void APlayerCharacter::PostDeathProcess()
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->StopMovement();
 	GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()/4);
-	FVector ActorLoc = GetActorLocation();
-	FRotator ActorRot = GetActorRotation();
-	
-	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 75.0f));
-
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, true, true);
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, false, true);
 
 	FTimerHandle DeathTimer;
 
@@ -131,7 +126,11 @@ UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 
 void APlayerCharacter::LoadLevel()
 {
-	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
+	RootComponent->SetWorldLocation(RespawnLocation);
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld() ,0));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()*4);
+	ReApplyPassives();
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.0f, 0.0f, 1.0f, FColor::Black, false, true);
 }
 
 

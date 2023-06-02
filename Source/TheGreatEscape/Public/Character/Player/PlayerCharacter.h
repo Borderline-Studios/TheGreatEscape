@@ -14,9 +14,7 @@
 
 //Includes
 #include "CoreMinimal.h"
-#include "NiagaraSystem.h"
 #include "Character/BASE/GASBASECharacter.h"
-#include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
 
 //Forward Declaration
@@ -158,6 +156,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void LerpLocation(float From, float To, bool Reverse);
 
+	UPROPERTY(BlueprintReadWrite)
+	FVector RespawnLocation;
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool bLoadLevel = true;
+
+	//Declearation of effect to apply when enemy is hit
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+
 	void LoadLevel();
 public:
 	//Constructor
@@ -181,6 +189,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ReApplyPassives();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
