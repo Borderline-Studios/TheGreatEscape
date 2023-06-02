@@ -39,6 +39,8 @@ namespace BbKeys
 	TCHAR const * const isMelee = TEXT("IsMelee");
 	TCHAR const * const isDashing = TEXT("IsDashing");
 	TCHAR const * const dashLocation = TEXT("DashLocation");
+	TCHAR const * const hasSeenPlayer = TEXT("HasSeenPlayer");
+	TCHAR const * const inDashingState = TEXT("InDashingState");
 }
 
 /**

@@ -92,4 +92,5 @@ void AEnemyReworkDasher::StopDash()
 	ControllerRef->StopMovement();
 	GetMesh()->GetAnimInstance()->Montage_JumpToSection("DashEnd");
 	ControllerRef->GetBlackboard()->SetValueAsBool(BbKeys::isDashing, false);
+	ControllerRef->GetBlackboard()->SetValueAsBool(BbKeys::inDashingState, false);
 }

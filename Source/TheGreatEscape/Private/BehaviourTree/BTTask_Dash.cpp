@@ -42,12 +42,14 @@ EBTNodeResult::Type UBTTask_Dash::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 		{
 			Enemy->GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(AIController, AIController->GetBlackboard()->GetValueAsVector(BbKeys::dashLocation));
+			AIController->GetBlackboard()->SetValueAsBool(BbKeys::inDashingState, true);
 			bDashStart = false;
 		}
 
 
 		if (FVector::Dist(Enemy->GetActorLocation(), AIController->GetBlackboard()->GetValueAsVector(BbKeys::dashLocation)) <= StoppingRange)
 		{
+			AIController->GetBlackboard()->SetValueAsBool(BbKeys::inDashingState, false);
 		}
 		
 			// Finish task
