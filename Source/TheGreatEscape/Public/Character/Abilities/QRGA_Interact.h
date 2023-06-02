@@ -38,6 +38,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<USoundBase*> FullHealSFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* PickUpRifleSFX;
 	
 	
 	
