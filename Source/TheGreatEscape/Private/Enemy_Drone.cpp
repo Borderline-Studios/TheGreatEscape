@@ -3,10 +3,14 @@
 
 #include "Enemy_Drone.h"
 
+#include <tiffio.h>
+
+#include "NiagaraFunctionLibrary.h"
 #include "PrimitiveSceneInfo.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AEnemy_Drone::AEnemy_Drone()
@@ -53,11 +57,10 @@ void AEnemy_Drone::LookAtPlayer(bool Interp)
 	{
 		SetActorRotation(LookAtRotation);
 	}
-
 	
 	if (bKeepTracking)
 	{
-		GetWorld()->GetTimerManager().SetTimer(TrackTimerHandle, this, &AEnemy_Drone::TrackPlayer, 1.0f, true);
+		GetWorld()->GetTimerManager().SetTimer(TrackTimerHandle, this, &AEnemy_Drone::TrackPlayer, 2.0f, true);
 		bKeepTracking = false;
 	}
 
@@ -74,6 +77,7 @@ APlayerCharacter* AEnemy_Drone::GetPlayerReference()
 void AEnemy_Drone::TrackPlayer()
 {
 	NumTracks++;
+	LazerTracePlayer();
 	if (NumTracks >= TracksNeeded)
 	{
 		CheckLineToPlayer();
@@ -84,27 +88,41 @@ void AEnemy_Drone::TrackPlayer()
 void AEnemy_Drone::StopTrackPlayer()
 {
 	GetWorld()->GetTimerManager().ClearTimer(TrackTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(ChargeTimer);
 	NumTracks = 0;
+	PitchMod = 1.0f;
 	bKeepTracking = true;
+}
+
+void AEnemy_Drone::PostHitProcess()
+{
+	Health = 0;
+	if (Health <= 0)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplodeSystem, RootComponent->GetComponentLocation(), FRotator(0,0,0), FVector(0.2, 0.2, 0.2));
+		Destroy();
+	}
+}
+
+void AEnemy_Drone::ChargeSystemTimer()
+{
+
 }
 
 // Called when the game starts or when spawned
 void AEnemy_Drone::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AEnemy_Drone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (bInRange)
-	{
+	{	
 		LookAtPlayer(false);
-		LazerTracePlayer();
 	}
-
+	
 }
 

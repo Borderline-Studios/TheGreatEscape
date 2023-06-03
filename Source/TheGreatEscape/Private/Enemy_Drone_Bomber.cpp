@@ -3,6 +3,7 @@
 
 #include "Enemy_Drone_Bomber.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -13,7 +14,7 @@ AEnemy_Drone_Bomber::AEnemy_Drone_Bomber()
 	PrimaryActorTick.bCanEverTick = true;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
-	StaticMesh->SetWorldRotation(FRotator(0, 0, 90));
+	RootComponent = StaticMesh;
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>("DetectionSphere");
 	DetectionSphere->InitSphereRadius(2000.0f);
@@ -42,6 +43,12 @@ void AEnemy_Drone_Bomber::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEnemy_Drone_Bomber::PostHitProcress()
+{
+	Destroy();
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathVFX, RootComponent->GetComponentLocation(), FRotator(0,0,0), FVector(0.2, 0.2,0.2));
 }
 
 APlayerCharacter* AEnemy_Drone_Bomber::GetPlayerReference()
