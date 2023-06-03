@@ -52,7 +52,7 @@ EBTNodeResult::Type UBTTask_HybridTeleport::ExecuteTask(UBehaviorTreeComponent& 
 		
 		if (NavSystem->GetRandomReachablePointInRadius(Enemy->GetActorLocation(), TeleportRadius, Location, nullptr))
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAttached(TeleportVfx, Enemy->GetMesh(), FName(Enemy->GetName()), Enemy->GetActorLocation(), Enemy->GetActorRotation(), EAttachLocation::KeepWorldPosition, true, true);
+			UNiagaraFunctionLibrary::SpawnSystemAttached(TeleportVfx, Enemy->GetMesh(), FName(Enemy->GetName()), FVector(Enemy->GetActorLocation().X, Enemy->GetActorLocation().Y, Enemy->GetActorLocation().Z - 80.0f), Enemy->GetActorRotation(), EAttachLocation::KeepWorldPosition, true, true);
 			Enemy->SetActorLocation(Location.Location);
 			AIController->GetBlackboard()->SetValueAsBool(BbKeys::hybirdHit, false);
 		}
