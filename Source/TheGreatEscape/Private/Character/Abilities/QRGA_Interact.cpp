@@ -55,6 +55,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 						ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
 						TrainHorn->PlayHorn();
 				}
+				else if (HitResult.GetActor()->ActorHasTag("RoboPal"))
+				{
+					GetPlayerReferance()->ApplyUI();
+					HitResult.GetActor()->Destroy();
+				}
 				//Check if its the train stop button
 				else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
 				{
