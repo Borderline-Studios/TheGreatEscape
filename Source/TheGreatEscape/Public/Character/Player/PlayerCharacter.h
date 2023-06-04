@@ -193,6 +193,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ReApplyPassives();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ApplyUI();
+
+	UPROPERTY(BlueprintReadWrite);
+	bool AutoApplyUI = true;
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
 
