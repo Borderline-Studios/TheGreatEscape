@@ -124,6 +124,29 @@ UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 	return FirstPersonCameraComponent;
 }
 
+void APlayerCharacter::IncrementBatteryCount()
+{
+	PlayerBatteryCount++;
+}
+
+void APlayerCharacter::DecrementBatteryCount()
+{
+	if (PlayerHasBattery())
+	{
+		PlayerBatteryCount--;
+	}
+}
+
+int APlayerCharacter::GetPlayerBatteryCount() const
+{
+	return PlayerBatteryCount;
+}
+
+bool APlayerCharacter::PlayerHasBattery()
+{
+	return PlayerBatteryCount > 0;
+}
+
 void APlayerCharacter::LoadLevel()
 {
 	RootComponent->SetWorldLocation(RespawnLocation);

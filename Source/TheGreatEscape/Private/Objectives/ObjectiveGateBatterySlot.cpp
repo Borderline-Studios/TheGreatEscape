@@ -93,10 +93,10 @@ void AObjectiveGateBatterySlot::BeginBatteryDetectorOverlap(
 	if (OtherActor == PlayerRef)
 	{
 		// check to see if it's holding a battery AND that we're empty
-		if (!bSlotFilled && PlayerRef->bBatteryPickedUp)
+		if (!bSlotFilled && PlayerRef->GetPlayerBatteryCount() > 0)
 		{
 			// make it stop holding the battery
-			PlayerRef->bBatteryPickedUp = false;
+			PlayerRef->DecrementBatteryCount();
 			
 			// mark ourselves as being filled
 			bSlotFilled = true;

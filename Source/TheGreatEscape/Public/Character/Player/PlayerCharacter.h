@@ -61,7 +61,6 @@ public:
 #pragma endregion
 
 #pragma region Booleans
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bSprinting = false;
 	
@@ -75,9 +74,6 @@ public:
 	bool bBossLevel = false; 
 	
 	bool bFirstDeathCall = true;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bBatteryPickedUp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRevolverEquipped = false;
@@ -106,7 +102,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> LeverSFX;
 #pragma endregion
-
 
 #pragma region Integers-And-Floats
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
@@ -140,8 +135,22 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	float SprintMod = 50;
-#pragma endregion 
+
+private:
+	//Player Battery Counter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int PlayerBatteryCount = 0;
+	
+public:
+#pragma endregion
+	
 	FRandomStream Stream;
+
+	void IncrementBatteryCount();
+	void DecrementBatteryCount();
+	int GetPlayerBatteryCount() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool PlayerHasBattery();
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void CallVignette();
@@ -207,5 +216,4 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void DeactivateRocket();
-	
 };

@@ -52,8 +52,8 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Horn"))
 				{
-						ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
-						TrainHorn->PlayHorn();
+					ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
+					TrainHorn->PlayHorn();
 				}
 				else if (HitResult.GetActor()->ActorHasTag("RoboPal"))
 				{
@@ -91,9 +91,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 						{
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX[0], HitResult.Location);
 						}
-				
 					}
-		
 					
 					if (Health > 30.0f && Found)
 					{
@@ -122,16 +120,15 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
-				else
+				else	// Checking for the battery
 				{
 					if (AObjectiveGate* ParentGate = Cast<AObjectiveGate>(HitResult.GetActor()->GetAttachParentActor()))
 					{
 						ParentGate->UpdateObjectiveText("Take this back to the gate blocking the train!");
 					}
 					
-					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-					HitResult.GetComponent()->SetVisibility(false, false);
-					GetPlayerReferance()->bBatteryPickedUp = true;
+					HitResult.GetActor()->Destroy();
+					GetPlayerReferance()->IncrementBatteryCount();
 					
 				}
 				//ends the ability
