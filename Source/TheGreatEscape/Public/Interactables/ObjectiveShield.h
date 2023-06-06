@@ -36,4 +36,7 @@ public:
 	void PostHitProcess();
 	void PostDestroyProcess();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateVFX(FHitResult InputHit); 
+
 };

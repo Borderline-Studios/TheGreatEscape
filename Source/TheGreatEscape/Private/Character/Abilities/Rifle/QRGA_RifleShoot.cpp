@@ -171,6 +171,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 		}
 		if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
 		{
+			ObjectiveShield->ActivateVFX(HitInput);
 			ObjectiveShield->PostHitProcess();
 		}
 
