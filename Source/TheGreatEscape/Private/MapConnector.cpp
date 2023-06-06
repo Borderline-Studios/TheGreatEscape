@@ -106,6 +106,8 @@ void AMapConnector::BeginFrontOverlap(
 			UGameplayStatics::OpenLevelBySoftObjectPtr(this, NextWorldRef);
 		}, BlendTime + 1, false);
 
+
+		LevelLoadSequence();
 		// This all works as a rudimentary EndOfLevel Camera movement system but it's a bit involved for what we're after. Gonna alter it so that it fades instead
 		// // Spawn the second camera
 		// ACameraActor* PlayerCam = Cast<ACameraActor>(GetWorld()->SpawnActor(ACameraActor::StaticClass()));
