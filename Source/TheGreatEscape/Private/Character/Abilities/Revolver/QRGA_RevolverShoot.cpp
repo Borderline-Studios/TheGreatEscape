@@ -319,14 +319,14 @@ void UQRGA_RevolverShoot::HitTagCheck(FHitResult HitInput)
 						}
 					}
 				}
-				if (HitInput.GetActor()->ActorHasTag("Generator"))
+				else if (HitInput.GetActor()->ActorHasTag("Generator"))
 				{
 					if (AShieldGenerator* ShieldGenerator = Cast<AShieldGenerator>(HitInput.GetActor()))
 					{
 						ShieldGenerator->PostHitProcess();
 					}
 				}
-				if (HitInput.GetActor()->ActorHasTag("Target"))
+				else if (HitInput.GetActor()->ActorHasTag("Target"))
 				{
 					if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
 					{
