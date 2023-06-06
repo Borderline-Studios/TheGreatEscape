@@ -67,7 +67,7 @@ void ATrainControlls::ControlsInteraction()
 {
 	if (EngineRef)
 	{
-		EngineRef->ToggleTrainStop();
+		EngineRef->ToggleTrainStop(true, true);
 
 		PlayLeverSound();
 		UpdateHandleRotation(EngineRef->GetTrainMoving());

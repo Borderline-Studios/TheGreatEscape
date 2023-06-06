@@ -425,7 +425,7 @@ void AObjectiveGate::BeginTrainDetectorOverlap(
 			// Update the tracking variable
 			bTrainStopped = true;
 			// Stop the train
-			EngineRef->ToggleTrainStop();
+			EngineRef->ToggleTrainStop(bOpenLeftPlatform, bOpenRightPlatform);
 			// Prevent the train from restarting with the lever
 			EngineRef->DisableMovement();
 			// Populate the objective text using the number of battery slots this gate has
