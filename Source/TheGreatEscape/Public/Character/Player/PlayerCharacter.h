@@ -98,6 +98,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	USoundBase* ButtonSFX;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
+	USoundBase* JumpSFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
+	USoundBase* LandSFX;
+
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> LeverSFX;
@@ -126,8 +132,6 @@ public:
 	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int CurrentRifleAmmo = RifleAmmo;
-	
-
 	int VoiceLineTiggerNum = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -151,11 +155,14 @@ public:
 	int GetPlayerBatteryCount() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool PlayerHasBattery();
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void CallVignette();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void HitVignette();
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void CallVignette();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void DisableVignette();
 	
 	UFUNCTION(BlueprintImplementableEvent)
@@ -167,15 +174,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FVector RespawnLocation;
-	
-	UPROPERTY(BlueprintReadWrite)
-	bool bLoadLevel = true;
 
 	//Declearation of effect to apply when enemy is hit
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	void LoadLevel();
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bResetCurrrentLevel = true;
 public:
 	//Constructor
 	APlayerCharacter();
@@ -191,6 +198,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void RemoveRocketTargetWidget();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResetLevel();
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
@@ -216,4 +226,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void DeactivateRocket();
+
+	void Jump() override;
+
+	void StopJumping() override;
+
+	void Landed(const FHitResult& Hit) override;
 };

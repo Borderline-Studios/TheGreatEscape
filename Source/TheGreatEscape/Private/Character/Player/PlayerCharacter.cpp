@@ -18,8 +18,7 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
-
-
+#include "GameFramework/PawnMovementComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -28,6 +27,8 @@ APlayerCharacter::APlayerCharacter()
 	bRiflePickedUp = false;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(40.f, 96.0f);
+
+	JumpMaxCount = 2;
 
 	// set our turn rates for input
 	TurnRateGamepad = 45.f;
@@ -79,8 +80,10 @@ void APlayerCharacter::PostHitProcess()
 	{
 		if (!HitSFX.IsEmpty())
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.3);
+			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.5);
 		}
+
+		HitVignette();
 
 		
 		if (Value <= 30.0f)
@@ -149,11 +152,20 @@ bool APlayerCharacter::PlayerHasBattery()
 
 void APlayerCharacter::LoadLevel()
 {
-	RootComponent->SetWorldLocation(RespawnLocation);
-	EnableInput(UGameplayStatics::GetPlayerController(GetWorld() ,0));
-	GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()*4);
-	ReApplyPassives();
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.0f, 0.0f, 1.0f, FColor::Black, false, true);
+	if (bResetCurrrentLevel)
+	{
+		ResetLevel();
+	}
+	else if (!bResetCurrrentLevel)
+	{
+		RootComponent->SetWorldLocation(RespawnLocation);
+		EnableInput(UGameplayStatics::GetPlayerController(GetWorld() ,0));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()*4);
+		ReApplyPassives();
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.0f, 0.0f, 1.0f, FColor::Black, false, true);
+
+	}
+
 }
 
 
@@ -165,6 +177,28 @@ APlayerCharacter* APlayerCharacter::GetPlayerReference()
 {
 	APlayerCharacter* PlayerCharacter = this;
 	return PlayerCharacter;
+}
+
+void APlayerCharacter::Jump()
+{
+	Super::Jump();
+	if(JumpCurrentCount == 1)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), JumpSFX, GetActorLocation(), FRotator(0,0,0),.5f, FMath::FRandRange(0.9,1.1));
+	}
+}
+
+void APlayerCharacter::StopJumping()
+{
+	Super::StopJumping();
+
+}
+
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSFX, GetActorLocation(), FRotator(0,0,0),.5f, FMath::FRandRange(0.9,1.1));
+
 }
 
 
