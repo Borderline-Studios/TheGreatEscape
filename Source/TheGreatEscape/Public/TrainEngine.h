@@ -92,7 +92,7 @@ public:
 
     // FUNCTIONS
     UFUNCTION(BlueprintCallable)
-    void ToggleTrainStop();
+    void ToggleTrainStop(bool bExtendLeft = false, bool bExtendRight = false);
     
     // Updating the Objective Message
     UFUNCTION(BlueprintCallable)
@@ -107,7 +107,11 @@ public:
     bool GetTrainMoving() const;
 
     UFUNCTION(BlueprintImplementableEvent)
-    void MovePlatforms(bool bExtending);
+    void MovePlatforms(bool bExtendLeft, bool bExtendRight);
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+    void MoveLeftPlatform(bool bExtending);
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+    void MoveRightPlatform(bool bExtending);
 
 protected:
 

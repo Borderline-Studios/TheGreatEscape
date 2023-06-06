@@ -198,11 +198,11 @@ void ATrainEngine::Tick(float DeltaTime)
 /**
  * @brief This function does nothing
  */
-void ATrainEngine::ToggleTrainStop()
+void ATrainEngine::ToggleTrainStop(const bool bExtendLeft, const bool bExtendRight)
 {
 	if (!bObjectiveLocked)
 	{
-		MovePlatforms(bTrainMoving);
+		MovePlatforms(bTrainMoving && bExtendLeft, bTrainMoving && bExtendRight);
 		bTrainMoving = !bTrainMoving;
 		
 		if (TrainControls)
