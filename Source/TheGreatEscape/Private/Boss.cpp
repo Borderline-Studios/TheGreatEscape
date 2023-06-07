@@ -300,13 +300,13 @@ void ABoss::Lasers(float DeltaTime)
 
 	if (bLaserSpawned && bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
+		Laser->SetActorLocation(GetMesh()->GetSocketLocation(LeftSocket));
+		Laser->SetActorRotation(GetMesh()->GetSocketRotation(LeftSocket));
 	}
 	else if (bLaserSpawned && !bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
+		Laser->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
+		Laser->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
 	}
 }
 
@@ -325,11 +325,11 @@ void ABoss::Lasers(float DeltaTime)
 
 	if (bDoubleLaserSpawned)
 	{
-		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
-		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
+		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("LeftSocket"));
+		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("LeftSocket"));
 
-		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
-		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
+		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
+		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
 	}
 }
 
@@ -621,13 +621,13 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("L_LaserSocket") , GetMesh()->GetSocketRotation("L_LaserSocket"));
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
 			bLeftLaser = true;
 				
 			if (Laser)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser left spawned")); // Condition
-				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "L_LaserSocket");
+				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), LeftSocket);
 				bLaserSpawned = true;
 			}
 			else
@@ -640,12 +640,12 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("R_LaserSocket") , GetMesh()->GetSocketRotation("R_LaserSocket"));
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
 
 			if (Laser)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser right spawned")); // Condition
-				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "R_LaserSocket");
+				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), RightSocket);
 				bLaserSpawned = true;
 			}
 			else
@@ -682,14 +682,14 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 	{
 		if (!bLaserSpawned)
 		{
-			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("L_LaserSocket") , GetMesh()->GetSocketRotation("L_LaserSocket"));
-			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("R_LaserSocket") , GetMesh()->GetSocketRotation("R_LaserSocket"));
+			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
+			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
 				
 			if (DoubleLaserL && DoubleLaserR)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser double spawned")); // Condition
-				DoubleLaserL->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "L_LaserSocket");
-				DoubleLaserR->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "R_LaserSocket");
+				DoubleLaserL->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), LeftSocket);
+				DoubleLaserR->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), RightSocket);
 				bDoubleLaserSpawned = true;
 			}
 			else

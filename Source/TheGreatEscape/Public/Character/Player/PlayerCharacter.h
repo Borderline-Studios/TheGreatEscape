@@ -148,7 +148,7 @@ private:
 public:
 #pragma endregion
 
-    QRGameplayAbility* CurrentAbility = nullptr;
+    //QRGameplayAbility* CurrentAbility = nullptr;
 	
 	FRandomStream Stream;
 
