@@ -96,7 +96,7 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
-		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+		FHitResult HitResult = HitScan(GetPlayerReference()->MaxRifleShotRange);
 		ActivateTraceParticle(HitResult);
 		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
@@ -135,7 +135,7 @@ FHitResult UQRGA_RifleShoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-75.0f, 75.0f), CamCompLocation.Z + FMath::FRandRange(-75.0f, 75.0f));
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-25.0f, 25.0f), CamCompLocation.Z + FMath::FRandRange(-25.0f, 25.0f));
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
@@ -170,6 +170,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
+		GetPlayerReference()->CheckBomber(HitInput);
 		if (HitInput.GetActor()->ActorHasTag("Target"))
 		{
 			if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
@@ -209,10 +210,6 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 				if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 				{
 	
-				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
-				{
-					// hybrid tins
 				}
 				else
 				{

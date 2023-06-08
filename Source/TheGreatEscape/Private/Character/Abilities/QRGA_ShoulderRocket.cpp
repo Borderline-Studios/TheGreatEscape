@@ -4,6 +4,9 @@
 #include "Character/Abilities/QRGA_ShoulderRocket.h"
 
 #include "EnemyRework.h"
+#include "EnemyReworkHybrid.h"
+#include "HybridEnemyProjectile.h"
+#include "BehaviourTree/Utils.h"
 #include "Camera/CameraComponent.h"
 #include "Character/Player/PlayerCharacter.h"
 
@@ -62,10 +65,20 @@ APlayerCharacter* UQRGA_ShoulderRocket::GetPlayerReference()
 void UQRGA_ShoulderRocket::ReleasedInput(float TimePressed)
 {
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle ,this,&UQRGA_ShoulderRocket::CallEndAbility, CooldownTime, false);
-	AEnemyRework* EnemyCast = Cast<AEnemyRework>(ClosestActor);
-	CreateCheckProjectile(ClosestActor);
-	GetPlayerReference()->RemoveRocketTargetWidget();
-	GetPlayerReference()->DeactivateRocket();
+	if (AEnemyRework* EnemyCast = Cast<AEnemyRework>(ClosestActor))
+	{
+		CreateCheckProjectile(ClosestActor);
+		GetPlayerReference()->RemoveRocketTargetWidget();
+		GetPlayerReference()->DeactivateRocket();
+	}
+	if (AEnemyReworkHybrid* EnemyCast = Cast<AEnemyReworkHybrid>(ClosestActor))
+	{
+		CreateCheckProjectile(ClosestActor);
+		GetPlayerReference()->RemoveRocketTargetWidget();
+		GetPlayerReference()->DeactivateRocket();
+	}
+
+
 }
 
 void UQRGA_ShoulderRocket::CallEndAbility()

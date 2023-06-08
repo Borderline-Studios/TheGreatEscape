@@ -232,6 +232,7 @@ void UQRGA_Interact::FirstRifleEqiup()
 
 void UQRGA_Interact::FirstRevovlerEqiup()
 {
+	GetPlayerReferance()->PickUpRobopal();
 	GetPlayerReferance()->RevolverMesh1P->SetVisibility(true);
 	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Inspect");
 	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
