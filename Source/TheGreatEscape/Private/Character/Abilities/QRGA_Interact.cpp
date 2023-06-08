@@ -3,6 +3,7 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Elevator.h"
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
@@ -39,6 +40,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (IsValid(HitResult.GetActor()) && IsValid(HitResult.GetComponent()))
 		{
+			if (AElevator* Elevator = Cast<AElevator>(HitResult.GetActor()))
+			{
+				Elevator->Activate();
+			}
 			//Checks if the hit actor was an interactable object (uses unreals tag system)
 			if(HitResult.GetActor()->ActorHasTag("Interactable"))
 			{
