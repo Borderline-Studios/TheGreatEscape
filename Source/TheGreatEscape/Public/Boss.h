@@ -78,7 +78,6 @@ private:
 
 
 
-
 	// Animation Delegate fucntions
 	UFUNCTION()
 	void LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
@@ -205,6 +204,7 @@ private:
 
 	// switching states
 	bool bRequestSwitch = false;
+	bool bRequestEndGame = false;
 
 	bool bParkourUp = false;
 };

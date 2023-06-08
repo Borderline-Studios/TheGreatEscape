@@ -370,7 +370,7 @@ void ABoss::ObjDropAttack(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("timer set")); // Condition
 		}
 
-		if (CheckSwitchSequence())
+		if (CheckSwitchSequence() || bRequestEndGame)
 		{
 			Tracker->Destroy();
 			GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
@@ -379,6 +379,7 @@ void ABoss::ObjDropAttack(float DeltaTime)
 			bObjSpawned = false;
 			return;
 		}
+		
 		
 		if (!bTrackerAttackDone)
 		{
@@ -437,7 +438,7 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 		bObjDropResetStarted = true;
 	}
 
-	if (CheckSwitchSequence())
+	if (CheckSwitchSequence() || bRequestEndGame)
 	{
 		bTrackerSpawned = false;
 		bTrackerAttackDone = false;
@@ -446,6 +447,7 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 		bObjDropResetStarted = false;
 		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 	}
+	
 }
 
 /**
@@ -541,7 +543,7 @@ void ABoss::IdleSeq3(float DeltaTime)
 		}
 	}
 
-	if (CheckSwitchSequence())
+	if (CheckSwitchSequence() || bRequestEndGame)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
 		bIdleSeq3TimerStarted = false;
@@ -576,14 +578,14 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		if (currentStateMachineIndex == 2)
 		{
 			// Get rid of blockers
-			//UGameplayStatics::GetAllActorsOfClass(GetWorld(), BlockingBoxClassRef, FoundBlockers);
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), BlockingBoxClassRef, FoundBlockers);
 
-			//UE_LOG(LogTemp, Warning, TEXT("%d"), FoundBlockers.Num());
+			UE_LOG(LogTemp, Warning, TEXT("%d"), FoundBlockers.Num());
 
-			//for (int i = 0; i < FoundBlockers.Num(); i++)
-			//{
-				//FoundBlockers[i]->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 1000.0f));
-			//}
+			for (int i = 0; i < FoundBlockers.Num(); i++)
+			{
+				FoundBlockers[i]->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 1000.0f));
+			}
 			
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[2].GetDefaultObject(), ASC);
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), Phase3StartSFX, PlayerRef->GetActorLocation());
@@ -605,6 +607,7 @@ bool ABoss::CheckSwitchSequence()
 	return false;
 }
 
+
 void ABoss::PostHitProcess()
 {
 	// get ability system component
@@ -620,6 +623,20 @@ void ABoss::PostHitProcess()
 	}
 	else if (Value <= 0 && currentStateMachineIndex == 2)
 	{
+		bRequestEndGame = true;
+
+		// if in lasers delete them
+		if (DoubleLaserL && DoubleLaserR)
+		{
+			bDoubleLaserSpawned = false;
+			DoubleLaserL->Destroy();
+			DoubleLaserR->Destroy();
+			DoubleLaserL = nullptr;
+			DoubleLaserR = nullptr;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("END GAME")); // Condition
+		
 		// spawn boss death vfx
 		this->SetActorHiddenInGame(true);
 		FVector location =  this->GetActorLocation();
