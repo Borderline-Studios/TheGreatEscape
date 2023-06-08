@@ -49,11 +49,17 @@ public:
 
 private:
 	// FUNCTIONS
+	UFUNCTION()
+	void ProcessRotation(float TimelineProgress) const;
 	
 	// VARIABLES
 	ATrainEngine* EngineRef;
 	FRotator CurrentRotation;
 
+	// Movement
+	FTimeline RotationTimeline;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UCurveFloat* RotationCurve = nullptr;
 	const FRotator ForwardRotation = FRotator(0.0f, 0.0f, 80.0f);
 	const FRotator BackwardRotation = FRotator(0.0f, 0.0f, 0.0f);
 
