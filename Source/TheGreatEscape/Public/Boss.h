@@ -98,21 +98,33 @@ private:
 	APlayerCharacter* PlayerRef;
 
 	// Objects to be spawned
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> LaserSubclassRef;
 	TSoftClassPtr<AActor> LaserRef; // weak pointer to laser class
 	UClass* LaserClassRef; // Reference to laser
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> TrackerSubclassRef;
 	TSoftClassPtr<AActor> TrackerRef; // weak pointer to tracker class
 	UClass* TrackerClassRef; // Reference to tracker
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> ObjDroppedSubclassRef;
 	TSoftClassPtr<AActor> ObjDroppedRef; // weak pointer to object dropped class
 	UClass* ObjDroppedClassRef; // Reference to Object dropped
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> GenShieldSubclassRef;
 	TSoftClassPtr<AActor> GenShieldRef; // Gen shield
 	UClass* GenShieldClassRef; // Reference to generated shield
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> BlockingBoxSubclassRef;
 	TSoftClassPtr<AActor> BlockingBoxRef; // Blocking box
 	UClass* BlockingBoxClassRef; // Reference to blocking box
-
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> DeathEffectSubclassRef;
 	TSoftClassPtr<AActor> DeathEffectRef; // Death Effect ref
 	UClass* DeathEffectClassRef; // Reference to Death Effect
 
@@ -148,8 +160,15 @@ private:
 	TArray<AActor*> FoundGens; // found shield gens
 	TArray<AActor*> FoundBlockers; // found blocking ____
 
-	FName LeftSocket = "L_LaserSocket";
-	FName RightSocket = "R_LaserSocket";
+	FName LeftSocket;
+	FName RightSocket;
+
+
+	FVector LeftSocketLoc;
+	FVector RightSocketLoc;
+
+	FRotator LeftSocketRot;
+	FRotator RightSocketRot;
 	
 	// Timers
 	FTimerHandle TrackerAttackHandle;
@@ -186,4 +205,6 @@ private:
 
 	// switching states
 	bool bRequestSwitch = false;
+
+	bool bParkourUp = false;
 };
