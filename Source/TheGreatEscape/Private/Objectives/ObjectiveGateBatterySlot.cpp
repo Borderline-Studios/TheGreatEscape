@@ -103,8 +103,7 @@ void AObjectiveGateBatterySlot::BeginBatteryDetectorOverlap(
 			
 			// spawn battery at filled location
 			AActor* PlacedBattery = GetWorld()->SpawnActor(PickupItemClassRef);
-			PlacedBattery->AttachToComponent(DetectionSphere, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-			PlacedBattery->SetActorRelativeLocation(FVector(30.0f, 5.0f, 160.0f));
+			PlacedBattery->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BatteryAttach");
 			PlacedBattery->SetActorEnableCollision(false);
 			PlacedBattery->Tags.Empty();
 
