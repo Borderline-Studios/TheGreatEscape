@@ -14,6 +14,7 @@
 
 #include "CoreMinimal.h"
 #include "EnemyRework.h"
+#include "EnemyReworkController.h"
 #include "EnemyReworkDasher.generated.h"
 
 /**
@@ -32,7 +33,19 @@ public:
 	virtual void PostDeathProcess() override;
 	virtual void PostHitProcess() override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass; // What effect it is
+
 private:
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit); // On hit
+
+	void StopDash(); // stops dash
+
+	AEnemyReworkController* ControllerRef;
+
+	float DefaultMoveSpeed;
+
 	
 	
 };

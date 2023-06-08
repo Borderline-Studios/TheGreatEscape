@@ -14,6 +14,7 @@
 #include "CoreMinimal.h"
 #include "Character/BASE/GASBASECharacter.h"
 #include "BossStateMachine.h"
+#include "NiagaraSystem.h"
 #include "Character/Player/PlayerCharacter.h"
 #include "Boss.generated.h"
 
@@ -49,6 +50,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void Seq2ShieldSetup();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* Phase2StartSFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* Phase3StartSFX;
+
 private:
 	// *** Functions *** ///
 	void StateMachineSetUps();
@@ -66,6 +73,8 @@ private:
 	void IdleSeq3(float DeltaTime); // Idle for sequence 3
 
 	void NewSequenceEffect(int NewSequenceNum);
+
+	bool CheckSwitchSequence();
 
 
 
@@ -100,6 +109,15 @@ private:
 
 	TSoftClassPtr<AActor> GenShieldRef; // Gen shield
 	UClass* GenShieldClassRef; // Reference to generated shield
+
+	TSoftClassPtr<AActor> BlockingBoxRef; // Blocking box
+	UClass* BlockingBoxClassRef; // Reference to blocking box
+
+	TSoftClassPtr<AActor> DeathEffectRef; // Death Effect ref
+	UClass* DeathEffectClassRef; // Reference to Death Effect
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* DeathEffect;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ObjDropAttack", meta = (AllowPrivateAccess = "true"))
 	float MaxTrackerTime = 4.0f; // max tracker time
@@ -114,8 +132,10 @@ private:
 	float PlayerFeetZ = 9174.7f; // Z height of floor
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle", meta = (AllowPrivateAccess = "true"))
-	float IdleTimer = 3.0f; // Object spawn height
+	float IdleTimer = 3.0f;// Object spawn height
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "End Game", meta = (AllowPrivateAccess = "true"))
+	float EndGameTimer = 10.0f;// End Game Timer
 
 	// objects
 	AActor* Tracker = nullptr; // Tracker obj
@@ -126,12 +146,17 @@ private:
 	AActor* DoubleLaserR = nullptr; // Laser left Obj double lasers
 
 	TArray<AActor*> FoundGens; // found shield gens
+	TArray<AActor*> FoundBlockers; // found blocking ____
+
+	FName LeftSocket = "L_LaserSocket";
+	FName RightSocket = "R_LaserSocket";
 	
 	// Timers
 	FTimerHandle TrackerAttackHandle;
 	FTimerHandle IdleHandle;
 	FTimerHandle IdleSeq3Handle;
 	FTimerHandle ObjDropResetHandle;
+	FTimerHandle EndGameHandle;
 	
 	// Bools
 	// object drop
@@ -158,4 +183,7 @@ private:
 	bool bPersonalShieldUp = false;
 
 	bool bGenShieldAnim = false;
+
+	// switching states
+	bool bRequestSwitch = false;
 };

@@ -55,7 +55,7 @@ public:
     //UPROPERTY(EditAnywhere, BlueprintReadWrite)
     //TArray<TSubclassOf<UGameplayAbility>> QRGAWreckerAttacks; // Gameplay ability type (set in bp)
 
-	int AttackIndex = 0;
+	int AttackIndex = 1; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayAbility> QRGAAttack; // Gameplay ability type (set in bp)

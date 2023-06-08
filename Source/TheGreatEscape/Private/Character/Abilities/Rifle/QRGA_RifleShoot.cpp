@@ -8,6 +8,8 @@
 #include "EnemyRework.h"
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
+#include "Enemy_Drone.h"
+#include "Enemy_Drone_Bomber.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Camera/CameraComponent.h"
@@ -27,6 +29,7 @@ void UQRGA_RifleShoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
 	if(GetPlayerReference()->bRifleEquipped)
 	{
 		InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
@@ -53,6 +56,13 @@ bool UQRGA_RifleShoot::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+void UQRGA_RifleShoot::CancelAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateCancelAbility)
+{
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 APlayerCharacter* UQRGA_RifleShoot::GetPlayerReference()
@@ -169,7 +179,17 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 		}
 		if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
 		{
+			ObjectiveShield->ActivateVFX(HitInput);
 			ObjectiveShield->PostHitProcess();
+		}
+
+		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
+		{
+			Drone->PostHitProcess();
+		}
+		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
+		{
+			Bomber->PostHitProcress();
 		}
 		
 		//Getting the ability system component from the hit actor
@@ -242,7 +262,6 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 				}
 				Boss->PostHitProcess();
 			}
-			
 			bool bFound;
 			float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
 			if (Value > 0 && bFound)

@@ -93,18 +93,17 @@ void AObjectiveGateBatterySlot::BeginBatteryDetectorOverlap(
 	if (OtherActor == PlayerRef)
 	{
 		// check to see if it's holding a battery AND that we're empty
-		if (!bSlotFilled && PlayerRef->bBatteryPickedUp)
+		if (!bSlotFilled && PlayerRef->GetPlayerBatteryCount() > 0)
 		{
 			// make it stop holding the battery
-			PlayerRef->bBatteryPickedUp = false;
+			PlayerRef->DecrementBatteryCount();
 			
 			// mark ourselves as being filled
 			bSlotFilled = true;
 			
 			// spawn battery at filled location
 			AActor* PlacedBattery = GetWorld()->SpawnActor(PickupItemClassRef);
-			PlacedBattery->AttachToComponent(DetectionSphere, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-			PlacedBattery->SetActorRelativeLocation(FVector(30.0f, 5.0f, 160.0f));
+			PlacedBattery->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BatteryAttach");
 			PlacedBattery->SetActorEnableCollision(false);
 			PlacedBattery->Tags.Empty();
 

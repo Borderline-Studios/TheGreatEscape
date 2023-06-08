@@ -14,6 +14,7 @@
 
 #include "EnemyReworkController.h"
 #include "EnemyReworkHybrid.h"
+#include "NiagaraFunctionLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
@@ -83,7 +84,9 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
   {
    LeftTurretLoc = Enemy->GetMesh()->GetSocketLocation("L_WristSocket");
    LeftTurretRot = FRotator(Enemy->GetActorRotation().Pitch, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("L_WristSocket").Roll);
-   
+
+   UNiagaraFunctionLibrary::SpawnSystemAttached(ShootVfx, Enemy->GetMesh(), FName(Enemy->GetName()), Enemy->GetMesh()->GetSocketLocation("L_WristSocketMuzzleFlash"), LeftTurretRot, EAttachLocation::KeepWorldPosition, true, true);
+   //UNiagaraFunctionLibrary::SpawnSystemAttached(BulletVfx, Enemy->GetMesh(), FName(Enemy->GetName()), LeftTurretLoc, LeftTurretRot, EAttachLocation::KeepWorldPosition, true, true);
    AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, LeftTurretLoc, LeftTurretRot, SpawnParams);
     
    bSpawnLeft = false;
@@ -94,6 +97,8 @@ EBTNodeResult::Type UBTTask_HybridAttack::ExecuteTask(UBehaviorTreeComponent& Ow
    RightTurretLoc = Enemy->GetMesh()->GetSocketLocation("R_WristSocket");
    RightTurretRot = FRotator(Enemy->GetActorRotation().Pitch, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Yaw, Enemy->GetMesh()->GetSocketRotation("R_WristSocket").Roll);
 
+   UNiagaraFunctionLibrary::SpawnSystemAttached(ShootVfx, Enemy->GetMesh(), FName(Enemy->GetName()), Enemy->GetMesh()->GetSocketLocation("R_WristSocketMuzzleFlash"), RightTurretRot, EAttachLocation::KeepWorldPosition, true, true);
+   //UNiagaraFunctionLibrary::SpawnSystemAttached(BulletVfx, Enemy->GetMesh(), FName(Enemy->GetName()), RightTurretLoc, RightTurretRot, EAttachLocation::KeepWorldPosition, true, true);
    AHybridEnemyProjectile* Projectile = GetWorld()->SpawnActor<AHybridEnemyProjectile>(LoadedBpProjectile, RightTurretLoc, RightTurretRot, SpawnParams);
    
    bSpawnRight = false;

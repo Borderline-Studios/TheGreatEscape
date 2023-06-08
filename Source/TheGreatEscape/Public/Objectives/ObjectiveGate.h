@@ -124,8 +124,14 @@ private:
 	// Reference to the train engine
 	ATrainEngine* EngineRef;
 
+	// Which train platforms do we want to open?
+	UPROPERTY(EditInstanceOnly, Category = "Functionality")
+	bool bOpenLeftPlatform = false;
+	UPROPERTY(EditInstanceOnly, Category = "Functionality")
+	bool bOpenRightPlatform = false;
+
 	// Elevator reference. Populated in editor only if a relevant elevator is required.
-	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditInstanceOnly, Category = "Functionality", meta = (AllowPrivateAccess = "true"))
 	AObjectiveElevator* ElevatorRef;
 
 	// Array of references to battery slots

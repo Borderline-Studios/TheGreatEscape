@@ -41,38 +41,37 @@ EBTNodeResult::Type UBTTask_LookAtPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 	if (AEnemyReworkController* const  AIController = Cast<AEnemyReworkController>(OwnerComp.GetAIOwner()))
 	{
 		// Get player character
-    	ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-    	
-		// Get players location
-		FVector const PlayerLocation = Player->GetActorLocation();
-
-		if (bDrone)
+		if (ACharacter* const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 		{
-			// get npc
-			AEnemyReworkDrone* const Drone = Cast<AEnemyReworkDrone>(AIController->GetPawn());
+			// Get players location
+			FVector const PlayerLocation = Player->GetActorLocation();
 
-			FVector Forward = PlayerLocation - Drone->GetActorLocation();
-			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
+			if (AEnemyReworkDrone* const Drone = Cast<AEnemyReworkDrone>(AIController->GetPawn()))
+			{
+				// get npc
+				FVector Forward = PlayerLocation - Drone->GetActorLocation();
+				FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
 
-			Drone->SetActorRotation(FRotator(0.0f, Rot.Yaw, 0.0f));
+				Drone->SetActorRotation(FRotator(0.0f, Rot.Yaw, 0.0f));
 			
-			FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Drone->GetActorLocation(), PlayerLocation);
+				FRotator newTurretBaseRot = UKismetMathLibrary::FindLookAtRotation(Drone->GetActorLocation(), PlayerLocation);
 
-			Drone->TurretBaseRef->SetWorldRotation(newTurretBaseRot);
+				Drone->TurretBaseRef->SetWorldRotation(newTurretBaseRot);
 
-		}
-		else
-		{
-			// get npc
-			AEnemyReworkHybrid* const Enemy = Cast<AEnemyReworkHybrid>(AIController->GetPawn());
+			}
+			else if (AEnemyRework* const Enemy = Cast<AEnemyRework>(AIController->GetPawn()))
+			{
+				// get npc
+			
 
-			FVector Forward = PlayerLocation - Enemy->GetActorLocation();
-			FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
+				FVector Forward = PlayerLocation - Enemy->GetActorLocation();
+				FRotator Rot = UKismetMathLibrary::MakeRotFromXY(Forward, UKismetMathLibrary::Cross_VectorVector(Forward, FVector::DownVector));
 
-			//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
+				//FVector Rot = UKismetMathLibrary::FindLookAtRotation(NPC->GetActorLocation(), PlayerLocation);
 
-			// set rotation of the actor
-			Enemy->SetActorRotation(Rot);
+				// set rotation of the actor
+				Enemy->SetActorRotation(Rot);
+			}
 		}
 
 		

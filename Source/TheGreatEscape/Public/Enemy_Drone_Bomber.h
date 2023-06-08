@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
@@ -18,7 +19,7 @@ public:
 	// Sets default values for this actor's properties
 	AEnemy_Drone_Bomber();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -33,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* DeathVFX;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,6 +50,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void Explode(FVector Location);
+
+	UFUNCTION(BlueprintCallable)
+	void PostHitProcress();
 
 	UFUNCTION()
 	APlayerCharacter* GetPlayerReference();

@@ -36,6 +36,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void LevelLoadSequence();
+
 private:
 	// FUNCTIONS
 	UFUNCTION()
@@ -47,6 +50,7 @@ private:
 	bool bFromSweep,
 	const FHitResult &SweepResult
 	);
+
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -71,7 +75,7 @@ private:
 	
 	// Camera Variables
 	UPROPERTY(EditInstanceOnly)
-	float BlendTime = 1.0f;
+	float BlendTime = 8.0f;
 
 	UCameraComponent* PlayerCamRef;
 	

@@ -9,6 +9,8 @@
 #include "EnemyReworkDrone.h"
 #include "EnemyReworkHybrid.h"
 #include "EnemyReworkHybridTank.h"
+#include "Enemy_Drone.h"
+#include "Enemy_Drone_Bomber.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
@@ -288,6 +290,14 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 				Boss->PostHitProcess();
 			}
 		}
+		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
+		{
+			Drone->PostHitProcess();
+		}
+		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
+		{
+			Bomber->PostHitProcress();
+		}
 	}
 }
 
@@ -309,14 +319,14 @@ void UQRGA_RevolverShoot::HitTagCheck(FHitResult HitInput)
 						}
 					}
 				}
-				if (HitInput.GetActor()->ActorHasTag("Generator"))
+				else if (HitInput.GetActor()->ActorHasTag("Generator"))
 				{
 					if (AShieldGenerator* ShieldGenerator = Cast<AShieldGenerator>(HitInput.GetActor()))
 					{
 						ShieldGenerator->PostHitProcess();
 					}
 				}
-				if (HitInput.GetActor()->ActorHasTag("Target"))
+				else if (HitInput.GetActor()->ActorHasTag("Target"))
 				{
 					if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
 					{

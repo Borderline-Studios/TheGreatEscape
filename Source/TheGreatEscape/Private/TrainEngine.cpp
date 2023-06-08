@@ -109,7 +109,19 @@ void ATrainEngine::BeginPlay()
 		SetActorRotation(SplineRef->GetRotationAtDistanceAlongSpline(0, ESplineCoordinateSpace::World) - FRotator(0.0f, 90.0f, 0.0f));
 
 		bStartedMoving = true;
-		// bTrainMoving = true;
+		 // if (true)
+		 // {
+			// 	bTrainMoving = true;
+		 // }
+
+		if (MovementCurve)
+		{
+			FOnTimelineFloat ProgressFunction;
+			ProgressFunction.BindUFunction(this, TEXT("ProcessTrainSpeedTimeline"));
+			TrainSpeedModificationTimeline.AddInterpFloat(MovementCurve, ProgressFunction);
+		
+			TrainSpeedModificationTimeline.SetTimelineLengthMode(TL_LastKeyFrame);
+		}
 	}
 	
 	// Spawning in the Carriages // Doesn't fire if CarriageCount <= 0
@@ -165,6 +177,11 @@ void ATrainEngine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (TrainSpeedModificationTimeline.IsPlaying())
+	{
+		TrainSpeedModificationTimeline.TickTimeline(DeltaTime);
+	}
+
 	// Standard Tick Operation
     if (bStartedMoving && GetPlayerOnTrain() && !bObjectiveLocked)
     {
@@ -198,11 +215,11 @@ void ATrainEngine::Tick(float DeltaTime)
 /**
  * @brief This function does nothing
  */
-void ATrainEngine::ToggleTrainStop()
+void ATrainEngine::ToggleTrainStop(const bool bExtendLeft, const bool bExtendRight)
 {
 	if (!bObjectiveLocked)
 	{
-		MovePlatforms(bTrainMoving);
+		MovePlatforms(bTrainMoving && bExtendLeft, bTrainMoving && bExtendRight);
 		bTrainMoving = !bTrainMoving;
 		
 		if (TrainControls)
@@ -248,6 +265,22 @@ bool ATrainEngine::GetTrainMoving() const
 	return bTrainMoving;
 }
 
+void ATrainEngine::ChangeTrainSpeedModifier(float NewModifier)
+{
+	CurrentModifier = TrainSpeedModifier;
+	TargetModifier = NewModifier;
+
+	TrainSpeedModificationTimeline.PlayFromStart();
+}
+
+void ATrainEngine::ResetTrainSpeed()
+{
+	CurrentModifier = TrainSpeedModifier;
+	TargetModifier = DefaultTrainSpeedModifier;
+
+	TrainSpeedModificationTimeline.PlayFromStart();
+}
+
 void ATrainEngine::BeginCarOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -266,4 +299,9 @@ void ATrainEngine::EndCarOverlap(
 	int32 OtherBodyIndex)
 {
 	Super::EndCarOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+}
+
+void ATrainEngine::ProcessTrainSpeedTimeline(float TimelineProgress)
+{
+	TrainSpeedModifier = FMath::Lerp(CurrentModifier, TargetModifier, TimelineProgress);
 }

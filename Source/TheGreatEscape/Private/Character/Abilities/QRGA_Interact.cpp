@@ -3,6 +3,7 @@
 
 #include "Character/Abilities/QRGA_Interact.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Elevator.h"
 #include "TrainControlls.h"
 #include "TrainStopButton.h"
 #include "Camera/CameraComponent.h"
@@ -39,6 +40,10 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (IsValid(HitResult.GetActor()) && IsValid(HitResult.GetComponent()))
 		{
+			if (AElevator* Elevator = Cast<AElevator>(HitResult.GetActor()))
+			{
+				Elevator->Activate();
+			}
 			//Checks if the hit actor was an interactable object (uses unreals tag system)
 			if(HitResult.GetActor()->ActorHasTag("Interactable"))
 			{
@@ -52,8 +57,13 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Horn"))
 				{
-						ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
-						TrainHorn->PlayHorn();
+					ATrainHorn* TrainHorn = Cast<ATrainHorn>(HitResult.GetActor());
+					TrainHorn->PlayHorn();
+				}
+				else if (HitResult.GetActor()->ActorHasTag("RoboPal"))
+				{
+
+					HitResult.GetActor()->Destroy();
 				}
 				//Check if its the train stop button
 				else if (ATrainStopButton* ButtonRef = Cast<ATrainStopButton>(HitResult.GetActor()))
@@ -86,9 +96,7 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 						{
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX[0], HitResult.Location);
 						}
-				
 					}
-		
 					
 					if (Health > 30.0f && Found)
 					{
@@ -113,20 +121,20 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				{
 					ActorToDestory = HitResult.GetActor();
 					FirstRevovlerEqiup();
+					GetPlayerReferance()->ApplyUI();
 					ActorToDestory->Destroy();
 				}
 				//Checks if its a pick upable
 				//TODO Make this better (Pick up and drop)
-				else
+				else	// Checking for the battery
 				{
 					if (AObjectiveGate* ParentGate = Cast<AObjectiveGate>(HitResult.GetActor()->GetAttachParentActor()))
 					{
 						ParentGate->UpdateObjectiveText("Take this back to the gate blocking the train!");
 					}
 					
-					HitResult.GetActor()->AttachToActor(GetPlayerReferance(), FAttachmentTransformRules::SnapToTargetNotIncludingScale , NAME_None);
-					HitResult.GetComponent()->SetVisibility(false, false);
-					GetPlayerReferance()->bBatteryPickedUp = true;
+					HitResult.GetActor()->Destroy();
+					GetPlayerReferance()->IncrementBatteryCount();
 					
 				}
 				//ends the ability
@@ -195,9 +203,17 @@ void UQRGA_Interact::CallEndAbility(FName NotifyName, const FBranchingPointNotif
 		//Ends ability is the animation is done
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	if (NotifyName == FName("FinishedGather"))
+	if (NotifyName == FName("InspectFinished"))
+	{
+		//Ends ability is the animation is done
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	if (NotifyName == FName("FinishedInspect"))
 	{
 		GetPlayerReferance()->bRevolverEquipped = true;
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("RevolverEquiped"));
+		//Ends ability is the animation is done
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
 }
 
@@ -209,13 +225,14 @@ void UQRGA_Interact::ForceEndAbility()
 
 void UQRGA_Interact::FirstRifleEqiup()
 {
-	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Inspect");
 	GetPlayerReferance()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickUpRifleSFX, GetPlayerReferance()->GetActorLocation());
 }
 
 void UQRGA_Interact::FirstRevovlerEqiup()
 {
 	GetPlayerReferance()->RevolverMesh1P->SetVisibility(true);
-	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Inspect");
 	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
 }

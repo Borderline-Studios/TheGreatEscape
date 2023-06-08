@@ -18,8 +18,7 @@
 #include "GameFramework/InputSettings.h"
 //GAS Includes
 #include "AbilitySystemBlueprintLibrary.h"
-
-
+#include "GameFramework/PawnMovementComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -28,6 +27,8 @@ APlayerCharacter::APlayerCharacter()
 	bRiflePickedUp = false;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(40.f, 96.0f);
+
+	JumpMaxCount = 2;
 
 	// set our turn rates for input
 	TurnRateGamepad = 45.f;
@@ -79,8 +80,10 @@ void APlayerCharacter::PostHitProcess()
 	{
 		if (!HitSFX.IsEmpty())
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.3);
+			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.5);
 		}
+
+		HitVignette();
 
 		
 		if (Value <= 30.0f)
@@ -106,12 +109,7 @@ void APlayerCharacter::PostDeathProcess()
 	DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->StopMovement();
 	GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()/4);
-	FVector ActorLoc = GetActorLocation();
-	FRotator ActorRot = GetActorRotation();
-	
-	SetActorLocationAndRotation(FVector(ActorLoc.X,ActorLoc.Y, ActorLoc.Z), FRotator(ActorRot.Pitch, ActorRot.Yaw, ActorRot.Roll + 75.0f));
-
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, true, true);
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.0f, 1.0f, 1.0f, FColor::Black, false, true);
 
 	FTimerHandle DeathTimer;
 
@@ -129,9 +127,45 @@ UCameraComponent* APlayerCharacter::GetFirstPersonCameraComponent()
 	return FirstPersonCameraComponent;
 }
 
+void APlayerCharacter::IncrementBatteryCount()
+{
+	PlayerBatteryCount++;
+}
+
+void APlayerCharacter::DecrementBatteryCount()
+{
+	if (PlayerHasBattery())
+	{
+		PlayerBatteryCount--;
+	}
+}
+
+int APlayerCharacter::GetPlayerBatteryCount() const
+{
+	return PlayerBatteryCount;
+}
+
+bool APlayerCharacter::PlayerHasBattery()
+{
+	return PlayerBatteryCount > 0;
+}
+
 void APlayerCharacter::LoadLevel()
 {
-	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
+	if (bResetCurrrentLevel)
+	{
+		ResetLevel();
+	}
+	else if (!bResetCurrrentLevel)
+	{
+		RootComponent->SetWorldLocation(RespawnLocation);
+		EnableInput(UGameplayStatics::GetPlayerController(GetWorld() ,0));
+		GetCapsuleComponent()->SetCapsuleHalfHeight(GetCapsuleComponent()->GetScaledCapsuleHalfHeight()*4);
+		ReApplyPassives();
+		UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(1.0f, 0.0f, 1.0f, FColor::Black, false, true);
+
+	}
+
 }
 
 
@@ -143,6 +177,28 @@ APlayerCharacter* APlayerCharacter::GetPlayerReference()
 {
 	APlayerCharacter* PlayerCharacter = this;
 	return PlayerCharacter;
+}
+
+void APlayerCharacter::Jump()
+{
+	Super::Jump();
+	if(JumpCurrentCount == 1)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), JumpSFX, GetActorLocation(), FRotator(0,0,0),.5f, FMath::FRandRange(0.9,1.1));
+	}
+}
+
+void APlayerCharacter::StopJumping()
+{
+	Super::StopJumping();
+
+}
+
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSFX, GetActorLocation(), FRotator(0,0,0),.5f, FMath::FRandRange(0.9,1.1));
+
 }
 
 

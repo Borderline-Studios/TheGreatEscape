@@ -13,6 +13,7 @@
 #include "Boss.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "NiagaraFunctionLibrary.h"
 #include "QRGameplayAbility.h"
 #include "Components/CapsuleComponent.h"
 
@@ -67,7 +68,7 @@ void ABoss::BeginPlay()
 	}
 
 	// Load the laser
-	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/Laser.Laser_C'")));
+	LaserRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Effects/Enemies/Boss/Laser/BP_Laser.BP_Laser_C'")));
 	LaserClassRef = LaserRef.LoadSynchronous();
 
 	// Load the tracker
@@ -82,6 +83,14 @@ void ABoss::BeginPlay()
 	// Load the object to be checked
 	GenShieldRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Interactables/BossRoom/BP_ShieldGenerator.BP_ShieldGenerator_C'")));
 	GenShieldClassRef = GenShieldRef.LoadSynchronous();
+
+	// Load the object to be checked
+	BlockingBoxRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/BP_BlockingBox.BP_BlockingBox_C'")));
+	BlockingBoxClassRef = GenShieldRef.LoadSynchronous();
+
+	// Load the object to be checked
+	BlockingBoxRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/BP_BossDeath.BP_BossDeath_C'")));
+	BlockingBoxClassRef = GenShieldRef.LoadSynchronous();
 
 }
 
@@ -267,6 +276,12 @@ void ABoss::Idle(float DeltaTime)
 		}
 		bIdleTimerStarted = true;
 	}
+
+	if (CheckSwitchSequence())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(IdleHandle);
+		bIdleTimerStarted = false;
+	}
 }
 
 /**
@@ -285,13 +300,13 @@ void ABoss::Lasers(float DeltaTime)
 
 	if (bLaserSpawned && bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
+		Laser->SetActorLocation(GetMesh()->GetSocketLocation(LeftSocket));
+		Laser->SetActorRotation(GetMesh()->GetSocketRotation(LeftSocket));
 	}
 	else if (bLaserSpawned && !bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
+		Laser->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
+		Laser->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
 	}
 }
 
@@ -310,11 +325,11 @@ void ABoss::Lasers(float DeltaTime)
 
 	if (bDoubleLaserSpawned)
 	{
-		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("L_LaserSocket"));
-		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("L_LaserSocket"));
+		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("LeftSocket"));
+		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("LeftSocket"));
 
-		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation("R_LaserSocket"));
-		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation("R_LaserSocket"));
+		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
+		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
 	}
 }
 
@@ -339,6 +354,16 @@ void ABoss::ObjDropAttack(float DeltaTime)
 		{
 			GetWorld()->GetTimerManager().SetTimer(TrackerAttackHandle, FTimerDelegate::CreateLambda([&] { bTrackerAttackDone = true; UE_LOG(LogTemp, Warning, TEXT("timer done"));}), MaxTrackerTime, false);
 			UE_LOG(LogTemp, Warning, TEXT("timer set")); // Condition
+		}
+
+		if (CheckSwitchSequence())
+		{
+			Tracker->Destroy();
+			GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
+			bTrackerAttackDone = false;
+			bTrackerSpawned = false;
+			bObjSpawned = false;
+			return;
 		}
 		
 		if (!bTrackerAttackDone)
@@ -397,6 +422,16 @@ void ABoss::ObjDropAttackReset(float DeltaTime)
 		}
 		bObjDropResetStarted = true;
 	}
+
+	if (CheckSwitchSequence())
+	{
+		bTrackerSpawned = false;
+		bTrackerAttackDone = false;
+		bObjSpawned = false;
+		Tracker = nullptr;
+		bObjDropResetStarted = false;
+		GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
+	}
 }
 
 /**
@@ -423,6 +458,8 @@ void ABoss::Parkour(float DeltaTime)
 		bGenShieldAnim = true;
 		//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
+
+	CheckSwitchSequence();
 	
 }
 
@@ -482,6 +519,12 @@ void ABoss::IdleSeq3(float DeltaTime)
 			bIdleSeq3TimerStarted = true;
 		}
 	}
+
+	if (CheckSwitchSequence())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(IdleSeq3Handle);
+		bIdleSeq3TimerStarted = false;
+	}
 }
 
 void ABoss::NewSequenceEffect(int NewSequenceNum)
@@ -495,15 +538,50 @@ void ABoss::NewSequenceEffect(int NewSequenceNum)
 		}
 		if (currentStateMachineIndex == 1)
 		{
+			// Get rid of blockers
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), BlockingBoxClassRef, FoundBlockers);
+
+			UE_LOG(LogTemp, Warning, TEXT(" fences found: %d"), FoundBlockers.Num());
+
+			for (int i = 0; i < FoundBlockers.Num(); i++)
+			{
+				FoundBlockers[i]->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - 1000.0f));
+			}
+			
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[1].GetDefaultObject(), ASC);
 			Seq2ShieldSetup();
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), Phase2StartSFX, PlayerRef->GetActorLocation());
 		}
 		if (currentStateMachineIndex == 2)
 		{
+			// Get rid of blockers
+			//UGameplayStatics::GetAllActorsOfClass(GetWorld(), BlockingBoxClassRef, FoundBlockers);
+
+			//UE_LOG(LogTemp, Warning, TEXT("%d"), FoundBlockers.Num());
+
+			//for (int i = 0; i < FoundBlockers.Num(); i++)
+			//{
+				//FoundBlockers[i]->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 1000.0f));
+			//}
+			
 			ASC->ApplyGameplayEffectToTarget(PassiveGameplayEffects[2].GetDefaultObject(), ASC);
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), Phase3StartSFX, PlayerRef->GetActorLocation());
 		}
 	}
 
+}
+
+bool ABoss::CheckSwitchSequence()
+{
+	if (bRequestSwitch)
+	{
+		currentStateMachineIndex++;
+		NewSequenceEffect(currentStateMachineIndex);
+		bRequestSwitch = false;
+		return true;
+	}
+
+	return false;
 }
 
 void ABoss::PostHitProcess()
@@ -517,12 +595,23 @@ void ABoss::PostHitProcess()
 
 	if (Value <= 0 && currentStateMachineIndex != 2)
 	{
-			currentStateMachineIndex++;
-			NewSequenceEffect(currentStateMachineIndex);
+		bRequestSwitch = true;
 	}
 	else if (Value <= 0 && currentStateMachineIndex == 2)
 	{
-		EndGame();
+		// spawn boss death vfx
+		this->SetActorHiddenInGame(true);
+		FVector location =  this->GetActorLocation();
+		AActor* deathEffect = Cast<AActor>(GetWorld()->SpawnActor(DeathEffectClassRef, &location));
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, this->GetActorLocation(), this->GetActorRotation(), FVector(1,1,1), true);
+		
+		GetWorld()->GetTimerManager().SetTimer(EndGameHandle, FTimerDelegate::CreateLambda([&]
+			{
+				GetWorld()->GetTimerManager().ClearTimer(EndGameHandle);
+				EndGame();
+			}), EndGameTimer, false);
+		
+		
 	}
 }
 
@@ -532,13 +621,13 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("L_LaserSocket") , GetMesh()->GetSocketRotation("L_LaserSocket"));
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
 			bLeftLaser = true;
 				
 			if (Laser)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser left spawned")); // Condition
-				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "L_LaserSocket");
+				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), LeftSocket);
 				bLaserSpawned = true;
 			}
 			else
@@ -551,12 +640,12 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("R_LaserSocket") , GetMesh()->GetSocketRotation("R_LaserSocket"));
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
 
 			if (Laser)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser right spawned")); // Condition
-				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "R_LaserSocket");
+				Laser->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), RightSocket);
 				bLaserSpawned = true;
 			}
 			else
@@ -574,6 +663,7 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			UE_LOG(LogTemp, Warning, TEXT("Laser bye bye")); // Condition
 			Laser->Destroy();
 			Laser = nullptr;
+			CheckSwitchSequence();
 		}
 	}
 	else if (NotifyName == "LasersDone")
@@ -592,14 +682,14 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 	{
 		if (!bLaserSpawned)
 		{
-			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("L_LaserSocket") , GetMesh()->GetSocketRotation("L_LaserSocket"));
-			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation("R_LaserSocket") , GetMesh()->GetSocketRotation("R_LaserSocket"));
+			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
+			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
 				
 			if (DoubleLaserL && DoubleLaserR)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Laser double spawned")); // Condition
-				DoubleLaserL->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "L_LaserSocket");
-				DoubleLaserR->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), "R_LaserSocket");
+				DoubleLaserL->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), LeftSocket);
+				DoubleLaserR->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepWorld,EAttachmentRule::KeepRelative,EAttachmentRule::KeepWorld,  false), RightSocket);
 				bDoubleLaserSpawned = true;
 			}
 			else
@@ -618,6 +708,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 			DoubleLaserR->Destroy();
 			DoubleLaserL = nullptr;
 			DoubleLaserR = nullptr;
+			CheckSwitchSequence();
 		}
 	}
 	else if (NotifyName == "DoubleLasersDone")

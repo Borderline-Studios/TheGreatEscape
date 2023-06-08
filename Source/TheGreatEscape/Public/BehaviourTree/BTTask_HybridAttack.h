@@ -43,6 +43,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSoftClassPtr<AHybridEnemyProjectile> ProjectileClass; // weak pointer to class type we want
 
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* ShootVfx;
+
+	//Niagara VFX declearation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Projectile", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* BulletVfx;
+
 	FActorSpawnParameters SpawnParams;
 	
 	UClass* LoadedBpProjectile; // Class to spawn

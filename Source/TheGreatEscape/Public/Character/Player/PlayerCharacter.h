@@ -14,9 +14,7 @@
 
 //Includes
 #include "CoreMinimal.h"
-#include "NiagaraSystem.h"
 #include "Character/BASE/GASBASECharacter.h"
-#include "Components/PostProcessComponent.h"
 #include "PlayerCharacter.generated.h"
 
 //Forward Declaration
@@ -63,7 +61,6 @@ public:
 #pragma endregion
 
 #pragma region Booleans
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	bool bSprinting = false;
 	
@@ -77,18 +74,19 @@ public:
 	bool bBossLevel = false; 
 	
 	bool bFirstDeathCall = true;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bBatteryPickedUp = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
-	bool bRevolverEquipped = false;
+	bool bRevolverEquipped = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRifleEquipped = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	bool bRiflePickedUp = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	bool bBatteryPickUp = false;
+
 #pragma endregion 
 
 #pragma region SFX
@@ -104,11 +102,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	USoundBase* ButtonSFX;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
+	USoundBase* JumpSFX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
+	USoundBase* LandSFX;
+
 	//Sound effect declearation
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SFX", meta = (AllowPrivateAccess = "true"))
 	TArray<USoundBase*> LeverSFX;
 #pragma endregion
-
 
 #pragma region Integers-And-Floats
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
@@ -133,8 +136,6 @@ public:
 	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int CurrentRifleAmmo = RifleAmmo;
-	
-
 	int VoiceLineTiggerNum = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -142,13 +143,32 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	float SprintMod = 50;
-#pragma endregion 
-	FRandomStream Stream;
+
+private:
+	//Player Battery Counter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int PlayerBatteryCount = 0;
 	
-	UFUNCTION(BlueprintImplementableEvent)
-	void CallVignette();
+public:
+#pragma endregion
+
+    //QRGameplayAbility* CurrentAbility = nullptr;
+	
+	FRandomStream Stream;
+
+	void IncrementBatteryCount();
+	void DecrementBatteryCount();
+	int GetPlayerBatteryCount() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool PlayerHasBattery();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void HitVignette();
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void CallVignette();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void DisableVignette();
 	
 	UFUNCTION(BlueprintImplementableEvent)
@@ -158,7 +178,17 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void LerpLocation(float From, float To, bool Reverse);
 
+	UPROPERTY(BlueprintReadWrite)
+	FVector RespawnLocation;
+
+	//Declearation of effect to apply when enemy is hit
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+
 	void LoadLevel();
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bResetCurrrentLevel = true;
 public:
 	//Constructor
 	APlayerCharacter();
@@ -174,6 +204,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void RemoveRocketTargetWidget();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResetLevel();
 	
 	//Functions
 	virtual void Tick(float DeltaSeconds) override;
@@ -181,6 +214,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	APlayerCharacter* GetPlayerReference();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ReApplyPassives();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ApplyUI();
+
+	UPROPERTY(BlueprintReadWrite);
+	bool AutoApplyUI = true;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
@@ -190,5 +232,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void DeactivateRocket();
-	
+
+	void Jump() override;
+
+	void StopJumping() override;
+
+	void Landed(const FHitResult& Hit) override;
 };
