@@ -86,12 +86,14 @@ void ABoss::BeginPlay()
 
 	// Load the object to be checked
 	BlockingBoxRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/BP_BlockingBox.BP_BlockingBox_C'")));
-	BlockingBoxClassRef = GenShieldRef.LoadSynchronous();
+	BlockingBoxClassRef = BlockingBoxRef.LoadSynchronous();
 
 	// Load the object to be checked
-	BlockingBoxRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/BP_BossDeath.BP_BossDeath_C'")));
-	BlockingBoxClassRef = GenShieldRef.LoadSynchronous();
+	DeathEffectRef = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("Blueprint'/Game/Production/Enemies/Boss/BP_BossDeath.BP_BossDeath_C'")));
+	DeathEffectClassRef = DeathEffectRef.LoadSynchronous();
 
+    LeftSocket = TEXT("L_LaserSocket");
+    RightSocket = TEXT("R_LaserSocket");
 }
 
 void ABoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -293,20 +295,26 @@ void ABoss::Lasers(float DeltaTime)
 
 	if (!bLaserStarted)
 	{
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("LaserLeft");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("LaserLeft")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::LasersAnimNotify);
 		bLaserStarted = true;
 	}
 
 	if (bLaserSpawned && bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation(LeftSocket));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation(LeftSocket));
+		LeftSocketLoc = GetMesh()->GetSocketLocation(LeftSocket);
+		LeftSocketRot = GetMesh()->GetSocketRotation(LeftSocket);
+	
+		Laser->SetActorLocation(LeftSocketLoc);
+		Laser->SetActorRotation(LeftSocketRot);
 	}
 	else if (bLaserSpawned && !bLeftLaser)
 	{
-		Laser->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
-		Laser->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
+		RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
+		RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
+		
+		Laser->SetActorLocation(RightSocketLoc);
+		Laser->SetActorRotation(RightSocketRot);
 	}
 }
 
@@ -318,18 +326,24 @@ void ABoss::Lasers(float DeltaTime)
 	
 	if (!bDoubleLaserStarted)
 	{
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("DoubleLaser");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("DoubleLaser")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::DoubleLasersAnimNotify);
 		bDoubleLaserStarted = true;
 	}
 
 	if (bDoubleLaserSpawned)
 	{
-		DoubleLaserL->SetActorLocation(GetMesh()->GetSocketLocation("LeftSocket"));
-		DoubleLaserL->SetActorRotation(GetMesh()->GetSocketRotation("LeftSocket"));
+		LeftSocketLoc = GetMesh()->GetSocketLocation(LeftSocket);
+		LeftSocketRot = GetMesh()->GetSocketRotation(LeftSocket);
+		
+		DoubleLaserL->SetActorLocation(LeftSocketLoc);
+		DoubleLaserL->SetActorRotation(LeftSocketRot);
 
-		DoubleLaserR->SetActorLocation(GetMesh()->GetSocketLocation(RightSocket));
-		DoubleLaserR->SetActorRotation(GetMesh()->GetSocketRotation(RightSocket));
+		RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
+		RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
+		
+		DoubleLaserR->SetActorLocation(RightSocketLoc);
+		DoubleLaserR->SetActorRotation(RightSocketRot);
 	}
 }
 
@@ -376,7 +390,7 @@ void ABoss::ObjDropAttack(float DeltaTime)
 			{
 				GetWorld()->GetTimerManager().ClearTimer(TrackerAttackHandle);
 
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection("ObjectSpawn");
+				GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("ObjectSpawn")));
 				AActor* HeavyObject = GetWorld()->SpawnActor<AActor>(ObjDroppedClassRef, FVector(Tracker->GetActorLocation().X, Tracker->GetActorLocation().Y, Tracker->GetActorLocation().Z + ObjectSpawnHeight), FRotator::ZeroRotator);
 
 				if (HeavyObject)
@@ -453,7 +467,7 @@ void ABoss::Parkour(float DeltaTime)
 		// no more gens
 		UE_LOG(LogTemp, Warning, TEXT("No more gens switching"));
 		DeactivatePlatforms();
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldDown");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("GenShieldDown")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bGenShieldAnim = true;
 		//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
@@ -469,7 +483,7 @@ void ABoss::StartBootUp(float DeltaTime)
 
 	if (!bBootUpStarted)
 	{
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("BootUp");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("BootUp")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bBootUpStarted = true;
 	}
@@ -481,7 +495,7 @@ void ABoss::GenShieldUp(float DeltaTime)
 	
 	if (!bGenShieldUp)
 	{
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldUp");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("GenShieldUp")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bGenShieldUp = true;
 	}
@@ -495,7 +509,7 @@ void ABoss::PersonalShieldUp(float DeltaTime)
 	
 	if (!bPersonalShieldUp)
 	{
-		GetMesh()->GetAnimInstance()->Montage_JumpToSection("PersonalShieldUp");
+		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("PersonalShieldUp")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bPersonalShieldUp = true;
 	}
@@ -617,11 +631,14 @@ void ABoss::PostHitProcess()
 
 void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
-	if (NotifyName == "SpawnLaserLeft")
+	if (NotifyName == FName(TEXT("SpawnLaserLeft")))
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
+			LeftSocketLoc = GetMesh()->GetSocketLocation(LeftSocket);
+			LeftSocketRot = GetMesh()->GetSocketRotation(LeftSocket);
+			
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, LeftSocketLoc , LeftSocketRot);
 			bLeftLaser = true;
 				
 			if (Laser)
@@ -636,11 +653,14 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			}
 		}
 	}
-	else if (NotifyName == "SpawnLaserRight")
+	else if (NotifyName == FName(TEXT("SpawnLaserRight")))
 	{
 		if (!bLaserSpawned)
 		{
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
+			RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
+			RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
+			
+			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, RightSocketLoc , RightSocketRot);
 
 			if (Laser)
 			{
@@ -654,7 +674,7 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			}
 		}
 	}
-	else if (NotifyName == "DeleteLaser")
+	else if (NotifyName == FName(TEXT("DeleteLaser")))
 	{
 		if (Laser)
 		{
@@ -666,7 +686,7 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			CheckSwitchSequence();
 		}
 	}
-	else if (NotifyName == "LasersDone")
+	else if (NotifyName == FName(TEXT("LasersDone")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Switching to next state LASERSDONE"));
 		bLaserStarted = false;
@@ -678,12 +698,18 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 {
 	//DoubleLasersDone DeleteDoubleLaser SpawnDoubleLaser
 
-	if (NotifyName == "SpawnDoubleLaser")
+	if (NotifyName == FName(TEXT("SpawnDoubleLaser")))
 	{
 		if (!bLaserSpawned)
 		{
-			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(LeftSocket) , GetMesh()->GetSocketRotation(LeftSocket));
-			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, GetMesh()->GetSocketLocation(RightSocket) , GetMesh()->GetSocketRotation(RightSocket));
+			LeftSocketLoc = GetMesh()->GetSocketLocation(LeftSocket);
+			LeftSocketRot = GetMesh()->GetSocketRotation(LeftSocket);
+
+			RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
+			RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
+			
+			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, LeftSocketLoc , LeftSocketRot);
+			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, RightSocketLoc , RightSocketRot);
 				
 			if (DoubleLaserL && DoubleLaserR)
 			{
@@ -698,7 +724,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 			}
 		}
 	}
-	else if (NotifyName == "DeleteDoubleLaser")
+	else if (NotifyName == FName(TEXT("DeleteDoubleLaser")))
 	{
 		if (DoubleLaserL && DoubleLaserR)
 		{
@@ -711,7 +737,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 			CheckSwitchSequence();
 		}
 	}
-	else if (NotifyName == "DoubleLasersDone")
+	else if (NotifyName == FName(TEXT("DoubleLasersDone")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("double lasers done switched states"));
 		bDoubleLaserStarted = false;
@@ -721,7 +747,7 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 
 void ABoss::StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
-	if (NotifyName == "AnimEnding")
+	if (NotifyName == FName(TEXT("AnimEnding")))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("anim end"));
 		bBootUpStarted = false;
@@ -730,7 +756,7 @@ void ABoss::StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayl
 		bGenShieldAnim = false;
 		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
-	else if (NotifyName == "GenShieldUp")
+	else if (NotifyName == FName(TEXT("GenShieldUp")))
 	{
 		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
