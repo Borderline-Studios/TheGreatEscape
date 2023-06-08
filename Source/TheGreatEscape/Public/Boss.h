@@ -193,4 +193,6 @@ private:
 
 	// switching states
 	bool bRequestSwitch = false;
+
+	bool bParkourUp = false;
 };

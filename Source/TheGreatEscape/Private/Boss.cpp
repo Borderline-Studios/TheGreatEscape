@@ -456,7 +456,13 @@ void ABoss::Parkour(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("Parkour"));
 
 	//GetMesh()->GetAnimInstance()->Montage_JumpToSection("GenShieldIdle");
-	ActivatePlatforms();
+
+	if (!bParkourUp)
+	{
+		ActivatePlatforms();
+		bParkourUp = true;
+	}
+	
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), GenShieldClassRef, FoundGens);
 
@@ -470,6 +476,7 @@ void ABoss::Parkour(float DeltaTime)
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("GenShieldDown")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bGenShieldAnim = true;
+		bParkourUp = false;
 		//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
 
