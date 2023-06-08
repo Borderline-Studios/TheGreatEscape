@@ -148,8 +148,15 @@ private:
 	TArray<AActor*> FoundGens; // found shield gens
 	TArray<AActor*> FoundBlockers; // found blocking ____
 
-	FName LeftSocket = "L_LaserSocket";
-	FName RightSocket = "R_LaserSocket";
+	FName LeftSocket;
+	FName RightSocket;
+
+
+	FVector LeftSocketLoc;
+	FVector RightSocketLoc;
+
+	FRotator LeftSocketRot;
+	FRotator RightSocketRot;
 	
 	// Timers
 	FTimerHandle TrackerAttackHandle;

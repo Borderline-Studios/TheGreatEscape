@@ -20,7 +20,7 @@
 ATrainControlls::ATrainControlls()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	if (!EngineRef)
 	{
@@ -37,7 +37,6 @@ ATrainControlls::ATrainControlls()
 	ControlHandle->SetupAttachment(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> HandleMesh(TEXT("StaticMesh'/Game/Production/Train/Art/Quantum_Train/Engine/Engine_Lever_Handle.Engine_Lever_Handle'"));
 	ControlHandle->SetStaticMesh(HandleMesh.Object);
-	ControlHandle->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
 	Tags.Push("Interactable");
 }
 
@@ -55,12 +54,26 @@ void ATrainControlls::BeginPlay()
 	{
 		UpdateHandleRotation(EngineRef->GetTrainMoving());
 	}
+
+	if (RotationCurve)
+	{
+		FOnTimelineFloat ProgressFunction;
+		ProgressFunction.BindUFunction(this, TEXT("ProcessRotation"));
+		RotationTimeline.AddInterpFloat(RotationCurve, ProgressFunction);
+
+		RotationTimeline.SetTimelineLengthMode(TL_LastKeyFrame);
+	}
 }
 
 // Called every frame
 void ATrainControlls::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (RotationTimeline.IsPlaying())
+	{
+		RotationTimeline.TickTimeline(DeltaTime);
+	}
 }
 
 void ATrainControlls::ControlsInteraction()
@@ -78,12 +91,13 @@ void ATrainControlls::UpdateHandleRotation(bool bTrainMoving)
 {
 	if (bTrainMoving)
 	{
-		ControlHandle->SetRelativeRotation(ForwardRotation);
+		RotationTimeline.Play();
 	}
 	else
 	{
-		ControlHandle->SetRelativeRotation(BackwardRotation);
+		RotationTimeline.Reverse();
 	}
+	// bTrainMoving ? RotationTimeline.Play() : RotationTimeline.Reverse();
 }
 
 void ATrainControlls::PlayLeverSound()
@@ -93,5 +107,10 @@ void ATrainControlls::PlayLeverSound()
 		const int RandIndex = FMath::RandRange(0,LeverSFX.Num() - 1);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeverSFX[RandIndex], GetActorLocation(), FRotator(), 0.6f);
 	}
+}
+
+void ATrainControlls::ProcessRotation(float TimelineProgress) const
+{
+	ControlHandle->SetRelativeRotation(FMath::Lerp(ForwardRotation, BackwardRotation, TimelineProgress));
 }
 
