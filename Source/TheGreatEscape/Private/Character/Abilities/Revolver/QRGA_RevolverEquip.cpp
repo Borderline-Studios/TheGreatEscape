@@ -22,9 +22,19 @@ void UQRGA_RevolverEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	if (GetPlayerReference()->bRevolverEquipped)
+	{
+		//Ends ability when animation is finished
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
+	else
+	{
 		GetPlayerReference()->bRifleEquipped = false;
-		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
-		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("DeActivate");
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RevolverEquip::CallEndAbility);
+	}
+
+
 }
 
 void UQRGA_RevolverEquip::EndAbility(const FGameplayAbilitySpecHandle Handle,
