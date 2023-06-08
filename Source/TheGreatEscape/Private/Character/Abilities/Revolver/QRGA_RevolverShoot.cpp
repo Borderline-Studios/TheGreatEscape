@@ -11,6 +11,7 @@
 #include "EnemyReworkHybridTank.h"
 #include "Enemy_Drone.h"
 #include "Enemy_Drone_Bomber.h"
+#include "InterpolationHitProxy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
@@ -202,6 +203,7 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
+		GetPlayerReference()->CheckBomber(HitInput);
 		//Getting the ability system component from the hit actor
 		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitInput.GetActor());
 		//Check if ASC is vaild
@@ -293,10 +295,6 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
 		{
 			Drone->PostHitProcess();
-		}
-		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
-		{
-			Bomber->PostHitProcress();
 		}
 	}
 }
