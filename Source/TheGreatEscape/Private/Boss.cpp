@@ -108,6 +108,8 @@ void ABoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	GetWorld()->GetTimerManager().ClearTimer(ObjDropResetHandle);
 	
+	GetWorld()->GetTimerManager().ClearTimer(EndGameHandle);
+	
 	Tracker = nullptr; // Tracker obj
 	Laser = nullptr; // Laser left Obj
 	DoubleLaserL = nullptr; // Laser left Obj double lasers
