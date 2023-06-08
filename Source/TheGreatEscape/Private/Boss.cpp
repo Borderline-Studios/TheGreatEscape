@@ -645,7 +645,7 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			LeftSocketLoc = GetMesh()->GetSocketLocation(LeftSocket);
 			LeftSocketRot = GetMesh()->GetSocketRotation(LeftSocket);
 			
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, LeftSocketLoc , LeftSocketRot);
+			Laser = GetWorld()->SpawnActor<AActor>(LaserSubclassRef, LeftSocketLoc , LeftSocketRot);
 			bLeftLaser = true;
 				
 			if (Laser)
@@ -667,7 +667,7 @@ void ABoss::LasersAnimNotify(FName NotifyName, const FBranchingPointNotifyPayloa
 			RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
 			RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
 			
-			Laser = GetWorld()->SpawnActor<AActor>(LaserClassRef, RightSocketLoc , RightSocketRot);
+			Laser = GetWorld()->SpawnActor<AActor>(LaserSubclassRef, RightSocketLoc , RightSocketRot);
 
 			if (Laser)
 			{
@@ -715,8 +715,8 @@ void ABoss::DoubleLasersAnimNotify(FName NotifyName, const FBranchingPointNotify
 			RightSocketLoc = GetMesh()->GetSocketLocation(RightSocket);
 			RightSocketRot = GetMesh()->GetSocketRotation(RightSocket);
 			
-			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserClassRef, LeftSocketLoc , LeftSocketRot);
-			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserClassRef, RightSocketLoc , RightSocketRot);
+			DoubleLaserL = GetWorld()->SpawnActor<AActor>(LaserSubclassRef, LeftSocketLoc , LeftSocketRot);
+			DoubleLaserR = GetWorld()->SpawnActor<AActor>(LaserSubclassRef, RightSocketLoc , RightSocketRot);
 				
 			if (DoubleLaserL && DoubleLaserR)
 			{
