@@ -480,7 +480,6 @@ void ABoss::Parkour(float DeltaTime)
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(FName(TEXT("GenShieldDown")));
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &ABoss::StartUpAnimsNotify);
 		bGenShieldAnim = true;
-		bParkourUp = false;
 		//StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
 
@@ -780,6 +779,7 @@ void ABoss::StartUpAnimsNotify(FName NotifyName, const FBranchingPointNotifyPayl
 		bGenShieldUp = false;
 		bPersonalShieldUp = false;
 		bGenShieldAnim = false;
+		bParkourUp = false;
 		StateMachines[currentStateMachineIndex].CurrentState = StateMachines[currentStateMachineIndex].CurrentState->NextStates[0];
 	}
 	else if (NotifyName == FName(TEXT("GenShieldUp")))

@@ -186,7 +186,12 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
-		GetPlayerReference()->CheckBomber(HitInput);
+		if (HitInput.GetActor()->ActorHasTag("Bomber"))
+		{
+			GetPlayerReference()->CheckBomber(HitInput);
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
+		}
+
 		if (HitInput.GetActor()->ActorHasTag("Target"))
 		{
 			if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
@@ -217,7 +222,6 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 		//Check if ASC is vaild
 		if(ASC)
 		{
-			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 
@@ -227,6 +231,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			//play animation
 			if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitInput.GetActor()))
 			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 				{
 	
@@ -277,6 +282,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					Boss->AdjustUIValue(true);
 				}
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				Boss->PostHitProcess();
 			}
 			bool bFound;
