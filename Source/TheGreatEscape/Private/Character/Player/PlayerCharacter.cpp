@@ -71,6 +71,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::PostHitProcess()
 {
 	CallVignette();
+	ScreenShake();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APlayerCharacter::DisableVignette, 1.0f, false);
 	
 	//Check if the players health is less than or equal to 0 then kill
