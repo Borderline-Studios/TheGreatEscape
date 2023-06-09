@@ -18,6 +18,7 @@
 #include "Interactables/ObjectiveShield.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Objectives/DestroyableTarget.h"
+#include "Objectives/ShieldGenerator.h"
 
 UQRGA_RifleShoot::UQRGA_RifleShoot()
 {
@@ -205,6 +206,10 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			ObjectiveShield->ActivateVFX(HitInput);
 			ObjectiveShield->PostHitProcess();
 		}
+		if (AShieldGenerator* ShieldGenerator = Cast<AShieldGenerator>(HitInput.GetActor()))
+		{
+			ShieldGenerator->PostHitProcess();
+		}
 
 		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
 		{
@@ -245,7 +250,10 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 					{
 						Enemy->SFXTiggerNum = FMath::RandRange(4,7 );
 						int RandomSFX = FMath::RandRange(0,2 );
-						UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
+						if (!Enemy->EnemyHitSFX.IsEmpty())
+						{
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
+						}
 					}
 					else
 					{

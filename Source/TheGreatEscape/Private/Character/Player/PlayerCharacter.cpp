@@ -70,9 +70,10 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::PostHitProcess()
 {
+	CallVignette();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &APlayerCharacter::DisableVignette, 1.0f, false);
 	
 	//Check if the players health is less than or equal to 0 then kill
-	//todo(Jacob) Set up a better system for this
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(this);
 	bool Found;
 	float Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetHealthAttribute(), Found);
@@ -82,10 +83,6 @@ void APlayerCharacter::PostHitProcess()
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, HitSFX[FMath::RandRange(0,2)], GetActorLocation(), GetActorRotation(), 0.5);
 		}
-
-		HitVignette();
-
-		
 		if (Value <= 30.0f)
 		{
 			CallVignette();
@@ -94,8 +91,6 @@ void APlayerCharacter::PostHitProcess()
 		{
 			DisableVignette();
 		}
-
-
 		if (Value <= 0.0f)
 		{
 			PostDeathProcess();

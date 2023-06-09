@@ -96,11 +96,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(), FullHealSFX[0], HitResult.Location);
 						}
 					}
-					
 					if (Health > 30.0f && Found)
 					{
 						GetPlayerReferance()->DisableVignette();
 					}
+					GetPlayerReferance()->PostHitProcess();
 				}
 				else if (HitResult.GetActor()->ActorHasTag("Door"))
 				{

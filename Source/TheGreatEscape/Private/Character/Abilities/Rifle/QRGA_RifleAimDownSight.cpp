@@ -32,6 +32,8 @@ void UQRGA_RifleAimDownSight::ActivateAbility(const FGameplayAbilitySpecHandle H
 		InputRelaese->OnRelease.AddUniqueDynamic(this, &UQRGA_RifleAimDownSight::ReleasedInput);
 		InputRelaese->ReadyForActivation();
 
+		GetPlayerReference()->LerpFOV(90, 45, false);
+
 		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("AimIn");
 		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleAimDownSight::CallEndAbility);
 		 
@@ -66,6 +68,7 @@ APlayerCharacter* UQRGA_RifleAimDownSight::GetPlayerReference()
 
 void UQRGA_RifleAimDownSight::ReleasedInput(float TimePressed)
 {
+	GetPlayerReference()->LerpFOV(90, 45, true);
 	GetPlayerReference()->bADS = false;
 	GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("AimOut");
 	GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleAimDownSight::CallEndAbility);
