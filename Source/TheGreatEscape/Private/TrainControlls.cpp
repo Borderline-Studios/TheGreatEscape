@@ -91,13 +91,12 @@ void ATrainControlls::UpdateHandleRotation(bool bTrainMoving)
 {
 	if (bTrainMoving)
 	{
-		RotationTimeline.Play();
+		RotationTimeline.Reverse();
 	}
 	else
 	{
-		RotationTimeline.Reverse();
+		RotationTimeline.Play();
 	}
-	// bTrainMoving ? RotationTimeline.Play() : RotationTimeline.Reverse();
 }
 
 void ATrainControlls::PlayLeverSound()

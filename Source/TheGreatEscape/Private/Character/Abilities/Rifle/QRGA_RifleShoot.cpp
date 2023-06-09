@@ -81,7 +81,24 @@ void UQRGA_RifleShoot::ReleasedInput(float TimePressed)
 
 void UQRGA_RifleShoot::FireLoop()
 {
-	if (GetPlayerReference()->CurrentRifleAmmo > 0)
+	
+	if (GetPlayerReference()->CurrentRifleAmmo <= 0)
+	{
+		
+		//Sets ammo to zero to avoid any issues (Probably not nessessary)
+		GetPlayerReference()->CurrentRifleAmmo = 0;
+		//Sets ammo to full
+		GetPlayerReference()->CurrentRifleAmmo = 30;
+
+		//Jumps animontage ot the reload section to player reload animation
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Reload");
+		//Checks for an Animnotify then triggers function
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
+
+		//Plays reload sound at location
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ReloadSFX, GetPlayerReference()->GetActorLocation(),FRotator(0,0,0), 0.3, 1.0);
+	}
+	else if (GetPlayerReference()->CurrentRifleAmmo > 0)
 	{
 		GetPlayerReference()->CurrentRifleAmmo--;
 		UGameplayStatics::PlaySoundAtLocation(this, ShootSFX[FMath::RandRange(0,3)], GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation(),
@@ -96,7 +113,7 @@ void UQRGA_RifleShoot::FireLoop()
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Fire");
 			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_RifleShoot::CallEndAbility);
 		}
-		FHitResult HitResult = HitScan(GetPlayerReference()->MaxShotRange);
+		FHitResult HitResult = HitScan(GetPlayerReference()->MaxRifleShotRange);
 		ActivateTraceParticle(HitResult);
 		ActivateEffects(HitResult);
 		if (HitResult.IsValidBlockingHit())
@@ -104,11 +121,6 @@ void UQRGA_RifleShoot::FireLoop()
 			HitEnemyCheck(HitResult);
 		}
 	}
-	else
-	{
-		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
-	}
-
 }
 
 void UQRGA_RifleShoot::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
@@ -125,6 +137,10 @@ void UQRGA_RifleShoot::CallEndAbility(FName NotifyName, const FBranchingPointNot
 			FireLoop();
 		}
 	}
+	if (NotifyName == FName("ReloadFinished"))
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 }
 
 FHitResult UQRGA_RifleShoot::HitScan(float MaxDistance)
@@ -135,7 +151,7 @@ FHitResult UQRGA_RifleShoot::HitScan(float MaxDistance)
 	FHitResult HitScanResult;
 	FVector CamCompLocation = GetPlayerReference()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector CamCompForwardVector = GetPlayerReference()->GetFirstPersonCameraComponent()->GetForwardVector();
-	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-75.0f, 75.0f), CamCompLocation.Z + FMath::FRandRange(-75.0f, 75.0f));
+	FVector CamCompLocationWithDeviation = FVector(CamCompLocation.X,CamCompLocation.Y + FMath::FRandRange(-25.0f, 25.0f), CamCompLocation.Z + FMath::FRandRange(-25.0f, 25.0f));
 	GetWorld()->LineTraceSingleByChannel(HitScanResult,CamCompLocation,CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance,ECC_Visibility, Params);
 	//DrawDebugLine(GetWorld(), CamCompLocation, CamCompLocationWithDeviation + CamCompForwardVector * MaxDistance, FColor::Red,false, 1.0f , 0, 5.0f );
 	return HitScanResult;
@@ -170,11 +186,18 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 {
 	if (HitInput.GetActor())
 	{
+		if (HitInput.GetActor()->ActorHasTag("Bomber"))
+		{
+			GetPlayerReference()->CheckBomber(HitInput);
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
+		}
+
 		if (HitInput.GetActor()->ActorHasTag("Target"))
 		{
 			if (ADestroyableTarget* DestroyableTarget = Cast<ADestroyableTarget>(HitInput.GetActor()))
 			{
 				DestroyableTarget->DestoryTarget();
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 			}
 		}
 		if (AObjectiveShield* ObjectiveShield = Cast<AObjectiveShield>(HitInput.GetActor()))
@@ -186,10 +209,12 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
 		{
 			Drone->PostHitProcess();
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 		}
 		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
 		{
 			Bomber->PostHitProcress();
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 		}
 		
 		//Getting the ability system component from the hit actor
@@ -206,13 +231,10 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 			//play animation
 			if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitInput.GetActor()))
 			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 				{
 	
-				}
-				else if (AEnemyReworkHybrid* enemyHybrid= Cast<AEnemyReworkHybrid>(Enemy))
-				{
-					// hybrid tins
 				}
 				else
 				{
@@ -260,6 +282,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 				{
 					Boss->AdjustUIValue(true);
 				}
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				Boss->PostHitProcess();
 			}
 			bool bFound;

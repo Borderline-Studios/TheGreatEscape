@@ -33,7 +33,7 @@ public:
 	//~ABoss(); // constructor
 	virtual void Tick(float DeltaTime) override; // tick, called every frame
 	virtual void BeginPlay() override;
-	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void PostHitProcess();
 	
 	UFUNCTION(BlueprintImplementableEvent)
@@ -75,7 +75,6 @@ private:
 	void NewSequenceEffect(int NewSequenceNum);
 
 	bool CheckSwitchSequence();
-
 
 
 
@@ -205,6 +204,7 @@ private:
 
 	// switching states
 	bool bRequestSwitch = false;
+	bool bRequestEndGame = false;
 
 	bool bParkourUp = false;
 };

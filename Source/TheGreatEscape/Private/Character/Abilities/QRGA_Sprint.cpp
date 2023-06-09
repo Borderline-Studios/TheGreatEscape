@@ -27,9 +27,16 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
 	GetPlayerReference()->LerpFOV(90.0f, 110.0f, false);
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
-	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
+	if (GetPlayerReference()->bRevolverEquipped)
+	{
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+		//Added dynamic notify and triggers function if notify is received
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
+	}
+	if (GetPlayerReference()->bRifleEquipped)
+	{
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Sprint");
+	}
 }
 
 void UQRGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -63,10 +70,18 @@ void UQRGA_Sprint::ReleasedInput(float TimePressed)
 	GetPlayerReference()->LerpFOV(90.0f, 110.0f, true);
 	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 
+	if (GetPlayerReference()->bRevolverEquipped)
+	{
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
+		//Added dynamic notify and triggers function if notify is received
+		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
+	}
+	if (GetPlayerReference()->bRifleEquipped)
+	{
+		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Default");
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+	}
 
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Activate");
-	//Added dynamic notify and triggers function if notify is received
-	GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
 }
 
 void UQRGA_Sprint::CallEndAbility(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)

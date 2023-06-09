@@ -185,17 +185,11 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
 			}
 			else if (!bFound)
 			{
 				//Uses the out going handle to deal damage
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectToApply.Data.Get(), ASC);
-				GetPlayerReference()->CreateDamageWidget(HitInput, 10.0f, false);
-			}
-			else
-			{
-				GetPlayerReference()->CreateDamageWidget(HitInput, 0.0f, false);
 			}
 
 			
@@ -204,6 +198,7 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 			//play animation
 			if (AEnemyRework* Enemy = Cast<AEnemyRework>(HitInput.GetActor()))
 			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				if (AEnemyReworkDrone* enemyDrone = Cast<AEnemyReworkDrone>(Enemy))
 				{
 					enemyDrone->PostHitProcess();
@@ -253,6 +248,7 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 			}
 			else if (ABoss* Boss = Cast<ABoss>(HitInput.GetActor()))
 			{
+				GetPlayerReference()->CreateDamageWidget(HitInput, false);
 				Value = ASC->GetGameplayAttributeValue(UQRAttributeSet::GetShieldAttribute(), bFound);
 				if (Value <= 0 && bFound)
 				{
@@ -269,10 +265,12 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 		if (AEnemy_Drone* Drone = Cast<AEnemy_Drone>(HitInput.GetActor()))
 		{
 			Drone->PostHitProcess();
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 		}
 		if (AEnemy_Drone_Bomber* Bomber = Cast<AEnemy_Drone_Bomber>(HitInput.GetActor()))
 		{
 			Bomber->PostHitProcress();
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 		}
 	}
 }

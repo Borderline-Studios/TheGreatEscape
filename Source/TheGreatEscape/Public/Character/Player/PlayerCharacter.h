@@ -126,6 +126,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int MaxShotRange = 5000;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	int MaxRifleShotRange = 10000;
+
 	//Player Ammo variable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats, meta = (AllowPrivateAccess = "true"))
 	int PlayerAmmo = 6;
@@ -164,6 +167,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HitVignette();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CheckBomber(FHitResult HitInput);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PickUpRobopal();
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void CallVignette();
@@ -225,7 +234,7 @@ public:
 	bool AutoApplyUI = true;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
+	void CreateDamageWidget(FHitResult HitResult, bool ShieldDamage);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ActivateRocket();
