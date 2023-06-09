@@ -130,6 +130,8 @@ private:
     float TimeSinceStart;
     bool bStartedMoving = false;
     bool bTrainMoving = false;
+    UPROPERTY(EditAnywhere)
+    bool bMoveOnStart = true;
 
     // Train Speed Modification
     FTimeline TrainSpeedModificationTimeline;
@@ -143,6 +145,7 @@ private:
     // Extra controls that have additional functionality
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ATrainControlls> TrainControlsClass;
+    UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     ATrainControlls* TrainControls;
 
     //

@@ -35,7 +35,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// FUNCTIONS
-	// void UpdateEngineSpeed();
+	UFUNCTION(BlueprintCallable)
 	void ControlsInteraction();
 	// Function to update the rotation of the train controls
 	void UpdateHandleRotation(bool bTrainMoving);

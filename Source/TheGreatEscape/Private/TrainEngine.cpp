@@ -142,6 +142,11 @@ void ATrainEngine::BeginPlay()
 	TrainControls->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	TrainControls->SetActorRelativeLocation(FVector(-150.0f, -740.0f, 240.0f));
 
+	if (bMoveOnStart)
+	{
+		TrainControls->ControlsInteraction();
+	}
+
 	UpdateObjectiveText();
 
 	if (!PlayerRef)

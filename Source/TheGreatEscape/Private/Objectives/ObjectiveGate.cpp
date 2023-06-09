@@ -499,6 +499,7 @@ void AObjectiveGate::UpdateFromSlot()
 			ObjText.Append(((SlotsFilled == 1) ? " Battery." : " Batteries."));
 			ObjText.Append(" Explore nearby!");
 			UpdateObjectiveText(ObjText);
+			
 			return;
 		}
 
