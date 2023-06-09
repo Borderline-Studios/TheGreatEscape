@@ -9,6 +9,17 @@
 // Description : Parent Enemy class 
 // Author      : Borderline Studios - Toni Natta
 // Mail        : toni.natta@mds.ac.nz
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+// 
+// (c) 2022 Media Design School
+//
+// File Name   : EnemyRework.h
+// Description : Parent Enemy class 
+// Author      : Borderline Studios - Toni Natta
+// Mail        : toni.natta@mds.ac.nz
 
 
 #include "EnemyRework.h"

@@ -206,6 +206,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PostHitProcess();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ScreenShake();
 
 	UFUNCTION(BlueprintCallable)
 	void PostDeathProcess();

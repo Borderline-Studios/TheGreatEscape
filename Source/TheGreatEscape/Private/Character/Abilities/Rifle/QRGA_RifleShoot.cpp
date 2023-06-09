@@ -249,7 +249,7 @@ void UQRGA_RifleShoot::HitEnemyCheck(FHitResult HitInput)
 					if(UKismetMathLibrary::RandomBoolWithWeight(0.9) && Enemy->SFXTiggerNum == 0)
 					{
 						Enemy->SFXTiggerNum = FMath::RandRange(4,7 );
-						int RandomSFX = FMath::RandRange(0,2 );
+						int RandomSFX = FMath::RandRange(0,1);
 						if (!Enemy->EnemyHitSFX.IsEmpty())
 						{
 							UGameplayStatics::PlaySoundAtLocation(GetWorld(),Enemy->EnemyHitSFX[RandomSFX], Enemy->GetActorLocation(), FRotator(0,0,0), 0.4f);
