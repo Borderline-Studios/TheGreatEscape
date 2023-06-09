@@ -147,7 +147,7 @@ void UQRGA_RevolverShoot::CallEndAbility(FName NotifyName,
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	if(NotifyName == FName("ReloadFinished"))
+	if(NotifyName == FName("FinishedReload"))
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
