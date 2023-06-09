@@ -84,6 +84,8 @@ private:
 		const FHitResult &SweepResult
 	);
 
+	int GetSlotsFilled();
+
 	// VARIABLES
 	// Object Root
 	USceneComponent* Root;
@@ -149,7 +151,8 @@ public:
 	// FUNCTIONS
 	UFUNCTION(BlueprintCallable)
 	int ElevatorInformationCheck(int RequirementToAdjust);
-	
+
+	void RepopulateBatteryObjectiveText();
 	void UpdateFromSlot();
 	
 	void UpdateObjectiveText(FString NewText = "") const;

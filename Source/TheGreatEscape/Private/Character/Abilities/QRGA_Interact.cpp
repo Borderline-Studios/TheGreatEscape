@@ -127,14 +127,12 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				//TODO Make this better (Pick up and drop)
 				else	// Checking for the battery
 				{
-					if (AObjectiveGate* ParentGate = Cast<AObjectiveGate>(HitResult.GetActor()->GetAttachParentActor()))
+					if (AObjectiveGate* GateRef = Cast<AObjectiveGate>(UGameplayStatics::GetActorOfClass(this, AObjectiveGate::StaticClass())))
 					{
-						ParentGate->UpdateObjectiveText("Take this back to the gate blocking the train!");
+						GateRef->RepopulateBatteryObjectiveText();
 					}
-					
 					HitResult.GetActor()->Destroy();
 					GetPlayerReferance()->IncrementBatteryCount();
-					
 				}
 				//ends the ability
 				//EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
