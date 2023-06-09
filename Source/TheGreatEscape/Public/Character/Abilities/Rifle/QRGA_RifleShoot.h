@@ -33,6 +33,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<USoundBase*> ShootSFX;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ReloadSFX;
+
 
 	//GAS functions for adding Logic to abilities
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

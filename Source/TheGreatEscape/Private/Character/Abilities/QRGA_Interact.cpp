@@ -62,7 +62,6 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				}
 				else if (HitResult.GetActor()->ActorHasTag("RoboPal"))
 				{
-
 					HitResult.GetActor()->Destroy();
 				}
 				//Check if its the train stop button
@@ -233,6 +232,7 @@ void UQRGA_Interact::FirstRifleEqiup()
 void UQRGA_Interact::FirstRevovlerEqiup()
 {
 	GetPlayerReferance()->PickUpRobopal();
+	GetPlayerReferance()->bRevolverEquipped = true;
 	GetPlayerReferance()->RevolverMesh1P->SetVisibility(true);
 	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Inspect");
 	GetPlayerReferance()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Interact::CallEndAbility);
