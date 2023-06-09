@@ -106,6 +106,7 @@ public:
     void EnableMovement();
 
     bool GetTrainMoving() const;
+    void ActivateLeverControls();
 
     // Train Speed Modification
     // Modify Speed Modifier
@@ -147,6 +148,7 @@ private:
     TSubclassOf<ATrainControlls> TrainControlsClass;
     UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     ATrainControlls* TrainControls;
+    bool bCanActivateTrainControls = true;
 
     //
     UPROPERTY(EditDefaultsOnly)

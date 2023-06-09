@@ -195,6 +195,8 @@ public:
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	void LoadLevel();
+
+	FTimerHandle TimerHandle;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bResetCurrrentLevel = true;
@@ -204,6 +206,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PostHitProcess();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ScreenShake();
 
 	UFUNCTION(BlueprintCallable)
 	void PostDeathProcess();

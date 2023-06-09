@@ -222,8 +222,9 @@ void ATrainEngine::Tick(float DeltaTime)
  */
 void ATrainEngine::ToggleTrainStop(const bool bExtendLeft, const bool bExtendRight)
 {
-	if (!bObjectiveLocked)
+	if (!bObjectiveLocked && bCanActivateTrainControls)
 	{
+		bCanActivateTrainControls = false;
 		MovePlatforms(bTrainMoving && bExtendLeft, bTrainMoving && bExtendRight);
 		bTrainMoving = !bTrainMoving;
 		
@@ -268,6 +269,11 @@ void ATrainEngine::EnableMovement()
 bool ATrainEngine::GetTrainMoving() const
 {
 	return bTrainMoving;
+}
+
+void ATrainEngine::ActivateLeverControls()
+{
+	bCanActivateTrainControls = true;
 }
 
 void ATrainEngine::ChangeTrainSpeedModifier(float NewModifier)
