@@ -373,6 +373,18 @@ int AObjectiveGate::ElevatorInformationCheck(int RequirementToAdjust)
 	return RequirementToAdjust;
 }
 
+void AObjectiveGate::RepopulateBatteryObjectiveText()
+{
+	const int SlotsFilled = GetSlotsFilled() + 1;
+	
+	FString ObjText = "There ";
+	ObjText.Append(((SlotsFilled == 1) ? "is " : "are "));
+	ObjText.AppendInt(SlotsFilled);
+	ObjText.Append(((SlotsFilled == 1) ? " battery" : " batteries"));
+	ObjText.Append(" nearby");
+	UpdateObjectiveText(ObjText);
+}
+
 /**
  * @brief Goes through the array and removes any invalid references
  * @return Whether or not any references were removed
@@ -438,6 +450,26 @@ void AObjectiveGate::BeginTrainDetectorOverlap(
 	}
 }
 
+int AObjectiveGate::GetSlotsFilled()
+{
+	int SlotsFilled = 0;
+	
+	// Ensure the references in the array are valid
+	FixReferences();
+
+	// Iterate through the array and get whether each slot has been filled or not,
+	// incrementing the counting variable for each filled slot
+	for (int i = 0; i < SlotRefs.Num(); i++)
+	{
+		if (Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->GetSlotFilled())
+		{
+			SlotsFilled++;
+		}
+	}
+
+	return SlotsFilled;
+}
+
 /**
  * @brief Checks to see if all of the slots have been filled or not.
  * Called whenever a slot is provided its battery.
@@ -447,21 +479,8 @@ void AObjectiveGate::UpdateFromSlot()
 	// Check if the gate is opened.
 	if (!bOpened)
 	{
-		// Initialise a counting variable
-		int SlotsFilled = 0;
-
-		// Ensure the references in the array are valid
-		FixReferences();
-
-		// Iterate through the array and get whether each slot has been filled or not,
-		// incrementing the counting variable for each filled slot
-		for (int i = 0; i < SlotRefs.Num(); i++)
-		{
-			if (Cast<AObjectiveGateBatterySlot>(SlotRefs[i])->GetSlotFilled())
-			{
-				SlotsFilled++;
-			}
-		}
+		// Get the number of slots filled
+		const int SlotsFilled = GetSlotsFilled();
 
 		// If the elevator reference is populated,
 		// see if we can start it using the current number of filled slots 
@@ -475,6 +494,11 @@ void AObjectiveGate::UpdateFromSlot()
 		// If not, we return out.
 		if (SlotsFilled != (SlotRefs.Num()))
 		{
+			FString ObjText = "Collect ";
+			ObjText.AppendInt(SlotsFilled);
+			ObjText.Append(((SlotsFilled == 1) ? " Battery." : " Batteries."));
+			ObjText.Append(" Explore nearby!");
+			UpdateObjectiveText(ObjText);
 			return;
 		}
 
