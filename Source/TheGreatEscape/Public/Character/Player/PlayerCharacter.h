@@ -234,7 +234,7 @@ public:
 	bool AutoApplyUI = true;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void CreateDamageWidget(FHitResult HitResult, float Damage, bool ShieldDamage);
+	void CreateDamageWidget(FHitResult HitResult, bool ShieldDamage);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ActivateRocket();

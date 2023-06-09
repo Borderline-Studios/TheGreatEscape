@@ -175,6 +175,7 @@ void UQRGA_Fanning::HitEnemyCheck(FHitResult HitInput)
 		//Check if ASC is vaild
 		if(ASC)
 		{
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 							

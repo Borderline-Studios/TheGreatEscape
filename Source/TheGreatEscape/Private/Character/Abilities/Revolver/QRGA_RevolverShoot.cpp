@@ -147,7 +147,7 @@ void UQRGA_RevolverShoot::CallEndAbility(FName NotifyName,
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
-	if(NotifyName == FName("FinishedReload"))
+	if(NotifyName == FName("ReloadFinished"))
 	{
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 	}
@@ -209,6 +209,7 @@ void UQRGA_RevolverShoot::HitEnemyCheck(FHitResult HitInput)
 		//Check if ASC is vaild
 		if(ASC)
 		{
+			GetPlayerReference()->CreateDamageWidget(HitInput, false);
 			//Creates damage effect outgoing handle
 			FGameplayEffectSpecHandle EffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
 			// bool to check if it was found & the value the health equals
