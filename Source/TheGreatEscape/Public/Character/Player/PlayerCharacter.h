@@ -149,7 +149,7 @@ public:
 
 private:
 	//Player Battery Counter
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = PlayerStats,  meta = (AllowPrivateAccess = "true"))
 	int PlayerBatteryCount = 0;
 	
 public:
@@ -161,6 +161,7 @@ public:
 
 	void IncrementBatteryCount();
 	void DecrementBatteryCount();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetPlayerBatteryCount() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool PlayerHasBattery();
