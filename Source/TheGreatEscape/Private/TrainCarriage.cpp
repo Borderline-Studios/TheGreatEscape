@@ -21,7 +21,6 @@
 // Static Variable Declarations
 // TStaticArray<int, 4> ATrainCarriage::CarriageDistances;
 ATrainEngine* ATrainCarriage::EngineRef;
-// APlayerCharacter* ATrainCarriage::PlayerRef;
 
 /**
  * @brief
@@ -104,6 +103,8 @@ void ATrainCarriage::InitialiseFromEngine(
 	}
 
 	ProcessMovement(0);
+
+	BPNotify_Initialised();
 }
 
 // Called when the game starts or when spawned

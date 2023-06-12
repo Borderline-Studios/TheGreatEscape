@@ -78,6 +78,7 @@ protected:
 
 	// Individual Variables
 	USceneComponent* SceneRoot = nullptr;
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* CarMesh = nullptr;
 	UBoxComponent* PlayerDetectionComponent = nullptr;
 };

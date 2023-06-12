@@ -152,7 +152,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int ElevatorInformationCheck(int RequirementToAdjust);
 
-	void RepopulateBatteryObjectiveText();
+	void RepopulateBatteryObjectiveText() const;
 	void UpdateFromSlot();
 	
 	void UpdateObjectiveText(FString NewText = "") const;

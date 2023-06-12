@@ -51,6 +51,9 @@ public:
 	// FUNCTIONS
 	void ProcessMovement(float EngineSplineDist);
 	UBoxComponent* GetPlayerDetectionComponent() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPNotify_Initialised();
 	
 private:
 	// FUNCTIONS

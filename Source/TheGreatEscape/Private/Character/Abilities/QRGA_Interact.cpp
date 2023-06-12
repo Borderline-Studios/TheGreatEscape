@@ -127,10 +127,11 @@ void UQRGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				//TODO Make this better (Pick up and drop)
 				else	// Checking for the battery
 				{
-					if (AObjectiveGate* GateRef = Cast<AObjectiveGate>(UGameplayStatics::GetActorOfClass(this, AObjectiveGate::StaticClass())))
+					if (AObjectiveGate* GateRef = Cast<AObjectiveGate>(HitResult.GetActor()->GetAttachParentActor()->GetAttachParentActor()))
 					{
 						GateRef->RepopulateBatteryObjectiveText();
 					}
+					
 					HitResult.GetActor()->Destroy();
 					GetPlayerReferance()->IncrementBatteryCount();
 				}
