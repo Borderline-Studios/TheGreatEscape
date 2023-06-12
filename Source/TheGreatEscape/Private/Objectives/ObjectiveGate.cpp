@@ -139,7 +139,7 @@ void AObjectiveGate::Tick(float DeltaTime)
 		EngineRef->EnableMovement();
 
 		// Default call of this function sets the text back to ""
-		UpdateObjectiveText();
+		UpdateObjectiveText("The train can now leave the station");
 		
 		TimeSinceEnabled = 0;
 		SetActorTickEnabled(false);
@@ -373,15 +373,36 @@ int AObjectiveGate::ElevatorInformationCheck(int RequirementToAdjust)
 	return RequirementToAdjust;
 }
 
-void AObjectiveGate::RepopulateBatteryObjectiveText()
+void AObjectiveGate::RepopulateBatteryObjectiveText() const
 {
-	const int SlotsFilled = GetSlotsFilled() + 1;
+	int CollectibleBatteries = -1;
+
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors, true, true);
+
+	for (int i = 0; i < AttachedActors.Num(); i++)
+	{
+		if (AttachedActors[i]->GetClass() == PickupItemClassRef)
+		{
+			CollectibleBatteries++;
+		}
+	}
+
+	FString ObjText;
 	
-	FString ObjText = "There ";
-	ObjText.Append(((SlotsFilled == 1) ? "is " : "are "));
-	ObjText.AppendInt(SlotsFilled);
-	ObjText.Append(((SlotsFilled == 1) ? " battery" : " batteries"));
-	ObjText.Append(" nearby");
+	if (CollectibleBatteries == 0)
+	{
+		ObjText = "Take this last battery to the gate";
+	}
+	else
+	{
+		ObjText = "There ";
+		ObjText.Append(((CollectibleBatteries == 1) ? "is " : "are "));
+		ObjText.AppendInt(CollectibleBatteries);
+		ObjText.Append(((CollectibleBatteries == 1) ? " battery" : " batteries"));
+		ObjText.Append(" nearby");
+	}
+	
 	UpdateObjectiveText(ObjText);
 }
 
@@ -497,8 +518,8 @@ void AObjectiveGate::UpdateFromSlot()
 		if (SlotsFilled != (SlotRefs.Num()))
 		{
 			FString ObjText = "Collect ";
-			ObjText.AppendInt(SlotsFilled);
-			ObjText.Append(((SlotsFilled == 1) ? " Battery." : " Batteries."));
+			ObjText.AppendInt(SlotRefs.Num() - SlotsFilled);
+			ObjText.Append(((SlotRefs.Num() - SlotsFilled == 1) ? " Battery." : " Batteries."));
 			ObjText.Append(" Explore nearby!");
 			UpdateObjectiveText(ObjText);
 			
