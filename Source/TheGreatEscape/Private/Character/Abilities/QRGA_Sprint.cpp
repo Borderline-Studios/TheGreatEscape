@@ -20,22 +20,25 @@ void UQRGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
-	InputRelaese->OnRelease.AddUniqueDynamic(this, &UQRGA_Sprint::ReleasedInput);
-	InputRelaese->ReadyForActivation();
+	if (GetPlayerReference()->bRevolverEquipped || GetPlayerReference()->bRifleEquipped)
+	{
+		InputRelaese = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true);
+		InputRelaese->OnRelease.AddUniqueDynamic(this, &UQRGA_Sprint::ReleasedInput);
+		InputRelaese->ReadyForActivation();
 
-	float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
-	GetPlayerReference()->LerpFOV(90.0f, 110.0f, false);
-	GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	if (GetPlayerReference()->bRevolverEquipped)
-	{
-		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
-		//Added dynamic notify and triggers function if notify is received
-		GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
-	}
-	if (GetPlayerReference()->bRifleEquipped)
-	{
-		GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Sprint");
+		float SprintSpeed = GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed + 150.0f;
+		GetPlayerReference()->LerpFOV(90.0f, 110.0f, false);
+		GetPlayerReference()->GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		if (GetPlayerReference()->bRevolverEquipped)
+		{
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->Montage_JumpToSection("Deactivate");
+			//Added dynamic notify and triggers function if notify is received
+			GetPlayerReference()->RevolverMesh1P->GetAnimInstance()->OnPlayMontageNotifyBegin.AddUniqueDynamic(this, &UQRGA_Sprint::CallEndAbility);
+		}
+		if (GetPlayerReference()->bRifleEquipped)
+		{
+			GetPlayerReference()->RifleMesh1P->GetAnimInstance()->Montage_JumpToSection("Sprint");
+		}
 	}
 }
 
